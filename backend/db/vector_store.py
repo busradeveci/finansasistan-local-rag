@@ -1,10 +1,14 @@
+import logging
 import struct
+import time
 from pathlib import Path
 
 import numpy as np
 
 from backend.config import DB_PATH, TOP_K
 from backend.db.database import get_connection
+
+logger = logging.getLogger(__name__)
 
 # Number of float32 values per embedding vector — determined at insert time
 # from the actual embedding size; stored here for unpack reuse.
@@ -17,6 +21,7 @@ _FLOAT_SIZE = struct.calcsize("f")
 
 def init_db(db_path: Path = DB_PATH) -> None:
     """Create the documents table and filename index if they don't exist."""
+    logger.info("Initialising vector store at '%s'.", db_path)
     conn = get_connection(db_path)
     try:
         conn.execute(
@@ -69,6 +74,8 @@ def insert_chunks(chunks: list[dict], db_path: Path = DB_PATH) -> None:
         conn.commit()
     finally:
         conn.close()
+    logger.debug("Inserted %d chunk(s) for '%s'.", len(chunks),
+                 chunks[0]["filename"] if chunks else "?")
 
 
 def delete_document(filename: str, db_path: Path = DB_PATH) -> None:
@@ -101,16 +108,25 @@ def search(
     query_embedding: list[float],
     top_k: int = TOP_K,
     db_path: Path = DB_PATH,
+    score_threshold: float = 0.0,
 ) -> list[dict]:
-    """Return the *top_k* most similar chunks using cosine similarity.
+    """Return the *top_k* most similar chunks using vectorised cosine similarity.
 
     Returns a list of dicts: [{filename, chunk_index, content, score}]
     sorted by score descending.
+
+    Safeguards:
+    - Skips rows with null/empty blobs.
+    - Skips rows whose embedding dimension does not match the query vector.
+    - Catches struct.error for corrupted blobs without aborting the whole search.
+    - Drops results below `score_threshold` before returning.
     """
     query_vec = np.array(query_embedding, dtype=np.float32)
     query_norm = np.linalg.norm(query_vec)
     if query_norm == 0:
         return []
+
+    query_dim = query_vec.shape[0]
 
     conn = get_connection(db_path)
     try:
@@ -123,26 +139,60 @@ def search(
     if not rows:
         return []
 
-    results: list[dict] = []
+    # ── Parse blobs into a matrix, skipping malformed rows ──────────────────
+    valid_rows: list = []
+    vectors: list[np.ndarray] = []
+
     for row in rows:
         blob: bytes = row["embedding"]
+        if not blob:
+            continue
         n_floats = len(blob) // _FLOAT_SIZE
-        vec = np.array(struct.unpack(f"{n_floats}f", blob), dtype=np.float32)
+        if n_floats == 0 or n_floats != query_dim:
+            # Dimension mismatch (e.g. model was swapped) — silently skip
+            continue
+        try:
+            vec = np.array(struct.unpack(f"{n_floats}f", blob), dtype=np.float32)
+        except struct.error:
+            # Corrupted blob — skip without crashing
+            continue
+        if not np.isfinite(vec).all():
+            continue
+        valid_rows.append(row)
+        vectors.append(vec)
 
-        norm = np.linalg.norm(vec)
-        if norm == 0:
-            score = 0.0
-        else:
-            score = float(np.dot(query_vec, vec) / (query_norm * norm))
+    if not vectors:
+        logger.warning("No valid embeddings found in store — returning empty results.")
+        return []
 
+    # ── Vectorised cosine similarity ─────────────────────────────────────────
+    t0 = time.perf_counter()
+
+    matrix = np.stack(vectors)                            # (N, D)
+    norms = np.linalg.norm(matrix, axis=1)                # (N,)
+    norms = np.where(norms == 0, 1e-9, norms)             # guard zero-norm stored vecs
+    scores = matrix.dot(query_vec) / (norms * query_norm) # (N,)
+
+    order = np.argsort(scores)[::-1]
+
+    results: list[dict] = []
+    for i in order[:top_k]:
+        score = float(scores[i])
+        if score < score_threshold:
+            break
         results.append(
             {
-                "filename": row["filename"],
-                "chunk_index": row["chunk_index"],
-                "content": row["content"],
+                "filename": valid_rows[i]["filename"],
+                "chunk_index": int(valid_rows[i]["chunk_index"]),
+                "content": valid_rows[i]["content"],
                 "score": score,
             }
         )
 
-    results.sort(key=lambda x: x["score"], reverse=True)
-    return results[:top_k]
+    elapsed_ms = (time.perf_counter() - t0) * 1000
+    logger.info(
+        "Retrieved %d chunk(s) above threshold %.2f in %.1f ms "
+        "(searched %d vectors, dim=%d) for prompt evaluation.",
+        len(results), score_threshold, elapsed_ms, len(vectors), query_dim,
+    )
+    return results

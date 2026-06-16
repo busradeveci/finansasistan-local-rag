@@ -27,11 +27,17 @@ class QueryRequest(BaseModel):
 # ---------------------------------------------------------------------------
 
 def _build_sources(chunks: list[dict]) -> list[dict]:
+    """Serialise retrieval chunks for the frontend source-inspection modal.
+
+    Includes chunk_index so the InspectModal can display "Chunk #N",
+    and preview so the raw text panel has content without a second DB query.
+    """
     return [
         {
-            "filename": c["filename"],
-            "score": c["score"],
-            "preview": c["content"][:150],
+            "filename":    c["filename"],
+            "chunk_index": c.get("chunk_index"),
+            "score":       c["score"],
+            "preview":     c["content"][:300],   # richer preview for modal
         }
         for c in chunks
     ]

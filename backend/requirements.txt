@@ -1,8 +1,20 @@
+# ── Web framework ────────────────────────────────────────────────────────────
 fastapi>=0.111.0
 uvicorn[standard]>=0.29.0
 python-multipart>=0.0.9
 pydantic>=2.7.0
+
+# ── Numerical / vector search ────────────────────────────────────────────────
 numpy>=1.26.0
+
+# ── Document extractors ──────────────────────────────────────────────────────
 PyPDF2>=3.0.0
 python-docx>=1.1.0
+
+# ── Microsoft Foundry Local SDK ───────────────────────────────────────────────
+# Package : foundry-local-sdk
+# Module  : foundry_local_sdk
+# Provides: FoundryLocalManager, Configuration, ChatClient, EmbeddingClient
+# Runs models 100% offline via the Foundry Local Core native library.
+# Install Foundry Local CLI first: winget install Microsoft.FoundryLocal
 foundry-local-sdk>=0.1.0
