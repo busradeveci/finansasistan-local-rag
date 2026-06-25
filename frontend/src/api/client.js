@@ -15,6 +15,8 @@ export const uploadDocument = (file) => {
   form.append("file", file)
   return api.post("/documents/upload", form, {
     headers: { "Content-Type": "multipart/form-data" },
+    // Large PDFs may need several minutes for chunked embedding on CPU
+    timeout: 600_000,
   }).then((r) => r.data)
 }
 

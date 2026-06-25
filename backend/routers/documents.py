@@ -22,6 +22,9 @@ async def get_documents():
 @router.post("/upload")
 async def upload_document(file: UploadFile):
     """Upload and ingest a document into the vector store."""
+    if not file.filename:
+        raise HTTPException(status_code=400, detail="Dosya adı bulunamadı.")
+
     suffix = Path(file.filename).suffix.lower()
     if suffix not in _ALLOWED_EXTENSIONS:
         raise HTTPException(
@@ -35,9 +38,27 @@ async def upload_document(file: UploadFile):
     safe_name = sanitize_filename(file.filename)
     dest = DOCS_DIR / safe_name
     DOCS_DIR.mkdir(parents=True, exist_ok=True)
-    dest.write_bytes(await file.read())
 
-    result = await ingest_file(dest, force=True)
+    try:
+        dest.write_bytes(await file.read())
+        result = await ingest_file(dest, force=True)
+    except ValueError as exc:
+        if dest.exists():
+            dest.unlink(missing_ok=True)
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    except Exception as exc:
+        if dest.exists():
+            dest.unlink(missing_ok=True)
+        raise HTTPException(
+            status_code=500,
+            detail=f"Belge işlenemedi: {exc}",
+        ) from exc
+
+    if result.get("chunks", 0) == 0 and not result.get("skipped"):
+        raise HTTPException(
+            status_code=400,
+            detail="Belgeden metin çıkarılamadı veya chunk oluşturulamadı.",
+        )
 
     return {
         "filename": result["filename"],

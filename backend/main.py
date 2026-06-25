@@ -1,3 +1,4 @@
+import asyncio
 import logging
 import time
 
@@ -41,6 +42,21 @@ async def startup() -> None:
         "Chat model: %s | Embed model: %s",
         doc_count, CHAT_MODEL, EMBED_MODEL,
     )
+    # Pre-load models in background so the first chat query is not blocked
+    # by an ~8-minute phi-3.5-mini download over SSE.
+    asyncio.create_task(_warm_models())
+
+
+async def _warm_models() -> None:
+    try:
+        from backend.services.foundry_client import get_chat_client, get_embedding_client
+
+        logger.info("Background model warm-up started…")
+        await get_embedding_client()
+        await get_chat_client()
+        logger.info("Background model warm-up complete — chat ready.")
+    except Exception as exc:
+        logger.warning("Background model warm-up failed (will retry on first query): %s", exc)
 
 
 app.include_router(documents.router)
