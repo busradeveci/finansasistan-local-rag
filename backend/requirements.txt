@@ -7,8 +7,13 @@ pydantic>=2.7.0
 # ── Numerical / vector search ────────────────────────────────────────────────
 numpy>=1.26.0
 
+# ── System telemetry (live CPU / RAM metrics for /api/telemetry) ─────────────
+psutil>=5.9.0
+
 # ── Document extractors ──────────────────────────────────────────────────────
 PyPDF2>=3.0.0
+pypdf>=4.2.0
+pymupdf>=1.24.0
 python-docx>=1.1.0
 
 # ── Microsoft Foundry Local SDK ───────────────────────────────────────────────

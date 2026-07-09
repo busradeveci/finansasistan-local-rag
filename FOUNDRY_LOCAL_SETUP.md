@@ -166,7 +166,7 @@ Once the backend is running, verify everything is working:
 ```
 GET http://localhost:8000/
 ```
-Expected: `{"status": "ok", "message": "FinansAsistan çalışıyor."}`
+Expected: `{"status": "ok", "message": "Foundry Local RAG workstation is running."}`
 
 ### Full system status (document count, models, uptime)
 ```

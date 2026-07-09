@@ -104,6 +104,47 @@ def list_documents(db_path: Path = DB_PATH) -> list[dict]:
         conn.close()
 
 
+def list_chunks(filename: str, db_path: Path = DB_PATH) -> list[dict]:
+    """Return chunk-level index records for one document (Knowledge Base view)."""
+    conn = get_connection(db_path)
+    try:
+        rows = conn.execute(
+            "SELECT chunk_index, content FROM documents WHERE filename = ? ORDER BY chunk_index",
+            (filename,),
+        ).fetchall()
+        return [
+            {
+                "chunk_index": row["chunk_index"],
+                "chars": len(row["content"]),
+                "preview": row["content"][:240],
+            }
+            for row in rows
+        ]
+    finally:
+        conn.close()
+
+
+def vector_index_stats(db_path: Path = DB_PATH) -> dict:
+    """Return live index metrics: {vectors, dimensions}.
+
+    *vectors* is the true row count of the embedding index; *dimensions* is
+    read from an actual stored blob (bytes / float32 size), not hardcoded.
+    """
+    conn = get_connection(db_path)
+    try:
+        count = conn.execute("SELECT COUNT(*) AS n FROM documents").fetchone()["n"]
+        dimensions = 0
+        if count:
+            row = conn.execute(
+                "SELECT embedding FROM documents WHERE embedding IS NOT NULL LIMIT 1"
+            ).fetchone()
+            if row and row["embedding"]:
+                dimensions = len(row["embedding"]) // _FLOAT_SIZE
+    finally:
+        conn.close()
+    return {"vectors": count, "dimensions": dimensions}
+
+
 def search(
     query_embedding: list[float],
     top_k: int = TOP_K,

@@ -16,6 +16,8 @@ import logging
 import re
 import unicodedata
 
+from backend.services import metrics
+
 logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
@@ -100,6 +102,7 @@ def sanitize_query(raw: str) -> str:
     text_clean = _INJECTION_PATTERNS.sub("[REDACTED]", text)
     if text_clean != text:
         logger.warning("sanitize_query: neutralised prompt-injection attempt in input.")
+        metrics.record_prompt_injection()
     text = text_clean
 
     # 5. Collapse whitespace
@@ -115,6 +118,7 @@ def sanitize_query(raw: str) -> str:
         )
         text = text[:_MAX_QUERY_CHARS].rstrip()
 
+    metrics.record_sanitized_query()
     return text
 
 

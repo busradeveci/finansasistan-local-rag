@@ -15,6 +15,7 @@ Loading sequence (lazy — triggered on first document upload):
 """
 from __future__ import annotations
 
+import asyncio
 import logging
 import re
 import time
@@ -161,7 +162,7 @@ async def ingest_file(
         delete_document(filename, db_path)
 
     t0   = time.perf_counter()
-    text = extract_text(path)
+    text = await asyncio.to_thread(extract_text, path)
 
     if not text:
         logger.warning("'%s' produced no extractable text — skipping.", filename)

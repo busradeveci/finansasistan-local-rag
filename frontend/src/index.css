@@ -4,16 +4,21 @@
 
 @layer base {
   :root {
-    --fluent-canvas: #f3f4f6;
-    --fluent-canvas-alt: #f8f9fa;
-    --fluent-text: #1f2937;
-    --fluent-text-muted: #6b7280;
-    --fluent-text-strong: #2c3e50;
-    --fluent-blue: #0078d4;
-    --fluent-blue-hover: #106ebe;
-    --fluent-border: rgba(0, 0, 0, 0.06);
-    --fluent-ease: cubic-bezier(0.1, 0.9, 0.2, 1);
-    --fluent-sidebar-width: 300px;
+    --ws-canvas: #F7FAFD;
+    --ws-surface: #FFFFFF;
+    --ws-primary: #0078D4;
+    --ws-primary-hover: #0F6CBD;
+    --ws-success: #107C10;
+    --ws-warning: #FFB900;
+    --ws-danger: #D13438;
+    --ws-border: rgba(15, 35, 60, 0.08);
+    --ws-text: #162235;
+    --ws-text-secondary: #2D3B50;
+    --ws-text-muted: #3E4E65;
+    --ws-sidebar: #162235;
+    --ws-sidebar-width: 240px;
+    --ws-evidence-width: 320px;
+    --ws-ease: cubic-bezier(0.1, 0.9, 0.2, 1);
   }
 
   html,
@@ -24,69 +29,98 @@
   }
 
   body {
-    font-family: "Segoe UI Variable", "Segoe UI", system-ui, -apple-system, sans-serif;
-    color: var(--fluent-text);
+    font-family: "Segoe UI", "Inter", system-ui, -apple-system, sans-serif;
+    color: var(--ws-text);
+    background: linear-gradient(135deg, #F7FAFD 0%, #EEF3F8 100%);
     -webkit-font-smoothing: antialiased;
     overflow: hidden;
   }
 }
 
 @layer components {
-  .fluent-canvas {
-    background:
-      radial-gradient(ellipse 100% 70% at 0% 0%, rgba(0, 120, 212, 0.04), transparent 50%),
-      radial-gradient(ellipse 80% 60% at 100% 100%, rgba(0, 0, 0, 0.02), transparent 45%),
-      linear-gradient(180deg, #f8f9fa 0%, #f3f4f6 100%);
+  .ws-surface {
+    background: var(--ws-surface);
+    border: 1px solid var(--ws-border);
   }
 
-  .fluent-acrylic {
-    background: rgba(255, 255, 255, 0.7);
-    backdrop-filter: blur(25px) saturate(110%);
-    -webkit-backdrop-filter: blur(25px) saturate(110%);
+  .ws-card {
+    background: #FFFFFF;
+    border: 1px solid rgba(15, 35, 60, 0.08);
+    border-radius: 1.125rem;
+    box-shadow: 0 1px 2px rgba(15, 35, 60, 0.06);
+    transition: transform 0.3s ease-out, box-shadow 0.3s ease-out, border-color 0.3s ease-out;
   }
 
-  .fluent-acrylic-subtle {
-    background: rgba(255, 255, 255, 0.55);
-    backdrop-filter: blur(20px) saturate(105%);
-    -webkit-backdrop-filter: blur(20px) saturate(105%);
+  .ws-card:hover {
+    transform: translateY(-4px) scale(1.01);
+    box-shadow: 0 18px 34px rgba(15, 35, 60, 0.16);
+    border-color: rgba(0, 120, 212, 0.22);
   }
 
-  .fluent-border {
-    border: 1px solid rgba(0, 0, 0, 0.06);
+  .ws-panel {
+    background: rgba(255, 255, 255, 0.92);
+    border: 1px solid rgba(15, 35, 60, 0.08);
+    border-radius: 1.125rem;
+    box-shadow: 0 1px 2px rgba(15, 35, 60, 0.06);
   }
 
-  .fluent-border-b {
-    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  .ws-strong-panel {
+    background: #FFFFFF;
+    border: 1px solid rgba(15, 35, 60, 0.08);
+    border-radius: 1.125rem;
+    box-shadow: 0 14px 30px rgba(15, 35, 60, 0.14);
   }
 
-  .fluent-border-r {
-    border-right: 1px solid rgba(0, 0, 0, 0.06);
+  .ws-nav-item {
+    @apply relative flex w-full items-center gap-3 overflow-hidden rounded-xl px-3.5 py-2.5 text-[13px] font-medium;
+    color: #D7E5F7;
+    transition: all 0.2s var(--ws-ease);
   }
 
-  .fluent-border-t {
-    border-top: 1px solid rgba(0, 0, 0, 0.06);
+  .ws-nav-indicator {
+    @apply absolute left-0 top-1/2 h-6 w-[3px] -translate-y-1/2 rounded-r-full;
+    background: #0078D4;
+    opacity: 0;
+    transition: opacity 0.2s var(--ws-ease);
+  }
+
+  .ws-nav-item:hover {
+    background: rgba(15, 108, 189, 0.14);
+    color: #EAF3FF;
+    box-shadow: inset 0 0 0 1px rgba(80, 140, 214, 0.22), 0 8px 18px rgba(7, 16, 31, 0.24);
+    transform: scale(1.01);
+  }
+
+  .ws-nav-item:hover .ws-nav-indicator {
+    opacity: 0.75;
+  }
+
+  .ws-nav-item-active {
+    background: rgba(0, 120, 212, 0.1);
+    color: #0078D4;
+    font-weight: 600;
+    box-shadow: inset 0 0 0 1px rgba(0, 120, 212, 0.24), 0 6px 14px rgba(7, 16, 31, 0.2);
+  }
+
+  .ws-nav-item-active .ws-nav-indicator {
+    opacity: 1;
+  }
+
+  .ws-input-bar {
+    background: var(--ws-surface);
+    border: 1px solid var(--ws-border);
+    border-radius: 0.9rem;
+    transition: transform 0.3s ease-out, box-shadow 0.3s ease-out, border-color 0.3s ease-out;
+  }
+
+  .ws-input-bar:focus-within {
+    border-color: rgba(0, 120, 212, 0.5);
+    box-shadow: 0 0 0 1px rgba(0, 120, 212, 0.14), 0 8px 24px rgba(15, 35, 60, 0.08);
+    transform: translateY(-1px);
   }
 
   .fluent-transition {
-    transition: all 0.3s cubic-bezier(0.1, 0.9, 0.2, 1);
-  }
-
-  .fluent-report-mono {
-    font-family: "Cascadia Mono", "Consolas", "Courier New", monospace;
-  }
-
-  .fluent-search-input {
-    background: rgba(255, 255, 255, 0.85);
-    border: 1px solid rgba(0, 0, 0, 0.08);
-    border-bottom-color: rgba(0, 0, 0, 0.12);
-    transition: border-color 0.2s var(--fluent-ease), background 0.2s var(--fluent-ease);
-  }
-
-  .fluent-search-input:focus-within {
-    background: rgba(255, 255, 255, 0.95);
-    border-color: rgba(0, 120, 212, 0.45);
-    outline: none;
-    box-shadow: none;
+    transition: all 0.3s ease-out;
   }
 }
 
@@ -95,26 +129,15 @@
     width: 8px;
     height: 8px;
   }
-
   .fluent-scrollbar::-webkit-scrollbar-track {
     background: transparent;
   }
-
   .fluent-scrollbar::-webkit-scrollbar-thumb {
-    background: rgba(0, 0, 0, 0.12);
+    background: rgba(22, 34, 53, 0.22);
     border-radius: 9999px;
-    border: 2px solid transparent;
-    background-clip: padding-box;
   }
-
-  .fluent-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: rgba(0, 0, 0, 0.2);
-    border: 2px solid transparent;
-    background-clip: padding-box;
-  }
-
   .fluent-scrollbar {
     scrollbar-width: thin;
-    scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
+    scrollbar-color: rgba(22, 34, 53, 0.2) transparent;
   }
 }
