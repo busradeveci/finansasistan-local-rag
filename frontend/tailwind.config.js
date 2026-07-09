@@ -68,10 +68,32 @@ export default {
           700: "#03396c",
           900: "#011f4b",
         },
+        glass: {
+          DEFAULT: "rgba(100, 151, 177, 0.35)",
+          border: "#E0E6E6",
+          canvas: "#b3cde0",
+        },
       },
       fontFamily: {
-        sans: ["Manrope", "sans-serif"],
-        heading: ["Archivo", "sans-serif"],
+        sans: ['"Segoe UI Variable"', '"Segoe UI"', "Inter", "system-ui", "sans-serif"],
+      },
+      fontSize: {
+        hero:          ["36px", { lineHeight: "1.2",  fontWeight: "700" }],
+        "page-title":  ["30px", { lineHeight: "1.25", fontWeight: "700" }],
+        "section-title": ["22px", { lineHeight: "1.3", fontWeight: "600" }],
+        "card-title":  ["18px", { lineHeight: "1.35", fontWeight: "600" }],
+        body:          ["16px", { lineHeight: "1.5",  fontWeight: "400" }],
+        "body-sm":     ["15px", { lineHeight: "1.5",  fontWeight: "400" }],
+        caption:       ["13px", { lineHeight: "1.45", fontWeight: "400" }],
+        badge:         ["13px", { lineHeight: "1.4",  fontWeight: "500" }],
+        button:        ["15px", { lineHeight: "1.4",  fontWeight: "600" }],
+      },
+      backdropBlur: {
+        glass: "12px",
+      },
+      boxShadow: {
+        glass: "0 2px 8px rgba(1, 31, 75, 0.06)",
+        "glass-hover": "0 6px 20px rgba(1, 31, 75, 0.1)",
       },
       borderRadius: {
         lg: "var(--radius)",

@@ -43,30 +43,30 @@ export default function AnalyticsModule() {
       : 0)
 
   return (
-    <div className="flex-1 overflow-y-auto fluent-scrollbar p-6 space-y-6">
+    <div className="flex-1 overflow-y-auto fluent-scrollbar p-6 space-y-8 metric-display">
       <header>
-        <h1 className="text-[18px] font-semibold">Analytics</h1>
-        <p className="text-[12px] text-[var(--ws-text-secondary)]">
+        <h1 className="text-page-title text-navy-900">Analytics</h1>
+        <p className="text-body-sm text-navy-700 mt-1">
           Real-time pipeline performance and system telemetry
         </p>
       </header>
 
       <section>
-        <h2 className="text-[11px] font-semibold uppercase tracking-wide text-[var(--ws-text-secondary)] mb-3">
+        <h2 className="text-section-title text-navy-900 mb-4">
           Performance
         </h2>
         {loading && perfCards.length === 0 ? (
-          <p className="text-[12px] text-[var(--ws-text-secondary)]">Loading pipeline metrics…</p>
+          <p className="text-body-sm text-navy-700">Loading pipeline metrics…</p>
         ) : perfCards.length === 0 ? (
-          <p className="text-[12px] text-[var(--ws-text-secondary)]">
+          <p className="text-body-sm text-navy-700">
             No query samples yet — metrics populate after the first chat request.
           </p>
         ) : (
-          <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
             {perfCards.map((c) => (
-              <div key={c.label} className="ws-card p-4">
-                <p className="text-[10px] uppercase text-[var(--ws-text-secondary)]">{c.label}</p>
-                <p className="text-[20px] font-semibold mt-1" style={{ color: "var(--ws-primary)" }}>
+              <div key={c.label} className="ws-stat-card p-5">
+                <p className="text-badge font-semibold uppercase tracking-wide text-navy-500">{c.label}</p>
+                <p className="text-section-title text-navy-900 mt-2 tabular-nums">
                   {c.value}
                 </p>
               </div>
@@ -76,18 +76,18 @@ export default function AnalyticsModule() {
       </section>
 
       <section>
-        <h2 className="text-[11px] font-semibold uppercase tracking-wide text-[var(--ws-text-secondary)] mb-3">
+        <h2 className="text-section-title text-navy-900 mb-4">
           System Telemetry
         </h2>
         {loading && !telemetry ? (
-          <p className="text-[12px] text-[var(--ws-text-secondary)]">Polling /api/telemetry…</p>
+          <p className="text-body-sm text-navy-700">Polling /api/telemetry…</p>
         ) : !telemetry ? (
-          <p className="text-[12px] text-[var(--ws-text-secondary)]">
+          <p className="text-body-sm text-navy-700">
             Telemetry unavailable — ensure the backend is running on port 8000.
           </p>
         ) : (
           <div className="grid lg:grid-cols-2 gap-4">
-            <div className="ws-card p-4 space-y-4">
+            <div className="ws-card p-5 space-y-5">
               <UsageBar
                 label="CPU Usage"
                 percent={telemetry.cpu.percent}
@@ -110,7 +110,7 @@ export default function AnalyticsModule() {
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-4">
               <TelCard label="Vector Engine" value={telemetry.vector_db.engine} />
               <TelCard label="Indexed Vectors" value={String(telemetry.vector_db.vectors)} />
               <TelCard label="Dimensions" value={`${telemetry.vector_db.dimensions}d`} />
@@ -136,17 +136,16 @@ function UsageBar({
 }) {
   const clamped = Math.max(0, Math.min(100, Math.round(percent)))
   const fillColor =
-    inactive ? "var(--ws-text-secondary)" : clamped >= 85 ? "var(--ws-danger)" : clamped >= 60 ? "#CA5010" : "var(--ws-primary)"
+    inactive ? "var(--ws-text-muted)" : clamped >= 85 ? "var(--ws-danger)" : clamped >= 60 ? "#CA5010" : "var(--ws-primary)"
 
   return (
     <div>
-      <div className="flex items-baseline justify-between gap-2 mb-1.5">
-        <p className="text-[11px] font-semibold text-[var(--ws-text)]">{label}</p>
-        <p className="text-[11px] text-[var(--ws-text-secondary)]">{detail}</p>
+      <div className="flex items-baseline justify-between gap-2 mb-2">
+        <p className="text-body-sm font-semibold text-navy-900">{label}</p>
+        <p className="text-caption text-navy-700 tabular-nums">{detail}</p>
       </div>
       <div
-        className="h-2.5 rounded-full overflow-hidden"
-        style={{ background: "rgba(0,0,0,0.06)" }}
+        className="h-2.5 rounded-full overflow-hidden bg-white/40"
         role="progressbar"
         aria-valuenow={clamped}
         aria-valuemin={0}
@@ -167,9 +166,9 @@ function UsageBar({
 
 function TelCard({ label, value }: { label: string; value: string }) {
   return (
-    <div className="ws-card p-4">
-      <p className="text-[10px] uppercase text-[var(--ws-text-secondary)]">{label}</p>
-      <p className="text-[16px] font-semibold mt-1 text-[var(--ws-text)]">{value}</p>
+    <div className="ws-stat-card p-4">
+      <p className="text-badge font-semibold uppercase tracking-wide text-navy-500">{label}</p>
+      <p className="text-card-title text-navy-900 mt-2 tabular-nums">{value}</p>
     </div>
   )
 }
