@@ -10,20 +10,20 @@ export default function WorkstationLayout({ children }: { children: React.ReactN
   const { hasBackgroundActivity, uploadQueue, isGenerating, alerts, dismissAlert } = useWorkstation()
   const indexingCount = uploadQueue.filter((q) => q.status === "indexing").length
   return (
-    <div className="flex h-screen flex-col bg-[linear-gradient(135deg,#F7FAFD_0%,#EEF3F8_100%)]">
+    <div className="flex h-screen flex-col bg-[var(--ws-canvas)]">
       <header className="sticky top-0 z-20 shrink-0 px-6 pt-4">
-        <div className="ws-panel flex items-center justify-between px-5 py-3.5 backdrop-blur-xl">
+        <div className="ws-panel flex items-center justify-between px-5 py-3.5 rounded-[30px]">
           <div>
-            <h1 className="text-[15px] font-semibold text-[#162235]">Foundry Local — Enterprise AI Workstation</h1>
-            <p className="mt-0.5 text-[11px] text-[#2D3B50]">Fluent 2 premium shell</p>
+            <h1 className="font-heading text-[15px] font-semibold text-navy-900">Foundry Local — Enterprise AI Workstation</h1>
+            <p className="mt-0.5 text-[11px] text-navy-300">Enterprise reporting shell</p>
           </div>
           <div className="flex items-center gap-2.5">
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[11px] font-semibold text-emerald-700">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-teal-500/25 bg-teal-50 px-2.5 py-1 text-[11px] font-semibold text-teal-700">
+              <span className="h-1.5 w-1.5 rounded-full bg-teal-500" />
               Active runtime
             </span>
             {hasBackgroundActivity && (
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-[rgba(15,108,189,0.25)] bg-[#0078D4]/10 px-2.5 py-1 text-[11px] font-medium text-[#0F6CBD]">
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-teal-500/25 bg-teal-50 px-2.5 py-1 text-[11px] font-medium text-teal-700">
                 <Loader2 className="h-3 w-3 animate-spin" />
                 {isGenerating && indexingCount > 0
                   ? `Streaming · ${indexingCount} upload${indexingCount > 1 ? "s" : ""}`
@@ -32,7 +32,7 @@ export default function WorkstationLayout({ children }: { children: React.ReactN
                     : `${indexingCount} upload${indexingCount > 1 ? "s" : ""} in progress`}
               </span>
             )}
-            <span className="inline-flex items-center rounded-full border border-[rgba(15,108,189,0.2)] bg-white px-2.5 py-1 text-[11px] font-medium text-[#0F6CBD]">
+            <span className="inline-flex items-center rounded-full border border-navy-100 bg-white px-2.5 py-1 text-[11px] font-medium text-navy-500">
               Online · Offline Mode
             </span>
           </div>
@@ -65,12 +65,12 @@ export default function WorkstationLayout({ children }: { children: React.ReactN
       )}
       <div className="flex flex-1 min-h-0 gap-4 px-6 pb-6 pt-2">
         <aside
-          className="fluent-scrollbar shrink-0 overflow-y-auto rounded-2xl border border-[rgba(255,255,255,0.14)] bg-[#162235]/95 shadow-sm backdrop-blur-md"
+          className="fluent-scrollbar shrink-0 overflow-y-auto rounded-2xl border border-darkTeal-800 bg-darkTeal-900 shadow-sm"
           style={{ width: "var(--ws-sidebar-width)" }}
         >
           <SidebarNav />
         </aside>
-        <main className="flex min-w-0 flex-1 flex-col overflow-hidden rounded-2xl border border-[rgba(15,35,60,0.08)] bg-white/88 shadow-sm backdrop-blur-[2px]">
+        <main className="flex min-w-0 flex-1 flex-col overflow-hidden rounded-[30px] border border-slate-200/80 bg-white shadow-sm">
           {children}
         </main>
       </div>

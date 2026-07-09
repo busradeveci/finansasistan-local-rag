@@ -1,9 +1,13 @@
-import { Plus, Trash2 } from "lucide-react"
+import { useState } from "react"
+import { Plus, Trash2, X } from "lucide-react"
 import { useWorkstation } from "@/context/WorkstationContext"
 import ConversationCanvas from "@/components/chat/ConversationCanvas"
 import EvidencePanel from "@/components/evidence/EvidencePanel"
 
 export default function ChatModule() {
+  const [sessionsOpen, setSessionsOpen] = useState(true)
+  const [evidenceOpen, setEvidenceOpen] = useState(true)
+
   const {
     sessions,
     activeSessionId,
@@ -21,24 +25,39 @@ export default function ChatModule() {
   const sources = lastAssistant?.sources ?? []
 
   return (
-    <div className="grid flex-1 min-h-0 h-full grid-cols-[270px,minmax(0,1fr),380px] gap-4 p-4">
-      <aside className="ws-card min-h-0 overflow-hidden p-4 flex flex-col">
-        <div className="mb-3 flex items-center justify-between">
-          <h2 className="text-[12px] font-semibold uppercase tracking-wide text-[var(--ws-text-secondary)]">
+    <div className="flex flex-1 min-h-0 h-full w-full gap-3 md:gap-4 p-2 md:p-4 overflow-hidden">
+      <aside
+        className={`spring shrink-0 flex flex-col min-h-0 overflow-hidden bg-white rounded-2xl border border-slate-200/80 shadow-sm transition-all duration-300 ease-[cubic-bezier(0.175,0.885,0.32,1.275)] ${
+          sessionsOpen ? "w-64 p-4 opacity-100" : "w-0 p-0 border-0 opacity-0 pointer-events-none"
+        }`}
+        aria-hidden={!sessionsOpen}
+      >
+        <div className="mb-3 flex items-center justify-between gap-2">
+          <h2 className="font-heading text-[12px] font-semibold uppercase tracking-wide text-navy-300">
             Intelligence Sessions
           </h2>
-          <button
-            type="button"
-            onClick={createSession}
-            className="inline-flex items-center gap-1 rounded-lg border border-[rgba(0,120,212,0.25)] bg-[#0078D4]/10 px-2 py-1 text-[11px] font-medium text-[#0F6CBD] hover:bg-[#0078D4]/20"
-          >
-            <Plus className="h-3 w-3" />
-            New
-          </button>
+          <div className="flex items-center gap-1">
+            <button
+              type="button"
+              onClick={createSession}
+              className="inline-flex items-center gap-1 rounded-xl border border-slate-200/80 bg-white px-2 py-1 text-[11px] font-medium text-teal-700 shadow-sm hover:border-teal-500/30 hover:bg-teal-50 transition-all duration-300 ease-[cubic-bezier(0.175,0.885,0.32,1.275)]"
+            >
+              <Plus className="h-3 w-3" />
+              New
+            </button>
+            <button
+              type="button"
+              onClick={() => setSessionsOpen(false)}
+              className="inline-flex items-center justify-center rounded-xl p-1.5 text-navy-300 hover:bg-teal-50 hover:text-teal-700 transition-all duration-300 ease-[cubic-bezier(0.175,0.885,0.32,1.275)]"
+              aria-label="Collapse sessions panel"
+            >
+              <X className="h-3.5 w-3.5" />
+            </button>
+          </div>
         </div>
         <div className="fluent-scrollbar flex-1 min-h-0 space-y-2 overflow-y-auto pr-1">
           {sessions.length === 0 ? (
-            <div className="rounded-xl border border-[rgba(15,35,60,0.08)] bg-white p-3 text-[12px] text-[var(--ws-text-secondary)]">
+            <div className="rounded-xl border border-slate-200/80 bg-teal-50/40 p-3 text-[12px] text-navy-300">
               Start a new session to begin executive analysis.
             </div>
           ) : (
@@ -47,10 +66,10 @@ export default function ChatModule() {
               return (
                 <div
                   key={s.id}
-                  className={`group relative rounded-xl border p-3 transition-all duration-300 ease-out ${
+                  className={`group relative rounded-xl border p-3 spring ${
                     active
-                      ? "border-[rgba(0,120,212,0.3)] bg-[#EAF3FF] shadow-sm"
-                      : "border-[rgba(15,35,60,0.08)] bg-white hover:-translate-y-0.5 hover:shadow-lg"
+                      ? "border-teal-500/40 bg-teal-50/60 shadow-sm"
+                      : "border-slate-200/80 bg-white hover:border-teal-500/20 hover:bg-slate-50/80"
                   }`}
                 >
                   <button
@@ -58,16 +77,16 @@ export default function ChatModule() {
                     onClick={() => setActiveSessionId(s.id)}
                     className="w-full text-left"
                   >
-                    <p className="truncate text-[13px] font-semibold text-[#162235]">{s.label}</p>
-                    <p className="mt-1 text-[11px] text-[#2D3B50]">{s.date}</p>
-                    <p className="mt-1 text-[11px] text-[#2D3B50]">
+                    <p className="truncate text-[13px] font-semibold text-navy-900">{s.label}</p>
+                    <p className="mt-1 text-[11px] text-navy-300">{s.date}</p>
+                    <p className="mt-1 text-[11px] text-navy-300">
                       {s.messages.length} message{s.messages.length === 1 ? "" : "s"}
                     </p>
                   </button>
                   <button
                     type="button"
                     onClick={() => deleteSession(s.id)}
-                    className="absolute right-2 top-2 rounded-md p-1 text-[#2D3B50] hover:bg-[rgba(209,52,56,0.12)] hover:text-[#D13438]"
+                    className="absolute right-2 top-2 rounded-xl p-1 text-navy-300 hover:bg-red-50 hover:text-[var(--ws-danger)] transition-all duration-300 ease-[cubic-bezier(0.175,0.885,0.32,1.275)]"
                     aria-label={`Delete ${s.label}`}
                   >
                     <Trash2 className="h-3.5 w-3.5" />
@@ -78,14 +97,31 @@ export default function ChatModule() {
           )}
         </div>
       </aside>
-      <div className="ws-card min-w-0 min-h-0 flex flex-col overflow-hidden">
-        <ConversationCanvas />
+
+      <div className="flex-1 w-full min-w-0 flex flex-col h-full bg-slate-50/50 rounded-[30px] p-4 md:p-6 min-h-0 overflow-hidden">
+        <ConversationCanvas
+          sessionsOpen={sessionsOpen}
+          onToggleSessions={() => setSessionsOpen((open) => !open)}
+          evidenceOpen={evidenceOpen}
+          onToggleEvidence={() => setEvidenceOpen((open) => !open)}
+        />
       </div>
-      <EvidencePanel
-        sources={sources}
-        selected={selectedEvidence}
-        onSelect={setSelectedEvidence}
-      />
+
+      <aside
+        className={`spring shrink-0 min-h-0 overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.175,0.885,0.32,1.275)] ${
+          evidenceOpen ? "w-80 max-w-sm opacity-100" : "w-0 opacity-0 pointer-events-none"
+        }`}
+        aria-hidden={!evidenceOpen}
+      >
+        {evidenceOpen && (
+          <EvidencePanel
+            sources={sources}
+            selected={selectedEvidence}
+            onSelect={setSelectedEvidence}
+            onToggle={() => setEvidenceOpen(false)}
+          />
+        )}
+      </aside>
     </div>
   )
 }

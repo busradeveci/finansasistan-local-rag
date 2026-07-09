@@ -6,19 +6,19 @@
   :root {
     --ws-canvas: #F7FAFD;
     --ws-surface: #FFFFFF;
-    --ws-primary: #0078D4;
-    --ws-primary-hover: #0F6CBD;
-    --ws-success: #107C10;
-    --ws-warning: #FFB900;
+    --ws-primary: #006666;
+    --ws-primary-hover: #005555;
+    --ws-success: #008080;
+    --ws-warning: #ffad60;
     --ws-danger: #D13438;
     --ws-border: rgba(15, 35, 60, 0.08);
-    --ws-text: #162235;
-    --ws-text-secondary: #2D3B50;
-    --ws-text-muted: #3E4E65;
-    --ws-sidebar: #162235;
+    --ws-text: #011f4b;
+    --ws-text-secondary: #6497b1;
+    --ws-text-muted: #6497b1;
+    --ws-sidebar: #003333;
     --ws-sidebar-width: 240px;
-    --ws-evidence-width: 320px;
-    --ws-ease: cubic-bezier(0.1, 0.9, 0.2, 1);
+    --ws-evidence-width: 20rem;
+    --ws-ease: cubic-bezier(0.175, 0.885, 0.32, 1.275);
   }
 
   html,
@@ -29,66 +29,69 @@
   }
 
   body {
-    font-family: "Segoe UI", "Inter", system-ui, -apple-system, sans-serif;
+    font-family: "Manrope", system-ui, -apple-system, sans-serif;
     color: var(--ws-text);
-    background: linear-gradient(135deg, #F7FAFD 0%, #EEF3F8 100%);
+    background: var(--ws-canvas);
     -webkit-font-smoothing: antialiased;
     overflow: hidden;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: "Archivo", "Manrope", sans-serif;
   }
 }
 
 @layer components {
+  .spring {
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+
   .ws-surface {
-    background: var(--ws-surface);
-    border: 1px solid var(--ws-border);
+    @apply bg-white border border-slate-200/80 rounded-2xl shadow-sm;
   }
 
   .ws-card {
-    background: #FFFFFF;
-    border: 1px solid rgba(15, 35, 60, 0.08);
-    border-radius: 1.125rem;
-    box-shadow: 0 1px 2px rgba(15, 35, 60, 0.06);
-    transition: transform 0.3s ease-out, box-shadow 0.3s ease-out, border-color 0.3s ease-out;
-  }
-
-  .ws-card:hover {
-    transform: translateY(-4px) scale(1.01);
-    box-shadow: 0 18px 34px rgba(15, 35, 60, 0.16);
-    border-color: rgba(0, 120, 212, 0.22);
+    @apply bg-white border border-slate-200/80 rounded-2xl shadow-sm
+      hover:shadow-md transition-all duration-300 ease-[cubic-bezier(0.175,0.885,0.32,1.275)];
   }
 
   .ws-panel {
-    background: rgba(255, 255, 255, 0.92);
-    border: 1px solid rgba(15, 35, 60, 0.08);
-    border-radius: 1.125rem;
-    box-shadow: 0 1px 2px rgba(15, 35, 60, 0.06);
+    @apply bg-white border border-slate-200/80 rounded-2xl shadow-sm
+      transition-all duration-300 ease-[cubic-bezier(0.175,0.885,0.32,1.275)];
   }
 
   .ws-strong-panel {
-    background: #FFFFFF;
-    border: 1px solid rgba(15, 35, 60, 0.08);
-    border-radius: 1.125rem;
-    box-shadow: 0 14px 30px rgba(15, 35, 60, 0.14);
+    @apply bg-white border border-slate-200/80 rounded-[30px] shadow-sm
+      transition-all duration-300 ease-[cubic-bezier(0.175,0.885,0.32,1.275)];
+  }
+
+  .ws-stat-card {
+    @apply bg-white p-6 rounded-[30px] shadow-sm border border-slate-200/80
+      hover:border-teal-500/30 hover:shadow-md transition-all duration-300
+      ease-[cubic-bezier(0.175,0.885,0.32,1.275)] cursor-pointer;
   }
 
   .ws-nav-item {
     @apply relative flex w-full items-center gap-3 overflow-hidden rounded-xl px-3.5 py-2.5 text-[13px] font-medium;
-    color: #D7E5F7;
-    transition: all 0.2s var(--ws-ease);
+    color: #b2d8d8;
+    transition: background-color 0.3s var(--ws-ease), color 0.3s var(--ws-ease);
   }
 
   .ws-nav-indicator {
     @apply absolute left-0 top-1/2 h-6 w-[3px] -translate-y-1/2 rounded-r-full;
-    background: #0078D4;
+    background: #008080;
     opacity: 0;
-    transition: opacity 0.2s var(--ws-ease);
+    transition: opacity 0.3s var(--ws-ease);
   }
 
   .ws-nav-item:hover {
-    background: rgba(15, 108, 189, 0.14);
-    color: #EAF3FF;
-    box-shadow: inset 0 0 0 1px rgba(80, 140, 214, 0.22), 0 8px 18px rgba(7, 16, 31, 0.24);
-    transform: scale(1.01);
+    background: rgba(0, 128, 128, 0.14);
+    color: #EDF5FF;
   }
 
   .ws-nav-item:hover .ws-nav-indicator {
@@ -96,10 +99,9 @@
   }
 
   .ws-nav-item-active {
-    background: rgba(0, 120, 212, 0.1);
-    color: #0078D4;
+    background: rgba(0, 102, 102, 0.12);
+    color: #66b2b2;
     font-weight: 600;
-    box-shadow: inset 0 0 0 1px rgba(0, 120, 212, 0.24), 0 6px 14px rgba(7, 16, 31, 0.2);
   }
 
   .ws-nav-item-active .ws-nav-indicator {
@@ -107,20 +109,16 @@
   }
 
   .ws-input-bar {
-    background: var(--ws-surface);
-    border: 1px solid var(--ws-border);
-    border-radius: 0.9rem;
-    transition: transform 0.3s ease-out, box-shadow 0.3s ease-out, border-color 0.3s ease-out;
+    @apply bg-white border border-slate-200 rounded-2xl shadow-sm p-3;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   }
 
   .ws-input-bar:focus-within {
-    border-color: rgba(0, 120, 212, 0.5);
-    box-shadow: 0 0 0 1px rgba(0, 120, 212, 0.14), 0 8px 24px rgba(15, 35, 60, 0.08);
-    transform: translateY(-1px);
+    @apply border-teal-500 ring-1 ring-teal-500;
   }
 
   .fluent-transition {
-    transition: all 0.3s ease-out;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   }
 }
 
@@ -133,11 +131,11 @@
     background: transparent;
   }
   .fluent-scrollbar::-webkit-scrollbar-thumb {
-    background: rgba(22, 34, 53, 0.22);
+    background: rgba(1, 31, 75, 0.18);
     border-radius: 9999px;
   }
   .fluent-scrollbar {
     scrollbar-width: thin;
-    scrollbar-color: rgba(22, 34, 53, 0.2) transparent;
+    scrollbar-color: rgba(1, 31, 75, 0.18) transparent;
   }
 }

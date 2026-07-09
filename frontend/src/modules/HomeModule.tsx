@@ -113,7 +113,7 @@ function ActionCard({
     <button
       type="button"
       onClick={onClick}
-      className="ws-card p-4 text-left fluent-transition hover:shadow-sm hover:border-[var(--ws-primary)]"
+      className="ws-card p-4 text-left hover:border-blue-300 hover:bg-slate-50"
     >
       <Icon className="h-4 w-4 mb-2" style={{ color: "var(--ws-primary)" }} strokeWidth={1.75} />
       <span className="text-[13px] font-medium text-[var(--ws-text)]">{label}</span>
