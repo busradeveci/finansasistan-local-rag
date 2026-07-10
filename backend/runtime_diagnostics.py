@@ -39,11 +39,13 @@ def _import_extractors() -> dict[str, Any]:
         import docx  # noqa: F401
         import fitz  # noqa: F401
         import psutil  # noqa: F401
+        import pandas  # noqa: F401
+        import openpyxl  # noqa: F401
 
         return _check(
             "document_extractors",
             True,
-            "pypdf, pymupdf, python-docx and psutil imports OK",
+            "pypdf, pymupdf, python-docx, pandas, openpyxl and psutil imports OK",
         )
     except ImportError as exc:
         return _check("document_extractors", False, str(exc))

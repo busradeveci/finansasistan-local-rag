@@ -19,13 +19,17 @@ from backend.services.ingestion import ingest_file
 router = APIRouter(prefix="/documents", tags=["documents"])
 logger = logging.getLogger(__name__)
 
-_ALLOWED_EXTENSIONS = {".txt", ".md", ".pdf", ".docx"}
+_ALLOWED_EXTENSIONS = {".txt", ".md", ".pdf", ".docx", ".xlsx", ".csv"}
 _ALLOWED_MIME_TYPES = {
     "text/plain",
     "text/markdown",
     "text/x-markdown",
+    "text/csv",
+    "application/csv",
+    "application/vnd.ms-excel",
     "application/pdf",
     "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
 }
 
 

@@ -1,140 +1,295 @@
+import { useEffect, useRef } from "react"
+
 import type { EvidenceChunk } from "@/types/workstation"
+
 import { useWorkstation } from "@/context/WorkstationContext"
+
 import { FileText } from "lucide-react"
 
+
+
 interface Props {
+
   sources: EvidenceChunk[]
+
   selected: EvidenceChunk | null
+
   onSelect: (chunk: EvidenceChunk) => void
+
 }
+
+
+
+function chunkDomId(chunk: EvidenceChunk, index: number): string {
+
+  return `evidence-chunk-${chunk.ref ?? index}-${chunk.chunk_index ?? index}`
+
+}
+
+
 
 export default function EvidencePanel({ sources, selected, onSelect }: Props) {
+
   const { setModule } = useWorkstation()
+
   const active = selected ?? sources[0] ?? null
 
+  const chunkRefs = useRef<Record<string, HTMLLIElement | null>>({})
+
+
+
+  useEffect(() => {
+
+    if (!active) return
+
+    const key = String(active.ref ?? active.chunk_index ?? active.filename)
+
+    const node = chunkRefs.current[key]
+
+    node?.scrollIntoView({ behavior: "smooth", block: "nearest" })
+
+  }, [active])
+
+
+
   return (
-    <aside className="flex h-full w-full max-w-xs shrink-0 flex-col overflow-hidden rounded-sm p-2 ws-glass">
-      <header className="mb-1.5 shrink-0 border-b border-glass pb-1.5">
-        <h2 className="truncate text-card-title text-midnight">
+
+    <aside className="ws-evidence-panel flex h-full w-full shrink-0 flex-col overflow-hidden border border-[var(--ws-card-border)] bg-[var(--ws-card-bg)]" style={{ borderRadius: "var(--ws-card-radius)" }}>
+
+      <header className="mb-1 shrink-0 border-b border-[var(--ws-card-border)] pb-1.5">
+
+        <h2 className="truncate text-badge font-bold uppercase tracking-wider text-white">
+
           Evidence Panel
+
         </h2>
-        <p className="mt-0.5 truncate text-sm text-stone">
+
+        <p className="mt-0.5 truncate text-badge leading-snug tracking-wide text-[var(--ws-text-muted)]">
+
           Retrieved sources &amp; chunk audit
+
         </p>
+
       </header>
 
+
+
       <div className="fluent-scrollbar min-h-0 flex-1 space-y-2 overflow-y-auto metric-display">
+
         {sources.length === 0 ? (
-          <p className="text-sm text-stone">
+
+          <p className="text-body-sm leading-relaxed tracking-wide text-[var(--ws-text-muted)]">
+
             Run a query to populate retrieved sources and similarity metrics.
+
           </p>
+
         ) : (
+
           <>
+
             <section>
-              <p className="mb-1.5 text-sm font-semibold uppercase tracking-wide text-stone">
+
+              <p className="mb-1 text-badge font-semibold uppercase tracking-wider text-[var(--ws-text-muted)]">
+
                 Retrieved Sources
+
               </p>
+
               <ul className="space-y-0.5">
-                {sources.map((s, i) => (
-                  <li key={`${s.filename}-${s.chunk_index}-${i}`}>
-                    <button
-                      type="button"
-                      onClick={() => onSelect(s)}
-                      className={`w-full rounded-sm border border-solid px-2 py-1 text-left text-sm transition-all duration-200 ease-in-out ${
-                        active === s
-                          ? "border-stone ws-glass-elevated text-midnight backdrop-blur-glass"
-                          : "border-transparent text-midnight ws-interactive"
-                      }`}
+
+                {sources.map((s, i) => {
+
+                  const domKey = String(s.ref ?? s.chunk_index ?? i)
+
+                  const isActive =
+
+                    active === s ||
+
+                    (active?.ref != null && active.ref === s.ref) ||
+
+                    (active?.filename === s.filename && active?.chunk_index === s.chunk_index)
+
+                  return (
+
+                    <li
+
+                      key={`${s.filename}-${s.chunk_index}-${i}`}
+
+                      ref={(el) => {
+
+                        chunkRefs.current[domKey] = el
+
+                      }}
+
+                      id={chunkDomId(s, i)}
+
                     >
-                      <span className="truncate">
-                        {s.ref != null && <span className="font-medium tabular-nums">[{s.ref}] </span>}
-                        {s.filename}
-                        {s.chunk_index != null && (
-                          <span className="text-stone tabular-nums">
-                            {" "}
-                            · chunk #{s.chunk_index}
-                          </span>
-                        )}
-                      </span>
-                    </button>
-                  </li>
-                ))}
+
+                      <button
+
+                        type="button"
+
+                        onClick={() => onSelect(s)}
+
+                        className={`w-full rounded-lg border border-solid px-1.5 py-1 text-left text-caption leading-snug tracking-wide transition-all duration-200 ease-in-out ${
+
+                          isActive
+
+                            ? "border-[var(--ws-primary)]/40 bg-[rgba(16,185,129,0.1)] text-white ring-1 ring-[var(--ws-primary)]/20"
+
+                            : "border-transparent text-[var(--ws-text-secondary)] hover:bg-[var(--ws-card-bg-elevated)]"
+
+                        }`}
+
+                      >
+
+                        <span className="truncate">
+
+                          {s.ref != null && (
+
+                            <span className="mr-0.5 font-bold tabular-nums text-[var(--ws-primary)]">
+
+                              [{s.ref}]
+
+                            </span>
+
+                          )}
+
+                          {s.filename}
+
+                          {s.chunk_index != null && (
+
+                            <span className="text-[var(--ws-text-muted)] tabular-nums"> · #{s.chunk_index}</span>
+
+                          )}
+
+                        </span>
+
+                      </button>
+
+                    </li>
+
+                  )
+
+                })}
+
               </ul>
+
             </section>
 
+
+
             {active && (
+
               <>
-                <section className="grid grid-cols-2 gap-1.5">
-                  <Metric label="Similarity" value={`${((active.score ?? 0) * 100).toFixed(1)}%`} />
-                  <Metric
+
+                <section className="flex flex-wrap gap-1">
+
+                  <MetaBadge label="Similarity" value={`${((active.score ?? 0) * 100).toFixed(1)}%`} />
+
+                  <MetaBadge
+
                     label="Confidence"
+
                     value={`${active.confidence ?? Math.round((active.score ?? 0) * 100)}%`}
+
                   />
+
+                  {active.chunk_index != null && (
+
+                    <MetaBadge label="Chunk" value={`#${active.chunk_index}`} />
+
+                  )}
+
+                  {active.ref != null && <MetaBadge label="Ref" value={`[${active.ref}]`} />}
+
+                  <MetaBadge label="Score" value={(active.score ?? 0).toFixed(4)} />
+
                 </section>
+
+
 
                 <section>
-                  <p className="mb-1.5 text-sm font-semibold uppercase tracking-wide text-stone">
+
+                  <p className="mb-1 text-badge font-semibold uppercase tracking-wider text-[var(--ws-text-muted)]">
+
                     Chunk Preview
+
                   </p>
-                  <pre className="max-h-36 overflow-y-auto whitespace-pre-wrap break-words rounded-sm border border-solid border-glass bg-glass p-2 text-sm leading-relaxed text-midnight fluent-scrollbar">
+
+                  <pre className="max-h-[calc(9rem*var(--ws-density))] overflow-y-auto whitespace-pre-wrap break-words rounded-lg border border-[var(--ws-card-border)] bg-[var(--ws-card-bg-elevated)] p-2 text-body-sm leading-relaxed tracking-wide text-[var(--ws-text-secondary)] fluent-scrollbar">
+
                     {active.content ?? active.preview}
+
                   </pre>
+
                 </section>
 
-                <section className="space-y-0.5 text-sm text-stone">
-                  {active.ref != null && (
-                    <p className="truncate">
-                      <span className="font-medium text-midnight">Reference:</span>{" "}
-                      <span className="tabular-nums">[{active.ref}]</span>
-                    </p>
-                  )}
-                  <p className="truncate">
-                    <span className="font-medium text-midnight">Document:</span>{" "}
-                    {active.filename}
-                  </p>
-                  <p className="truncate">
-                    <span className="font-medium text-midnight">Type:</span>{" "}
+
+
+                <section className="flex flex-wrap items-center gap-1 text-caption tracking-wide text-[var(--ws-text-muted)]">
+
+                  <span className="truncate">
+
+                    <span className="font-semibold text-[var(--ws-text-secondary)]">{active.filename}</span>
+
+                    {" · "}
+
                     {(active.file_type ?? "file").toUpperCase()}
-                  </p>
-                  {active.chunk_index != null && (
-                    <p className="truncate">
-                      <span className="font-medium text-midnight">Chunk index:</span>{" "}
-                      <span className="tabular-nums">{active.chunk_index}</span>
-                    </p>
-                  )}
-                  <p className="truncate">
-                    <span className="font-medium text-midnight">Raw score:</span>{" "}
-                    <span className="tabular-nums">{(active.score ?? 0).toFixed(4)}</span>
-                  </p>
-                  <p className="truncate">
-                    <span className="font-medium text-midnight">Confidence:</span>{" "}
-                    <span className="tabular-nums">
-                      {active.confidence ?? Math.round((active.score ?? 0) * 100)}%
-                    </span>
-                  </p>
+
+                  </span>
+
                   <button
+
                     type="button"
+
                     onClick={() => setModule("documents")}
-                    className="ws-toolbar-btn mt-1.5 text-sm"
+
+                    className="ws-toolbar-btn mt-0.5 text-[10px]"
+
                   >
+
                     <FileText className="h-3 w-3" strokeWidth={1.75} />
-                    Open in Document Vault
+
+                    Document Vault
+
                   </button>
+
                 </section>
+
               </>
+
             )}
+
           </>
+
         )}
+
       </div>
+
     </aside>
+
   )
+
 }
 
-function Metric({ label, value }: { label: string; value: string }) {
+
+
+function MetaBadge({ label, value }: { label: string; value: string }) {
+
   return (
-    <div className="ws-stat-card flex min-h-[48px] flex-col justify-center p-2">
-      <p className="truncate text-sm font-semibold uppercase tracking-wide text-stone">{label}</p>
-      <p className="mt-0.5 truncate text-card-title text-midnight tabular-nums">{value}</p>
-    </div>
+
+    <span className="ws-badge">
+
+      <span>{label}</span>
+
+      <span className="ws-badge-value">{value}</span>
+
+    </span>
+
   )
+
 }
+
+

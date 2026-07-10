@@ -22,8 +22,9 @@ import time
 from pathlib import Path
 from typing import Callable
 
-import PyPDF2
 import docx
+import pandas as pd
+import PyPDF2
 
 from backend.config import (
     CHUNK_OVERLAP,
@@ -32,6 +33,7 @@ from backend.config import (
     DOCS_DIR,
 )
 from backend.db.vector_store import (
+    chunk_content_hash,
     delete_document,
     init_db,
     insert_chunks,
@@ -83,6 +85,71 @@ _EXTRACTORS: dict[str, Callable[[Path], str]] = {
     ".pdf":  _extract_pdf,
     ".docx": _extract_docx,
 }
+
+_TABULAR_EXTENSIONS = {".xlsx", ".csv"}
+
+
+def _format_cell_value(value: object) -> str:
+    if pd.isna(value):
+        return ""
+    if isinstance(value, float) and value.is_integer():
+        return str(int(value))
+    return str(value).strip()
+
+
+def _dataframe_to_row_strings(df: pd.DataFrame, filename: str) -> list[str]:
+    """Convert each spreadsheet row into a structured, query-friendly string."""
+    if df.empty:
+        return []
+
+    df = df.copy()
+    df.columns = [str(col).strip() for col in df.columns]
+
+    rows: list[str] = []
+    for row_number, (_, series) in enumerate(df.iterrows(), start=1):
+        parts: list[str] = []
+        for column_name, raw_value in series.items():
+            value = _format_cell_value(raw_value)
+            if value:
+                parts.append(f"Column [{column_name}]: {value}")
+        if not parts:
+            continue
+        rows.append(
+            f"Source: {filename} | Row [{row_number}] - " + ", ".join(parts)
+        )
+    return rows
+
+
+def _extract_xlsx(path: Path) -> list[str]:
+    df = pd.read_excel(path, engine="openpyxl")
+    return _dataframe_to_row_strings(df, path.name)
+
+
+def _extract_csv(path: Path) -> list[str]:
+    last_exc: Exception | None = None
+    for encoding in _TEXT_ENCODINGS:
+        try:
+            df = pd.read_csv(path, encoding=encoding)
+            return _dataframe_to_row_strings(df, path.name)
+        except (UnicodeDecodeError, LookupError) as exc:
+            last_exc = exc
+    raise RuntimeError(f"Cannot decode CSV '{path}': {last_exc}") from last_exc
+
+
+_TABULAR_EXTRACTORS: dict[str, Callable[[Path], list[str]]] = {
+    ".xlsx": _extract_xlsx,
+    ".csv":  _extract_csv,
+}
+
+
+def extract_tabular_rows(path: Path) -> list[str]:
+    extractor = _TABULAR_EXTRACTORS.get(path.suffix.lower())
+    if extractor is None:
+        raise ValueError(
+            f"Unsupported tabular file type '{path.suffix}'. "
+            f"Supported: {', '.join(sorted(_TABULAR_EXTRACTORS))}"
+        )
+    return extractor(path)
 
 
 def extract_text(path: Path) -> str:
@@ -143,6 +210,61 @@ def chunk_text(text: str, chunk_size: int = CHUNK_SIZE, overlap: int = CHUNK_OVE
 # Ingest helpers
 # ---------------------------------------------------------------------------
 
+def _dedupe_row_strings(filename: str, row_strings: list[str]) -> list[tuple[str, str]]:
+    """Return unique (content, content_hash) pairs, preserving first occurrence."""
+    unique: list[tuple[str, str]] = []
+    seen: set[str] = set()
+    for content in row_strings:
+        content_hash = chunk_content_hash(filename, content)
+        if content_hash in seen:
+            continue
+        seen.add(content_hash)
+        unique.append((content, content_hash))
+    return unique
+
+
+async def _ingest_tabular_file(
+    path: Path,
+    filename: str,
+    db_path: Path,
+) -> dict:
+    t0 = time.perf_counter()
+    row_strings = await asyncio.to_thread(extract_tabular_rows, path)
+
+    if not row_strings:
+        logger.warning("'%s' produced no indexable spreadsheet rows — skipping.", filename)
+        return {"filename": filename, "chunks": 0, "skipped": False}
+
+    unique_rows = _dedupe_row_strings(filename, row_strings)
+    duplicates_in_file = len(row_strings) - len(unique_rows)
+    if duplicates_in_file:
+        logger.info(
+            "'%s' — skipped %d duplicate row(s) within the file before embedding.",
+            filename, duplicates_in_file,
+        )
+
+    contents = [content for content, _ in unique_rows]
+    embeddings = await embed_texts(contents)
+
+    rows = [
+        {
+            "filename":    filename,
+            "chunk_index": i,
+            "content":     content,
+            "embedding":   embedding,
+            "content_hash": content_hash,
+        }
+        for i, ((content, content_hash), embedding) in enumerate(zip(unique_rows, embeddings))
+    ]
+    inserted = insert_chunks(rows, db_path)
+
+    logger.info(
+        "Ingested tabular '%s': %d row vector(s) in %.1f ms.",
+        filename, inserted, (time.perf_counter() - t0) * 1000,
+    )
+    return {"filename": filename, "chunks": inserted, "skipped": False}
+
+
 async def ingest_file(
     path: Path,
     force: bool = False,
@@ -160,6 +282,10 @@ async def ingest_file(
             return {"filename": filename, "chunks": 0, "skipped": True}
         logger.info("Re-ingesting '%s' — deleting existing chunks first.", filename)
         delete_document(filename, db_path)
+
+    suffix = path.suffix.lower()
+    if suffix in _TABULAR_EXTENSIONS:
+        return await _ingest_tabular_file(path, filename, db_path)
 
     t0   = time.perf_counter()
     text = await asyncio.to_thread(extract_text, path)
@@ -183,14 +309,15 @@ async def ingest_file(
             "chunk_index": i,
             "content":     chunk,
             "embedding":   embedding,
+            "content_hash": chunk_content_hash(filename, chunk),
         }
         for i, (chunk, embedding) in enumerate(zip(text_chunks, embeddings))
     ]
-    insert_chunks(rows, db_path)
+    inserted = insert_chunks(rows, db_path)
 
     logger.info("Ingested '%s': %d chunks in %.1f ms.",
-                filename, len(rows), (time.perf_counter() - t0) * 1000)
-    return {"filename": filename, "chunks": len(rows), "skipped": False}
+                filename, inserted, (time.perf_counter() - t0) * 1000)
+    return {"filename": filename, "chunks": inserted, "skipped": False}
 
 
 async def ingest_directory(
@@ -202,7 +329,7 @@ async def ingest_directory(
     init_db(db_path)
     supported_files = [
         f for f in docs_dir.iterdir()
-        if f.is_file() and f.suffix.lower() in _EXTRACTORS
+        if f.is_file() and f.suffix.lower() in {*_EXTRACTORS, *_TABULAR_EXTENSIONS}
     ]
     if not supported_files:
         logger.warning("No supported files found in '%s'.", docs_dir)

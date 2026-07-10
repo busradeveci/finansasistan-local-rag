@@ -4,6 +4,7 @@ export type AppModule =
   | "home"
   | "chat"
   | "documents"
+  | "financial"
   | "knowledge"
   | "analytics"
   | "security"
@@ -78,6 +79,11 @@ export interface ChunkIndexRow {
   chunk_index: number
   chars: number
   preview: string
+}
+
+export interface SessionEvidenceState {
+  activeMessageId: string | null
+  selectedEvidence: EvidenceChunk | null
 }
 
 export interface ConversationSession {

@@ -22,17 +22,27 @@ import type {
   ChatMessage,
   ConversationSession,
   DocumentInventoryRow,
+  SessionEvidenceState,
   UploadQueueItem,
   WorkstationAlert,
 } from "@/types/workstation"
 
-const ALLOWED_EXTENSIONS = [".txt", ".md", ".pdf", ".docx"]
+const DEFAULT_EVIDENCE_STATE: SessionEvidenceState = {
+  activeMessageId: null,
+  selectedEvidence: null,
+}
+
+const ALLOWED_EXTENSIONS = [".txt", ".md", ".pdf", ".docx", ".xlsx", ".csv"]
 const ALLOWED_MIME_TYPES = new Set([
   "text/plain",
   "text/markdown",
   "text/x-markdown",
+  "text/csv",
+  "application/csv",
+  "application/vnd.ms-excel",
   "application/pdf",
   "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
 ])
 
 function isAllowedUploadFile(file: File): boolean {
@@ -62,6 +72,9 @@ interface WorkstationContextValue {
   appendReasoningStep: (sessionId: string, msgId: string, text: string) => void
   selectedEvidence: EvidenceChunk | null
   setSelectedEvidence: (chunk: EvidenceChunk | null) => void
+  setActiveEvidenceMessage: (sessionId: string, messageId: string | null) => void
+  focusEvidenceCitation: (sessionId: string, messageId: string, ref: number) => void
+  getSessionEvidenceSources: (sessionId: string | null) => EvidenceChunk[]
   recentDocuments: string[]
   addRecentDocument: (name: string) => void
   documentInventory: DocumentInventoryRow[]
@@ -100,7 +113,9 @@ export function WorkstationProvider({ children }: { children: ReactNode }) {
   const [module, setModule] = useState<AppModule>("home")
   const [sessions, setSessions] = useState<ConversationSession[]>([])
   const [activeSessionId, setActiveSessionId] = useState<string | null>(null)
-  const [selectedEvidence, setSelectedEvidence] = useState<EvidenceChunk | null>(null)
+  const [sessionEvidenceStates, setSessionEvidenceStates] = useState<
+    Record<string, SessionEvidenceState>
+  >({})
   const [recentDocuments, setRecentDocuments] = useState<string[]>([])
 
   const [documentInventory, setDocumentInventory] = useState<DocumentInventoryRow[]>([])
@@ -170,7 +185,81 @@ export function WorkstationProvider({ children }: { children: ReactNode }) {
   const deleteSession = useCallback((id: string) => {
     setSessions((prev) => prev.filter((s) => s.id !== id))
     setActiveSessionId((cur) => (cur === id ? null : cur))
+    setSessionEvidenceStates((prev) => {
+      const next = { ...prev }
+      delete next[id]
+      return next
+    })
   }, [])
+
+  const getSessionEvidenceState = useCallback(
+    (sessionId: string | null): SessionEvidenceState => {
+      if (!sessionId) return DEFAULT_EVIDENCE_STATE
+      return sessionEvidenceStates[sessionId] ?? DEFAULT_EVIDENCE_STATE
+    },
+    [sessionEvidenceStates]
+  )
+
+  const patchSessionEvidenceState = useCallback(
+    (sessionId: string, patch: Partial<SessionEvidenceState>) => {
+      setSessionEvidenceStates((prev) => ({
+        ...prev,
+        [sessionId]: { ...(prev[sessionId] ?? DEFAULT_EVIDENCE_STATE), ...patch },
+      }))
+    },
+    []
+  )
+
+  const setSelectedEvidence = useCallback(
+    (chunk: EvidenceChunk | null) => {
+      if (!activeSessionId) return
+      patchSessionEvidenceState(activeSessionId, { selectedEvidence: chunk })
+    },
+    [activeSessionId, patchSessionEvidenceState]
+  )
+
+  const setActiveEvidenceMessage = useCallback(
+    (sessionId: string, messageId: string | null) => {
+      patchSessionEvidenceState(sessionId, { activeMessageId: messageId })
+    },
+    [patchSessionEvidenceState]
+  )
+
+  const focusEvidenceCitation = useCallback(
+    (sessionId: string, messageId: string, ref: number) => {
+      const session = sessions.find((s) => s.id === sessionId)
+      const message = session?.messages.find((m) => m.id === messageId)
+      const chunk =
+        message?.sources.find((s) => s.ref === ref) ??
+        message?.sources[ref - 1] ??
+        null
+      patchSessionEvidenceState(sessionId, {
+        activeMessageId: messageId,
+        selectedEvidence: chunk,
+      })
+    },
+    [sessions, patchSessionEvidenceState]
+  )
+
+  const getSessionEvidenceSources = useCallback(
+    (sessionId: string | null): EvidenceChunk[] => {
+      if (!sessionId) return []
+      const session = sessions.find((s) => s.id === sessionId)
+      if (!session) return []
+      const { activeMessageId } = getSessionEvidenceState(sessionId)
+      const activeMessage = activeMessageId
+        ? session.messages.find((m) => m.id === activeMessageId)
+        : null
+      if (activeMessage?.sources.length) return activeMessage.sources
+      const lastAssistant = [...session.messages]
+        .reverse()
+        .find((m) => m.role === "assistant" && m.sources.length > 0)
+      return lastAssistant?.sources ?? []
+    },
+    [sessions, getSessionEvidenceState]
+  )
+
+  const selectedEvidence = getSessionEvidenceState(activeSessionId).selectedEvidence
 
   const appendMessage = useCallback((sessionId: string, msg: ChatMessage) => {
     setSessions((prev) =>
@@ -290,7 +379,7 @@ export function WorkstationProvider({ children }: { children: ReactNode }) {
       }
 
       if (accepted.length === 0) {
-        pushAlert("warning", "No supported files selected (.txt, .md, .pdf, .docx)")
+        pushAlert("warning", "No supported files selected (.txt, .md, .pdf, .docx, .xlsx, .csv)")
         return
       }
 
@@ -364,7 +453,10 @@ export function WorkstationProvider({ children }: { children: ReactNode }) {
           }
           const cleaned = scrubAnswerForDisplay(accumulated, sources.length > 0)
           updateMessage(sid!, asstId, { content: cleaned, sources })
-          if (sources[0]) setSelectedEvidence(sources[0])
+          patchSessionEvidenceState(sid!, {
+            activeMessageId: asstId,
+            selectedEvidence: sources[0] ?? null,
+          })
           setIsGenerating(false)
           setStreamStatusText(null)
           esRef.current = null
@@ -405,6 +497,7 @@ export function WorkstationProvider({ children }: { children: ReactNode }) {
       appendToMessageContent,
       appendReasoningStep,
       pushAlert,
+      patchSessionEvidenceState,
     ]
   )
 
@@ -426,6 +519,9 @@ export function WorkstationProvider({ children }: { children: ReactNode }) {
       appendReasoningStep,
       selectedEvidence,
       setSelectedEvidence,
+      setActiveEvidenceMessage,
+      focusEvidenceCitation,
+      getSessionEvidenceSources,
       recentDocuments,
       addRecentDocument,
       documentInventory,
@@ -477,6 +573,11 @@ export function WorkstationProvider({ children }: { children: ReactNode }) {
       appendToMessageContent,
       appendReasoningStep,
       addRecentDocument,
+      setSelectedEvidence,
+      setActiveEvidenceMessage,
+      focusEvidenceCitation,
+      getSessionEvidenceSources,
+      sessionEvidenceStates,
     ]
   )
 
