@@ -21,7 +21,7 @@ import urllib.request
 from pathlib import Path
 from typing import Any
 
-from backend.config import DATA_DIR, DB_PATH, DOCS_DIR, ROOT_DIR
+from backend.config import DATA_DIR, DB_PATH, DOCS_DIR, ROOT_DIR, ROUTER_MODEL
 from backend.db.vector_store import init_db, list_documents, vector_index_stats
 from backend.services.ingestion import extract_text
 
@@ -84,6 +84,22 @@ def _check_sqlite() -> dict[str, Any]:
         )
     except sqlite3.Error as exc:
         return _check("sqlite_vector_store", False, str(exc))
+
+
+def _check_semantic_router() -> dict[str, Any]:
+    try:
+        from backend.services.semantic_router import ExecutionTrack, classify_track  # noqa: F401
+        from backend.services.math_handler import try_math_answer
+
+        sample = try_math_answer("What is 10% of 200?")
+        ok = sample is not None and "20" in sample
+        return _check(
+            "semantic_router",
+            ok,
+            f"router_model={ROUTER_MODEL}, math_handler={'OK' if ok else 'failed'}",
+        )
+    except ImportError as exc:
+        return _check("semantic_router", False, str(exc))
 
 
 def _check_extraction_pipeline() -> dict[str, Any]:
@@ -180,6 +196,7 @@ def collect_diagnostics(*, check_http: bool | None = None) -> dict[str, Any]:
         _import_extractors(),
         *_check_paths(),
         _check_sqlite(),
+        _check_semantic_router(),
         _check_extraction_pipeline(),
     ]
 

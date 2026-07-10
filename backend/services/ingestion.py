@@ -31,6 +31,7 @@ from backend.config import (
     CHUNK_SIZE,
     DB_PATH,
     DOCS_DIR,
+    SEMANTIC_CHUNK_SIMILARITY,
 )
 from backend.db.vector_store import (
     chunk_content_hash,
@@ -206,9 +207,120 @@ def chunk_text(text: str, chunk_size: int = CHUNK_SIZE, overlap: int = CHUNK_OVE
     return chunks
 
 
-# ---------------------------------------------------------------------------
-# Ingest helpers
-# ---------------------------------------------------------------------------
+def _cosine_similarity(a: list[float], b: list[float]) -> float:
+    dot = sum(x * y for x, y in zip(a, b))
+    norm_a = sum(x * x for x in a) ** 0.5
+    norm_b = sum(x * x for x in b) ** 0.5
+    if norm_a == 0 or norm_b == 0:
+        return 0.0
+    return dot / (norm_a * norm_b)
+
+
+def _split_semantic_units(text: str) -> list[str]:
+    """Split text into paragraph/sentence units for embedding-distance analysis."""
+    paragraphs = [p.strip() for p in re.split(r"\n\s*\n+", text) if p.strip()]
+    units: list[str] = []
+    for para in paragraphs:
+        if len(para) <= CHUNK_SIZE:
+            units.append(para)
+            continue
+        for sentence in _SENTENCE_SPLIT.split(para):
+            sentence = sentence.strip()
+            if len(sentence) >= _MIN_CHUNK_LEN // 2:
+                units.append(sentence)
+    return units or ([text.strip()] if text.strip() else [])
+
+
+def _merge_units_with_overlap(units: list[str], overlap: int = CHUNK_OVERLAP) -> list[str]:
+    """Pack semantic units into size-bounded chunks with character overlap."""
+    if not units:
+        return []
+    chunks: list[str] = []
+    current = units[0]
+    for unit in units[1:]:
+        candidate = (current + "\n\n" + unit).strip()
+        if len(candidate) <= CHUNK_SIZE:
+            current = candidate
+        else:
+            if len(current) >= _MIN_CHUNK_LEN:
+                chunks.append(current)
+            overlap_text = current[-overlap:].strip() if len(current) > overlap else current
+            current = (overlap_text + "\n\n" + unit).strip() if overlap_text else unit
+    if len(current) >= _MIN_CHUNK_LEN:
+        chunks.append(current)
+    return chunks
+
+
+async def semantic_chunk_text(
+    text: str,
+    chunk_size: int = CHUNK_SIZE,
+    overlap: int = CHUNK_OVERLAP,
+    similarity_threshold: float = SEMANTIC_CHUNK_SIMILARITY,
+) -> list[str]:
+    """Split *text* on coherent contextual shifts using qwen3-embedding distances.
+
+    Adjacent units whose cosine similarity falls below *similarity_threshold*
+    start a new semantic segment; segments are then packed to *chunk_size*.
+    Falls back to sentence-boundary chunking when embedding is unavailable.
+    """
+    units = _split_semantic_units(text)
+    if len(units) <= 1:
+        return chunk_text(text, chunk_size, overlap)
+
+    try:
+        embeddings = await embed_texts(units)
+    except Exception as exc:
+        logger.warning("Semantic chunking embed failed (%s) — using character chunking.", exc)
+        return chunk_text(text, chunk_size, overlap)
+
+    if len(embeddings) != len(units):
+        return chunk_text(text, chunk_size, overlap)
+
+    segments: list[list[str]] = [[units[0]]]
+    for i in range(1, len(units)):
+        sim = _cosine_similarity(embeddings[i - 1], embeddings[i])
+        if sim < similarity_threshold:
+            segments.append([units[i]])
+        else:
+            segments[-1].append(units[i])
+
+    merged_units: list[str] = ["\n\n".join(seg) for seg in segments]
+    chunks = _merge_units_with_overlap(merged_units, overlap)
+    if not chunks:
+        return chunk_text(text, chunk_size, overlap)
+
+    logger.info(
+        "Semantic chunking: %d unit(s) → %d segment(s) → %d chunk(s) (threshold=%.2f).",
+        len(units), len(segments), len(chunks), similarity_threshold,
+    )
+    return chunks
+
+
+async def semantic_chunk_rows(row_strings: list[str]) -> list[str]:
+    """Group tabular row strings by embedding similarity for coherent index chunks."""
+    if len(row_strings) <= 1:
+        return row_strings
+
+    try:
+        embeddings = await embed_texts(row_strings)
+    except Exception as exc:
+        logger.warning("Semantic row chunking failed (%s) — keeping row-per-chunk.", exc)
+        return row_strings
+
+    groups: list[list[str]] = [[row_strings[0]]]
+    for i in range(1, len(row_strings)):
+        sim = _cosine_similarity(embeddings[i - 1], embeddings[i])
+        candidate = groups[-1] + [row_strings[i]]
+        joined = "\n".join(candidate)
+        if sim >= SEMANTIC_CHUNK_SIMILARITY and len(joined) <= CHUNK_SIZE:
+            groups[-1].append(row_strings[i])
+        else:
+            groups.append([row_strings[i]])
+
+    return ["\n".join(g) for g in groups if g]
+
+
+from backend.services.document_metadata import extract_document_metadata
 
 def _dedupe_row_strings(filename: str, row_strings: list[str]) -> list[tuple[str, str]]:
     """Return unique (content, content_hash) pairs, preserving first occurrence."""
@@ -244,7 +356,9 @@ async def _ingest_tabular_file(
         )
 
     contents = [content for content, _ in unique_rows]
-    embeddings = await embed_texts(contents)
+    grouped_rows = await semantic_chunk_rows(contents)
+    embeddings = await embed_texts(grouped_rows)
+    metadata = extract_document_metadata(filename)
 
     rows = [
         {
@@ -252,9 +366,10 @@ async def _ingest_tabular_file(
             "chunk_index": i,
             "content":     content,
             "embedding":   embedding,
-            "content_hash": content_hash,
+            "content_hash": chunk_content_hash(filename, content),
+            **metadata,
         }
-        for i, ((content, content_hash), embedding) in enumerate(zip(unique_rows, embeddings))
+        for i, (content, embedding) in enumerate(zip(grouped_rows, embeddings))
     ]
     inserted = insert_chunks(rows, db_path)
 
@@ -294,14 +409,15 @@ async def ingest_file(
         logger.warning("'%s' produced no extractable text — skipping.", filename)
         return {"filename": filename, "chunks": 0, "skipped": False}
 
-    text_chunks = chunk_text(text)
-    logger.info("'%s' → %d chunk(s) (chunk_size=%d, overlap=%d).",
+    text_chunks = await semantic_chunk_text(text)
+    logger.info("'%s' → %d semantic chunk(s) (chunk_size=%d, overlap=%d).",
                 filename, len(text_chunks), CHUNK_SIZE, CHUNK_OVERLAP)
 
     if not text_chunks:
         return {"filename": filename, "chunks": 0, "skipped": False}
 
     embeddings = await embed_texts(text_chunks)
+    metadata = extract_document_metadata(filename)
 
     rows = [
         {
@@ -310,6 +426,7 @@ async def ingest_file(
             "content":     chunk,
             "embedding":   embedding,
             "content_hash": chunk_content_hash(filename, chunk),
+            **metadata,
         }
         for i, (chunk, embedding) in enumerate(zip(text_chunks, embeddings))
     ]

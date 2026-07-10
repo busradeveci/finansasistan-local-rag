@@ -1,7 +1,7 @@
 const MODELS = [
-  { id: "phi-3.5-mini", label: "phi-3.5-mini", status: "Active" },
+  { id: "phi-3.5-mini", label: "phi-3.5-mini", status: "Active (Chat)" },
   { id: "qwen3-embedding-0.6b", label: "qwen3-embedding-0.6b", status: "Active (Embed)" },
-  { id: "phi-4-mini", label: "phi-4-mini", status: "Pending" },
+  { id: "phi-4-mini", label: "phi-4-mini", status: "Active (Semantic Router)" },
 ]
 
 const RETRIEVAL_PARAMS = [

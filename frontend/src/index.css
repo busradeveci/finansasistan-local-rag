@@ -173,6 +173,11 @@
     height: calc(0.9375rem * var(--ws-density));
   }
 
+  .ws-nav-item-collapsed svg {
+    width: calc(1.25rem * var(--ws-density));
+    height: calc(1.25rem * var(--ws-density));
+  }
+
   .ws-nav-section-label {
     font-size: calc(11px * var(--ws-density));
     line-height: 1.4;

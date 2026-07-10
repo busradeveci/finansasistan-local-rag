@@ -10,6 +10,7 @@ import {
 } from "react"
 import {
   getDocumentInventory,
+  getMetadataFilters,
   streamQuery,
   uploadDocument,
   uploadErrorMessage,
@@ -22,6 +23,8 @@ import type {
   ChatMessage,
   ConversationSession,
   DocumentInventoryRow,
+  MetadataFacetOptions,
+  MetadataFilters,
   SessionEvidenceState,
   UploadQueueItem,
   WorkstationAlert,
@@ -57,6 +60,19 @@ function isAllowedUploadFile(file: File): boolean {
 
 const SOURCES_PREFIX = "[SOURCES]"
 const STATUS_PREFIX = "[STATUS]"
+const AGENT_PREFIX = "[AGENT]"
+
+const DEFAULT_METADATA_FILTERS: MetadataFilters = {
+  year: null,
+  quarter: null,
+  file_type: null,
+}
+
+const DEFAULT_METADATA_FACETS: MetadataFacetOptions = {
+  years: [],
+  quarters: [],
+  file_types: [],
+}
 
 interface WorkstationContextValue {
   module: AppModule
@@ -82,10 +98,16 @@ interface WorkstationContextValue {
   documentInventoryLoading: boolean
   documentInventoryError: string | null
   refreshDocumentInventory: () => Promise<void>
+  metadataFilters: MetadataFilters
+  metadataFacets: MetadataFacetOptions
+  hasActiveMetadataFilters: boolean
+  setMetadataFilter: (key: keyof MetadataFilters, value: string | null) => void
+  clearMetadataFilters: () => void
   uploadQueue: UploadQueueItem[]
   uploadFiles: (files: FileList | File[]) => void
   isGenerating: boolean
   streamStatusText: string | null
+  activeAgentBadge: string | null
   streamError: string | null
   chatInput: string
   setChatInput: (value: string) => void
@@ -122,10 +144,13 @@ export function WorkstationProvider({ children }: { children: ReactNode }) {
   const [documentIndex, setDocumentIndex] = useState<{ vectors: number; dimensions: number } | null>(null)
   const [documentInventoryLoading, setDocumentInventoryLoading] = useState(false)
   const [documentInventoryError, setDocumentInventoryError] = useState<string | null>(null)
+  const [metadataFilters, setMetadataFilters] = useState<MetadataFilters>(DEFAULT_METADATA_FILTERS)
+  const [metadataFacets, setMetadataFacets] = useState<MetadataFacetOptions>(DEFAULT_METADATA_FACETS)
   const [uploadQueue, setUploadQueue] = useState<UploadQueueItem[]>([])
 
   const [isGenerating, setIsGenerating] = useState(false)
   const [streamStatusText, setStreamStatusText] = useState<string | null>(null)
+  const [activeAgentBadge, setActiveAgentBadge] = useState<string | null>(null)
   const [streamError, setStreamError] = useState<string | null>(null)
   const [chatInput, setChatInput] = useState("")
   const [alerts, setAlerts] = useState<WorkstationAlert[]>([])
@@ -150,9 +175,13 @@ export function WorkstationProvider({ children }: { children: ReactNode }) {
     setDocumentInventoryLoading(true)
     setDocumentInventoryError(null)
     try {
-      const { documents, index } = await getDocumentInventory()
+      const [{ documents, index }, facets] = await Promise.all([
+        getDocumentInventory(),
+        getMetadataFilters().catch(() => DEFAULT_METADATA_FACETS),
+      ])
       setDocumentInventory(documents)
       setDocumentIndex(index)
+      setMetadataFacets(facets)
     } catch (e: unknown) {
       const message =
         (e as { message?: string }).message === "Network Error"
@@ -164,6 +193,18 @@ export function WorkstationProvider({ children }: { children: ReactNode }) {
       setDocumentInventoryLoading(false)
     }
   }, [pushAlert])
+
+  const hasActiveMetadataFilters = Boolean(
+    metadataFilters.year || metadataFilters.quarter || metadataFilters.file_type
+  )
+
+  const setMetadataFilter = useCallback((key: keyof MetadataFilters, value: string | null) => {
+    setMetadataFilters((prev) => ({ ...prev, [key]: value }))
+  }, [])
+
+  const clearMetadataFilters = useCallback(() => {
+    setMetadataFilters(DEFAULT_METADATA_FILTERS)
+  }, [])
 
   useEffect(() => {
     refreshDocumentInventory()
@@ -405,6 +446,7 @@ export function WorkstationProvider({ children }: { children: ReactNode }) {
     esRef.current = null
     setIsGenerating(false)
     setStreamStatusText(null)
+    setActiveAgentBadge(null)
   }, [])
 
   const sendChatMessage = useCallback(
@@ -417,6 +459,7 @@ export function WorkstationProvider({ children }: { children: ReactNode }) {
 
       setChatInput("")
       setStreamStatusText(null)
+      setActiveAgentBadge(null)
       setStreamError(null)
 
       const userMsg: ChatMessage = {
@@ -438,10 +481,11 @@ export function WorkstationProvider({ children }: { children: ReactNode }) {
       appendMessage(sid, asstMsg)
       setIsGenerating(true)
 
-      const es = streamQuery(text)
+      const es = streamQuery(text, 4, metadataFilters)
       esRef.current = es
       let sources: EvidenceChunk[] = []
       let accumulated = ""
+      let agentBadge: string | null = null
 
       es.onmessage = (event) => {
         const data = event.data
@@ -452,15 +496,25 @@ export function WorkstationProvider({ children }: { children: ReactNode }) {
             sources = []
           }
           const cleaned = scrubAnswerForDisplay(accumulated, sources.length > 0)
-          updateMessage(sid!, asstId, { content: cleaned, sources })
+          updateMessage(sid!, asstId, {
+            content: cleaned,
+            sources,
+            agentBadge: agentBadge ?? undefined,
+          })
           patchSessionEvidenceState(sid!, {
             activeMessageId: asstId,
             selectedEvidence: sources[0] ?? null,
           })
           setIsGenerating(false)
           setStreamStatusText(null)
+          setActiveAgentBadge(null)
           esRef.current = null
           es.close()
+          return
+        }
+        if (data.startsWith(AGENT_PREFIX)) {
+          agentBadge = data.slice(AGENT_PREFIX.length)
+          setActiveAgentBadge(agentBadge)
           return
         }
         if (data.startsWith(STATUS_PREFIX)) {
@@ -479,6 +533,7 @@ export function WorkstationProvider({ children }: { children: ReactNode }) {
         esRef.current = null
         setIsGenerating(false)
         setStreamStatusText(null)
+        setActiveAgentBadge(null)
         const message = `Chat stream interrupted — check that the backend is running on port 8000 (${API_ORIGIN})`
         setStreamError(message)
         pushAlert("error", message)
@@ -498,6 +553,7 @@ export function WorkstationProvider({ children }: { children: ReactNode }) {
       appendReasoningStep,
       pushAlert,
       patchSessionEvidenceState,
+      metadataFilters,
     ]
   )
 
@@ -529,10 +585,16 @@ export function WorkstationProvider({ children }: { children: ReactNode }) {
       documentInventoryLoading,
       documentInventoryError,
       refreshDocumentInventory,
+      metadataFilters,
+      metadataFacets,
+      hasActiveMetadataFilters,
+      setMetadataFilter,
+      clearMetadataFilters,
       uploadQueue,
       uploadFiles,
       isGenerating,
       streamStatusText,
+      activeAgentBadge,
       streamError,
       chatInput,
       setChatInput,
@@ -554,10 +616,16 @@ export function WorkstationProvider({ children }: { children: ReactNode }) {
       documentInventoryLoading,
       documentInventoryError,
       refreshDocumentInventory,
+      metadataFilters,
+      metadataFacets,
+      hasActiveMetadataFilters,
+      setMetadataFilter,
+      clearMetadataFilters,
       uploadQueue,
       uploadFiles,
       isGenerating,
       streamStatusText,
+      activeAgentBadge,
       streamError,
       chatInput,
       sendChatMessage,

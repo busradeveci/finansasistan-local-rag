@@ -7,6 +7,7 @@ DB_PATH = DATA_DIR / "vector_store.db"
 
 EMBED_MODEL = "qwen3-embedding-0.6b"
 CHAT_MODEL = "phi-3.5-mini"
+ROUTER_MODEL = "phi-4-mini"  # primary semantic agent — offline intent classification
 
 # Foundry Local embedding calls fail/cancel when too many texts are sent at once.
 # Keep batches small (4–8) for reliable ingestion on CPU.
@@ -15,6 +16,10 @@ EMBED_MAX_RETRIES = 3
 
 CHUNK_SIZE = 800     # characters per chunk — balances context richness vs. token budget
 CHUNK_OVERLAP = 150  # overlap preserves semantic continuity across boundaries
+
+# Semantic chunking — split when adjacent paragraph embeddings diverge below
+# this cosine similarity (coherent context shift detected by qwen3-embedding).
+SEMANTIC_CHUNK_SIMILARITY = 0.65
 TOP_K = 4
 
 # Minimum cosine similarity score to include a chunk in the context.

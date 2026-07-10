@@ -62,7 +62,13 @@ export interface ChatMessage {
   content: string
   sources: EvidenceChunk[]
   reasoning: { time: string; text: string }[]
+  agentBadge?: string
 }
+
+export type AgentTrackBadge =
+  | "Local Agent: Phi-4 Reasoning"
+  | "Local RAG: Qwen Embedded Index"
+  | "Standard Chat: Phi-3.5"
 
 export interface DocumentInventoryRow {
   filename: string
@@ -73,6 +79,21 @@ export interface DocumentInventoryRow {
   indexation_state: string
   last_updated: string | null
   path: string
+  year?: string | null
+  quarter?: string | null
+  file_type?: string
+}
+
+export interface MetadataFilters {
+  year: string | null
+  quarter: string | null
+  file_type: string | null
+}
+
+export interface MetadataFacetOptions {
+  years: string[]
+  quarters: string[]
+  file_types: string[]
 }
 
 export interface ChunkIndexRow {

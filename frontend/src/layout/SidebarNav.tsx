@@ -127,7 +127,10 @@ function ChatSessionsPanel({ collapsed }: { collapsed: boolean }) {
 
       >
 
-        <Plus className="shrink-0" style={{ width: "calc(1rem * var(--ws-density))", height: "calc(1rem * var(--ws-density))" }} />
+        <Plus
+          className="shrink-0"
+          style={{ width: "calc(1.25rem * var(--ws-density))", height: "calc(1.25rem * var(--ws-density))" }}
+        />
 
       </button>
 

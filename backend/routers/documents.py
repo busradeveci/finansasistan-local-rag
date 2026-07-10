@@ -10,8 +10,10 @@ from backend.db.vector_store import (
     delete_document,
     list_chunks,
     list_documents,
+    list_metadata_facets,
     vector_index_stats,
 )
+from backend.services.document_metadata import extract_document_metadata
 from backend.sanitize import sanitize_filename
 from backend.services import metrics
 from backend.services.ingestion import ingest_file
@@ -41,6 +43,7 @@ def _build_inventory() -> dict:
         filename = doc["filename"]
         path = DOCS_DIR / filename
         ext = Path(filename).suffix.lower().lstrip(".") or "file"
+        meta = extract_document_metadata(filename)
         mtime = path.stat().st_mtime if path.exists() else None
         inventory.append(
             {
@@ -56,6 +59,9 @@ def _build_inventory() -> dict:
                     else None
                 ),
                 "path": str(path),
+                "year": meta["year"] or None,
+                "quarter": meta["quarter"] or None,
+                "file_type": meta["file_type"],
             }
         )
     return {"documents": inventory, "index": index}
@@ -72,6 +78,12 @@ async def get_documents():
 async def get_document_inventory():
     """Extended metadata for the Documents workstation table."""
     return await asyncio.to_thread(_build_inventory)
+
+
+@router.get("/metadata/filters")
+async def get_metadata_filters():
+    """Distinct metadata facets available for RAG vault scoping."""
+    return await asyncio.to_thread(list_metadata_facets, DB_PATH)
 
 
 @router.get("/chunks")

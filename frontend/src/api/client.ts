@@ -93,8 +93,31 @@ export const getSecurity = () =>
 
 export const getStatus = () => api.get("/api/status", { timeout: 10_000 }).then((r) => r.data)
 
-export const streamQuery = (question: string, topK = 4) => {
-  const path = `/query/stream?question=${encodeURIComponent(question)}&top_k=${topK}`
+export const getMetadataFilters = () =>
+  api
+    .get("/documents/metadata/filters", { timeout: 10_000 })
+    .then(
+      (r) =>
+        r.data as {
+          years: string[]
+          quarters: string[]
+          file_types: string[]
+        }
+    )
+
+export const streamQuery = (
+  question: string,
+  topK = 4,
+  filters?: { year?: string | null; quarter?: string | null; file_type?: string | null }
+) => {
+  const params = new URLSearchParams({
+    question,
+    top_k: String(topK),
+  })
+  if (filters?.year) params.set("year", filters.year)
+  if (filters?.quarter) params.set("quarter", filters.quarter)
+  if (filters?.file_type) params.set("file_type", filters.file_type)
+  const path = `/query/stream?${params.toString()}`
   const url = API_BASE ? `${API_BASE}${path}` : path
   return new EventSource(url)
 }

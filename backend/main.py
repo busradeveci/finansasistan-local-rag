@@ -9,7 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
-from backend.config import CHAT_MODEL, DATA_DIR, DB_PATH, DOCS_DIR, EMBED_MODEL
+from backend.config import CHAT_MODEL, DATA_DIR, DB_PATH, DOCS_DIR, EMBED_MODEL, ROUTER_MODEL
 from backend.db.vector_store import init_db, list_documents, vector_index_stats
 from backend.logging_config import configure_logging
 from backend.routers import documents, query
@@ -71,8 +71,8 @@ async def startup() -> None:
     doc_count = len(await asyncio.to_thread(list_documents, DB_PATH))
     logger.info(
         "Foundry Local RAG API ready. Vector store: %d document(s) indexed. "
-        "Chat model: %s | Embed model: %s",
-        doc_count, CHAT_MODEL, EMBED_MODEL,
+        "Chat model: %s | Router: %s | Embed model: %s",
+        doc_count, CHAT_MODEL, ROUTER_MODEL, EMBED_MODEL,
     )
     # Pre-load models in background so the first chat query is not blocked
     # by an ~8-minute phi-3.5-mini download over SSE.
@@ -81,12 +81,17 @@ async def startup() -> None:
 
 async def _warm_models() -> None:
     try:
-        from backend.services.foundry_client import get_chat_client, get_embedding_client
+        from backend.services.foundry_client import (
+            get_chat_client,
+            get_embedding_client,
+            get_router_client,
+        )
 
         logger.info("Background model warm-up started…")
         await get_embedding_client()
+        await get_router_client()
         await get_chat_client()
-        logger.info("Background model warm-up complete — chat ready.")
+        logger.info("Background model warm-up complete — router and chat ready.")
     except Exception as exc:
         logger.warning("Background model warm-up failed (will retry on first query): %s", exc)
 
@@ -134,7 +139,9 @@ async def api_status():
         },
         "models": {
             "chat_model": CHAT_MODEL,
+            "router_model": ROUTER_MODEL,
             "embed_model": EMBED_MODEL,
+            "semantic_router": "phi-4-mini (offline)",
         },
         "runtime": "local — no cloud dependency",
     }

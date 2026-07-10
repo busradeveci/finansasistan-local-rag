@@ -25,6 +25,7 @@ import {
 import { useWorkstation } from "@/context/WorkstationContext"
 
 import CitationContent from "@/components/chat/CitationContent"
+import MetadataFilterBar from "@/components/chat/MetadataFilterBar"
 
 import type { EvidenceChunk } from "@/types/workstation"
 
@@ -44,6 +45,17 @@ interface ConversationCanvasProps {
 
   onSourceClick: (messageId: string, chunk: EvidenceChunk) => void
 
+}
+
+
+
+function uniqueSourcesByFilename(sources: EvidenceChunk[]): EvidenceChunk[] {
+  const seen = new Set<string>()
+  return sources.filter((source) => {
+    if (seen.has(source.filename)) return false
+    seen.add(source.filename)
+    return true
+  })
 }
 
 
@@ -268,6 +280,8 @@ export default function ConversationCanvas({
 
     streamStatusText,
 
+    activeAgentBadge,
+
     streamError,
 
     setActiveEvidenceMessage,
@@ -352,9 +366,45 @@ export default function ConversationCanvas({
 
             <div className="min-w-0">
 
-              <h2 className="truncate text-card-title text-white">Analysis Workspace</h2>
+              <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-0.5">
 
-              <span className="truncate text-caption text-[var(--ws-text-muted)]">
+                <h2 className="truncate text-card-title text-white">Analysis Workspace</h2>
+
+                {(activeAgentBadge || (isGenerating && !activeAgentBadge)) && (
+
+                  <span
+
+                    className={`shrink-0 truncate rounded border px-1.5 py-0.5 text-body-sm font-semibold uppercase tracking-wide ${
+
+                      activeAgentBadge?.includes("RAG")
+
+                        ? "border-[var(--ws-primary)]/40 bg-[rgba(16,185,129,0.08)] text-[var(--ws-primary)]"
+
+                        : activeAgentBadge?.includes("Phi-4")
+
+                          ? "border-cyan-500/40 bg-[rgba(6,182,212,0.08)] text-cyan-400"
+
+                          : "border-[var(--ws-card-border)] text-[var(--ws-text-muted)]"
+
+                    }`}
+
+                  >
+
+                    [{activeAgentBadge ?? "Routing…"}]
+
+                  </span>
+
+                )}
+
+              </div>
+
+              <span className="flex min-w-0 items-center gap-1.5 truncate text-caption text-[var(--ws-text-muted)]">
+
+                {isGenerating && (
+
+                  <Loader2 className="h-3.5 w-3.5 shrink-0 animate-spin text-[var(--ws-primary)]" />
+
+                )}
 
                 {isGenerating ? (streamStatusText ?? "Streaming…") : "Ready"}
 
@@ -416,6 +466,10 @@ export default function ConversationCanvas({
 
 
 
+      <MetadataFilterBar />
+
+
+
       <div className="flex min-h-0 w-full flex-1 flex-col overflow-hidden">
 
         <div className="ws-chat-messages scrollbar-hover min-h-0 max-h-full flex-1 overflow-y-auto">
@@ -474,11 +528,25 @@ export default function ConversationCanvas({
 
                   >
 
-                    <p className="mb-1.5 text-badge font-semibold uppercase tracking-wider text-[var(--ws-text-muted)]">
+                    <div className="mb-1.5 flex min-w-0 flex-wrap items-center gap-x-2 gap-y-0.5">
 
-                      {isUser ? "Query" : "Executive Analysis"}
+                      <p className="text-badge font-semibold uppercase tracking-wider text-[var(--ws-text-muted)]">
 
-                    </p>
+                        {isUser ? "Query" : "Executive Analysis"}
+
+                      </p>
+
+                      {!isUser && message.agentBadge && (
+
+                        <span className="truncate rounded border border-[var(--ws-primary)]/35 bg-[rgba(16,185,129,0.08)] px-1.5 py-0.5 text-body-sm font-semibold tracking-wide text-[var(--ws-primary)]">
+
+                          [{message.agentBadge}]
+
+                        </span>
+
+                      )}
+
+                    </div>
 
                     {message.content ? (
 
@@ -536,11 +604,11 @@ export default function ConversationCanvas({
 
                         <div className="flex flex-wrap gap-1">
 
-                          {message.sources.map((source, sourceIndex) => (
+                          {uniqueSourcesByFilename(message.sources).map((source) => (
 
                             <button
 
-                              key={`${source.filename}-${source.chunk_index}-${sourceIndex}`}
+                              key={source.filename}
 
                               type="button"
 
@@ -671,12 +739,6 @@ export default function ConversationCanvas({
                 Send
 
               </button>
-
-            )}
-
-            {isGenerating && (
-
-              <Loader2 className="h-4 w-4 shrink-0 animate-spin text-[var(--ws-primary)]" />
 
             )}
 

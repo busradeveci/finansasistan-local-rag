@@ -76,6 +76,7 @@ async def retrieve(
     top_k: int = TOP_K,
     db_path: Path = DB_PATH,
     score_threshold: float = SCORE_THRESHOLD,
+    metadata_filters: dict[str, str] | None = None,
 ) -> list[dict]:
     """Return the most relevant chunks for *query*, capped at MAX_CONTEXT_CHUNKS.
 
@@ -86,7 +87,13 @@ async def retrieve(
     query_embedding = await embed_query(query)
     metrics.record_embedding((time.perf_counter() - t0) * 1000)
     # Over-fetch slightly so dedupe/relative filtering still fills the cap.
-    results = search(query_embedding, effective_top_k * 2, db_path, score_threshold=0.0)
+    results = search(
+        query_embedding,
+        effective_top_k * 2,
+        db_path,
+        score_threshold=0.0,
+        metadata_filters=metadata_filters,
+    )
     metrics.record_retrieval((time.perf_counter() - t0) * 1000)
 
     kept = _filter_and_dedupe(results, score_threshold)[:effective_top_k]

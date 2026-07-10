@@ -8,6 +8,7 @@ import numpy as np
 
 from backend.config import DB_PATH, TOP_K
 from backend.db.database import get_connection
+from backend.services.document_metadata import extract_document_metadata
 
 logger = logging.getLogger(__name__)
 
@@ -39,6 +40,40 @@ def _ensure_content_hash_column(conn) -> None:
     )
 
 
+def _ensure_metadata_columns(conn) -> None:
+    columns = {
+        row["name"]
+        for row in conn.execute("PRAGMA table_info(documents)").fetchall()
+    }
+    for col in ("year", "quarter", "file_type"):
+        if col not in columns:
+            conn.execute(f"ALTER TABLE documents ADD COLUMN {col} TEXT")
+    conn.execute(
+        "CREATE INDEX IF NOT EXISTS idx_documents_year ON documents(year)"
+    )
+    conn.execute(
+        "CREATE INDEX IF NOT EXISTS idx_documents_quarter ON documents(quarter)"
+    )
+    conn.execute(
+        "CREATE INDEX IF NOT EXISTS idx_documents_file_type ON documents(file_type)"
+    )
+
+
+def _backfill_metadata(conn) -> None:
+    """Populate metadata columns for rows ingested before metadata support."""
+    rows = conn.execute(
+        "SELECT DISTINCT filename FROM documents "
+        "WHERE year IS NULL OR year = '' OR file_type IS NULL OR file_type = ''"
+    ).fetchall()
+    for row in rows:
+        meta = extract_document_metadata(row["filename"])
+        conn.execute(
+            "UPDATE documents SET year = ?, quarter = ?, file_type = ? "
+            "WHERE filename = ? AND (year IS NULL OR year = '' OR file_type IS NULL OR file_type = '')",
+            (meta["year"], meta["quarter"], meta["file_type"], row["filename"]),
+        )
+
+
 def init_db(db_path: Path = DB_PATH) -> None:
     """Create the documents table and filename index if they don't exist."""
     logger.info("Initialising vector store at '%s'.", db_path)
@@ -60,6 +95,8 @@ def init_db(db_path: Path = DB_PATH) -> None:
             "CREATE INDEX IF NOT EXISTS idx_documents_filename ON documents(filename)"
         )
         _ensure_content_hash_column(conn)
+        _ensure_metadata_columns(conn)
+        _backfill_metadata(conn)
         conn.commit()
     finally:
         conn.close()
@@ -114,6 +151,9 @@ def insert_chunks(chunks: list[dict], db_path: Path = DB_PATH) -> int:
                 content,
                 _embedding_to_blob(chunk["embedding"]),
                 content_hash,
+                chunk.get("year", ""),
+                chunk.get("quarter", ""),
+                chunk.get("file_type", ""),
             )
         )
 
@@ -124,8 +164,9 @@ def insert_chunks(chunks: list[dict], db_path: Path = DB_PATH) -> int:
     conn = get_connection(db_path)
     try:
         conn.executemany(
-            "INSERT INTO documents (filename, chunk_index, content, embedding, content_hash) "
-            "VALUES (?, ?, ?, ?, ?)",
+            "INSERT INTO documents "
+            "(filename, chunk_index, content, embedding, content_hash, year, quarter, file_type) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
             rows,
         )
         conn.commit()
@@ -210,11 +251,48 @@ def vector_index_stats(db_path: Path = DB_PATH) -> dict:
     return {"vectors": count, "dimensions": dimensions}
 
 
+def list_metadata_facets(db_path: Path = DB_PATH) -> dict[str, list[str]]:
+    """Return distinct metadata values available for vault filtering."""
+    conn = get_connection(db_path)
+    try:
+        _ensure_metadata_columns(conn)
+        _backfill_metadata(conn)
+        conn.commit()
+
+        years = [
+            row["year"]
+            for row in conn.execute(
+                "SELECT DISTINCT year FROM documents WHERE year IS NOT NULL AND year != '' "
+                "ORDER BY year DESC"
+            ).fetchall()
+        ]
+        quarters = [
+            row["quarter"]
+            for row in conn.execute(
+                "SELECT DISTINCT quarter FROM documents "
+                "WHERE quarter IS NOT NULL AND quarter != '' "
+                "ORDER BY quarter"
+            ).fetchall()
+        ]
+        file_types = [
+            row["file_type"]
+            for row in conn.execute(
+                "SELECT DISTINCT file_type FROM documents "
+                "WHERE file_type IS NOT NULL AND file_type != '' "
+                "ORDER BY file_type"
+            ).fetchall()
+        ]
+        return {"years": years, "quarters": quarters, "file_types": file_types}
+    finally:
+        conn.close()
+
+
 def search(
     query_embedding: list[float],
     top_k: int = TOP_K,
     db_path: Path = DB_PATH,
     score_threshold: float = 0.0,
+    metadata_filters: dict[str, str] | None = None,
 ) -> list[dict]:
     """Return the *top_k* most similar chunks using vectorised cosine similarity.
 
@@ -236,8 +314,19 @@ def search(
 
     conn = get_connection(db_path)
     try:
+        where_clauses: list[str] = []
+        params: list[str] = []
+        if metadata_filters:
+            for key, col in (("year", "year"), ("quarter", "quarter"), ("file_type", "file_type")):
+                value = (metadata_filters.get(key) or "").strip()
+                if value:
+                    where_clauses.append(f"{col} = ?")
+                    params.append(value)
+        where_sql = f" WHERE {' AND '.join(where_clauses)}" if where_clauses else ""
         rows = conn.execute(
-            "SELECT filename, chunk_index, content, embedding FROM documents"
+            f"SELECT filename, chunk_index, content, embedding, year, quarter, file_type "
+            f"FROM documents{where_sql}",
+            params,
         ).fetchall()
     finally:
         conn.close()
@@ -292,6 +381,9 @@ def search(
                 "chunk_index": int(valid_rows[i]["chunk_index"]),
                 "content": valid_rows[i]["content"],
                 "score": score,
+                "year": valid_rows[i]["year"] or "",
+                "quarter": valid_rows[i]["quarter"] or "",
+                "file_type": valid_rows[i]["file_type"] or "",
             }
         )
 

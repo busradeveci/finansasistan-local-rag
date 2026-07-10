@@ -11,6 +11,7 @@ from backend.config import (
     EMBED_BATCH_SIZE,
     EMBED_MAX_RETRIES,
     EMBED_MODEL,
+    ROUTER_MODEL,
 )
 
 logger = logging.getLogger(__name__)
@@ -19,8 +20,10 @@ _sdk_lock = threading.Lock()
 _manager = None
 _embed_client = None
 _chat_client = None
+_router_client = None
 _embed_init_lock = asyncio.Lock()
 _chat_init_lock = asyncio.Lock()
+_router_init_lock = asyncio.Lock()
 
 
 def ensure_sdk():
@@ -87,15 +90,19 @@ def _load_embedding_client_blocking():
     return client
 
 
-def _load_chat_client_blocking():
+def _load_chat_client_blocking(model_alias: str = CHAT_MODEL):
     manager = ensure_sdk()
-    model = manager.catalog.get_model(CHAT_MODEL)
-    _download_if_needed(model, CHAT_MODEL)
-    logger.info("Loading chat model '%s'…", CHAT_MODEL)
+    model = manager.catalog.get_model(model_alias)
+    _download_if_needed(model, model_alias)
+    logger.info("Loading chat model '%s'…", model_alias)
     model.load()
     client = model.get_chat_client()
-    logger.info("Chat model '%s' ready.", CHAT_MODEL)
+    logger.info("Chat model '%s' ready.", model_alias)
     return client
+
+
+def _load_router_client_blocking():
+    return _load_chat_client_blocking(ROUTER_MODEL)
 
 
 def _generate_embeddings_sync(client, batch: list[str]):
@@ -130,9 +137,25 @@ async def get_chat_client():
             return _chat_client
         logger.info("Initialising chat model '%s' via Foundry Local SDK…", CHAT_MODEL)
         t0 = time.perf_counter()
-        _chat_client = await asyncio.to_thread(_load_chat_client_blocking)
+        _chat_client = await asyncio.to_thread(_load_chat_client_blocking, CHAT_MODEL)
         logger.info("Chat client ready in %.1f s.", time.perf_counter() - t0)
         return _chat_client
+
+
+async def get_router_client():
+    """Lazy-load phi-4-mini as the semantic routing agent (async-safe)."""
+    global _router_client
+    if _router_client is not None:
+        return _router_client
+
+    async with _router_init_lock:
+        if _router_client is not None:
+            return _router_client
+        logger.info("Initialising router model '%s' via Foundry Local SDK…", ROUTER_MODEL)
+        t0 = time.perf_counter()
+        _router_client = await asyncio.to_thread(_load_router_client_blocking)
+        logger.info("Router client ready in %.1f s.", time.perf_counter() - t0)
+        return _router_client
 
 
 async def embed_texts(texts: list[str]) -> list[list[float]]:
