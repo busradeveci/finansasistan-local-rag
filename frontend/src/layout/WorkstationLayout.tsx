@@ -10,24 +10,24 @@ export default function WorkstationLayout({ children }: { children: React.ReactN
   const { hasBackgroundActivity, uploadQueue, isGenerating, alerts, dismissAlert } = useWorkstation()
   const indexingCount = uploadQueue.filter((q) => q.status === "indexing").length
   return (
-    <div className="flex h-screen flex-col bg-glass-canvas">
-      <header className="sticky top-0 z-20 shrink-0 px-6 pt-4">
-        <div className="ws-panel flex items-center justify-between px-6 py-4">
+    <div className="flex h-screen flex-col bg-[#fcfcfc]">
+      <header className="sticky top-0 z-20 shrink-0 px-3 pt-2">
+        <div className="ws-header flex items-center justify-between px-3 py-2">
           <div>
-            <h1 className="text-section-title text-navy-900">
+            <h1 className="text-section-title text-warm">
               Global Banking Intelligence Workstation
             </h1>
-            <p className="mt-1 text-caption text-navy-700">
+            <p className="mt-0.5 text-caption text-stone-light">
               Secure Inference &amp; Orchestration Hub
             </p>
           </div>
-          <div className="flex items-center gap-2.5">
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-glass bg-white/40 backdrop-blur-glass px-3 py-1.5 text-badge text-teal-800">
-              <span className="h-1.5 w-1.5 rounded-full bg-teal-500" />
+          <div className="flex items-center gap-2">
+            <span className="inline-flex items-center gap-1.5 rounded-sm border border-stone-light/40 bg-warm/10 px-2.5 py-1 text-badge text-warm">
+              <span className="h-1.5 w-1.5 rounded-sm bg-stone-light" />
               Active runtime
             </span>
             {hasBackgroundActivity && (
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-glass bg-white/40 backdrop-blur-glass px-3 py-1.5 text-badge text-navy-700">
+              <span className="inline-flex items-center gap-1.5 rounded-sm border border-stone-light/40 bg-warm/10 px-2.5 py-1 text-badge text-stone-light">
                 <Loader2 className="h-3 w-3 animate-spin" />
                 {isGenerating && indexingCount > 0
                   ? `Streaming · ${indexingCount} upload${indexingCount > 1 ? "s" : ""}`
@@ -36,18 +36,18 @@ export default function WorkstationLayout({ children }: { children: React.ReactN
                     : `${indexingCount} upload${indexingCount > 1 ? "s" : ""} in progress`}
               </span>
             )}
-            <span className="inline-flex items-center rounded-full border border-glass bg-white/40 backdrop-blur-glass px-3 py-1.5 text-badge text-navy-700">
+            <span className="inline-flex items-center rounded-sm border border-stone-light/40 bg-warm/10 px-2.5 py-1 text-badge text-stone-light">
               Online · Offline Mode
             </span>
           </div>
         </div>
       </header>
       {alerts.length > 0 && (
-        <div className="shrink-0 space-y-1.5 px-6 py-2">
+        <div className="shrink-0 space-y-1 px-3 py-1">
           {alerts.map((alert) => (
             <div
               key={alert.id}
-              className="flex items-center gap-2 rounded-xl border border-glass bg-white/50 backdrop-blur-glass px-3 py-2 text-caption"
+              className="flex items-center gap-2 rounded-sm border border-glass ws-glass-elevated px-2.5 py-1.5 text-caption"
               style={{
                 color: alert.level === "error" ? "var(--ws-danger)" : alert.level === "warning" ? "var(--ws-warning)" : "var(--ws-primary)",
               }}
@@ -56,7 +56,7 @@ export default function WorkstationLayout({ children }: { children: React.ReactN
               <button
                 type="button"
                 onClick={() => dismissAlert(alert.id)}
-                className="p-0.5 rounded hover:opacity-70"
+                className="ws-toolbar-btn p-0.5"
                 aria-label="Dismiss"
               >
                 <X className="h-3 w-3" />
@@ -65,14 +65,14 @@ export default function WorkstationLayout({ children }: { children: React.ReactN
           ))}
         </div>
       )}
-      <div className="flex flex-1 min-h-0 gap-4 px-6 pb-6 pt-2">
+      <div className="flex flex-1 min-h-0 gap-2 px-3 pb-3 pt-1 overflow-hidden">
         <aside
-          className="fluent-scrollbar shrink-0 overflow-y-auto rounded-2xl border border-darkTeal-800 bg-[#003333] shadow-glass"
+          className="fluent-scrollbar shrink-0 overflow-y-auto rounded-sm border border-[#4f4e4d]/30 bg-[#1b1a1f]"
           style={{ width: "var(--ws-sidebar-width)" }}
         >
           <SidebarNav />
         </aside>
-        <main className="flex min-w-0 flex-1 flex-col overflow-hidden rounded-[30px] ws-glass shadow-glass">
+        <main className="flex min-w-0 flex-1 flex-col overflow-hidden rounded-sm bg-[#fcfcfc]">
           {children}
         </main>
       </div>

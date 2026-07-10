@@ -27,10 +27,11 @@ export default function SecurityCenterModule() {
   )
 
   return (
-    <div className="flex-1 overflow-y-auto fluent-scrollbar p-6 space-y-6">
+    <div className="flex h-full min-h-0 flex-col overflow-hidden">
+      <div className="min-h-0 flex-1 overflow-y-auto fluent-scrollbar p-4 space-y-4">
       <header>
         <h1 className="text-[18px] font-semibold">Security Center</h1>
-        <p className="text-[12px] text-[var(--ws-text-secondary)]">
+        <p className="text-[12px] font-medium text-[var(--ws-text-secondary)]">
           Hardened threat mitigation and audit readouts
         </p>
       </header>
@@ -39,7 +40,7 @@ export default function SecurityCenterModule() {
         {guardMap.map((g) => (
           <span
             key={g.label}
-            className="px-3 py-1 rounded-full text-[11px] font-medium border"
+            className="px-2.5 py-1 rounded-sm text-[11px] font-medium border"
             style={{
               color: g.enabled ? "var(--ws-success)" : "var(--ws-danger)",
               borderColor: g.enabled ? "rgba(16,124,16,0.25)" : "rgba(209,52,56,0.25)",
@@ -50,7 +51,7 @@ export default function SecurityCenterModule() {
           </span>
         ))}
         {data && (
-          <span className="px-3 py-1 rounded-full text-[11px] font-medium border" style={{ borderColor: "var(--ws-border)" }}>
+          <span className="px-2.5 py-1 rounded-sm text-[11px] font-medium border" style={{ borderColor: "var(--ws-border)" }}>
             Sanitization: {data.sanitization_layers} Active Layers
           </span>
         )}
@@ -58,23 +59,23 @@ export default function SecurityCenterModule() {
 
       {data && (
         <section>
-          <h2 className="text-[11px] font-semibold uppercase tracking-wide text-[var(--ws-text-secondary)] mb-3">
+          <h2 className="text-[11px] font-semibold uppercase tracking-wide text-[var(--ws-text-secondary)] mb-2">
             Live Threat Dashboard
           </h2>
-          <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-2">
             <Metric label="Threats Blocked" value={data.threats_blocked} />
             <Metric label="Prompt Injections Intercepted" value={data.prompt_injections_blocked} />
             <Metric label="Invalid Uploads Deflected" value={data.uploads_rejected} />
             <Metric label="Sanitized Queries Managed" value={data.sanitized_queries} />
-            <div className="ws-card p-4 col-span-2">
-              <p className="text-[10px] uppercase text-[var(--ws-text-secondary)]">Total Security Risk Tier</p>
+            <div className="ws-card p-3 col-span-2">
+              <p className="text-[10px] font-medium uppercase text-[var(--ws-text-secondary)]">Total Security Risk Tier</p>
               <p className="text-[18px] font-semibold mt-1" style={{ color: "var(--ws-success)" }}>
                 {data.risk_tier}
               </p>
             </div>
-            <div className="ws-card p-4 col-span-2 lg:col-span-3">
-              <p className="text-[10px] uppercase text-[var(--ws-text-secondary)] mb-2">Threat & Sanitization Map</p>
-              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-2 text-[11px]">
+            <div className="ws-card p-3 col-span-2 lg:col-span-3">
+              <p className="text-[10px] font-medium uppercase text-[var(--ws-text-secondary)] mb-1.5">Threat & Sanitization Map</p>
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-1.5 text-[11px]">
                 <MapCell label="Sanitized Queries" value={data.sanitized_queries} />
                 <MapCell label="Prompt Injections" value={data.prompt_injections_blocked} />
                 <MapCell label="Rejected Uploads" value={data.uploads_rejected} />
@@ -85,14 +86,15 @@ export default function SecurityCenterModule() {
           </div>
         </section>
       )}
+      </div>
     </div>
   )
 }
 
 function Metric({ label, value }: { label: string; value: number }) {
   return (
-    <div className="ws-card p-4">
-      <p className="text-[10px] uppercase text-[var(--ws-text-secondary)]">{label}</p>
+    <div className="ws-card p-3">
+      <p className="text-[10px] font-medium uppercase text-[var(--ws-text-secondary)]">{label}</p>
       <p className="text-[24px] font-semibold mt-1 text-[var(--ws-text)]">{value}</p>
     </div>
   )
@@ -100,8 +102,8 @@ function Metric({ label, value }: { label: string; value: number }) {
 
 function MapCell({ label, value }: { label: string; value: number }) {
   return (
-    <div className="rounded-md border px-2.5 py-2" style={{ borderColor: "var(--ws-border)", background: "rgba(0,0,0,0.01)" }}>
-      <p className="text-[10px] text-[var(--ws-text-secondary)]">{label}</p>
+    <div className="rounded-sm border border-solid px-2 py-1.5" style={{ borderColor: "var(--ws-border)", background: "rgba(0,0,0,0.01)" }}>
+      <p className="text-[10px] font-medium text-[var(--ws-text-secondary)]">{label}</p>
       <p className="text-[13px] font-semibold text-[var(--ws-text)]">{value}</p>
     </div>
   )

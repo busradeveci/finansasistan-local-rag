@@ -62,7 +62,7 @@ export default function App() {
   return (
     <WorkstationProvider>
       <FluentProvider theme={webLightTheme}>
-        <div className="h-full w-full font-sans text-body text-navy-900">
+        <div className="h-full w-full font-sans text-body text-midnight">
           <WorkstationLayout>
             <ModuleRouter />
           </WorkstationLayout>

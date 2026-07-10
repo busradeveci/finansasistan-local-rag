@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Plus, Trash2, X } from "lucide-react"
+import { Plus, Trash2 } from "lucide-react"
 import { useWorkstation } from "@/context/WorkstationContext"
 import ConversationCanvas from "@/components/chat/ConversationCanvas"
 import EvidencePanel from "@/components/evidence/EvidencePanel"
@@ -25,39 +25,29 @@ export default function ChatModule() {
   const sources = lastAssistant?.sources ?? []
 
   return (
-    <div className="flex flex-1 min-h-0 h-full w-full gap-3 md:gap-4 p-3 md:p-5 overflow-hidden">
+    <div className="flex h-full min-h-0 w-full flex-1 gap-1.5 overflow-hidden bg-[#fcfcfc] p-1.5 md:gap-2 md:p-2">
       <aside
-        className={`spring shrink-0 flex flex-col min-h-0 overflow-hidden ws-glass rounded-2xl shadow-glass transition-all duration-200 ease-[cubic-bezier(0.2,0,0,1)] ${
-          sessionsOpen ? "w-64 p-4 opacity-100" : "w-0 p-0 border-0 opacity-0 pointer-events-none"
+        className={`spring ws-card flex min-h-0 shrink-0 flex-col overflow-hidden rounded-sm transition-all duration-300 ease-in-out ${
+          sessionsOpen ? "w-56 p-2 opacity-100" : "w-0 border-0 p-0 opacity-0 pointer-events-none"
         }`}
         aria-hidden={!sessionsOpen}
       >
-        <div className="mb-3 flex items-center justify-between gap-2">
-          <h2 className="text-badge font-semibold uppercase tracking-wide text-navy-700">
+        <div className="mb-2 flex items-center justify-between gap-2">
+          <h2 className="truncate text-sm font-semibold uppercase tracking-wide text-[#4f4e4d]">
             Intelligence Sessions
           </h2>
-          <div className="flex items-center gap-1">
-            <button
-              type="button"
-              onClick={createSession}
-              className="inline-flex items-center gap-1 rounded-xl border border-glass bg-white/50 backdrop-blur-glass px-2.5 py-1.5 text-badge text-navy-700 shadow-glass hover:shadow-glass-hover hover:-translate-y-px transition-all duration-200 ease-[cubic-bezier(0.2,0,0,1)]"
-            >
-              <Plus className="h-3 w-3" />
-              New
-            </button>
-            <button
-              type="button"
-              onClick={() => setSessionsOpen(false)}
-              className="inline-flex items-center justify-center rounded-xl p-1.5 text-navy-500 hover:bg-white/40 hover:text-navy-900 transition-all duration-200 ease-[cubic-bezier(0.2,0,0,1)]"
-              aria-label="Collapse sessions panel"
-            >
-              <X className="h-3.5 w-3.5" />
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={createSession}
+            className="ws-toolbar-btn shrink-0"
+          >
+            <Plus className="h-3 w-3" />
+            New
+          </button>
         </div>
-        <div className="fluent-scrollbar flex-1 min-h-0 space-y-2 overflow-y-auto pr-1">
+        <div className="fluent-scrollbar min-h-0 flex-1 space-y-1.5 overflow-y-auto pr-0.5">
           {sessions.length === 0 ? (
-            <div className="ws-glass-inner rounded-xl p-3 text-caption text-navy-700">
+            <div className="rounded-sm border border-[#4f4e4d]/40 bg-white p-2 text-sm font-medium text-[#4f4e4d] shadow-sm">
               Start a new session to begin executive analysis.
             </div>
           ) : (
@@ -66,10 +56,10 @@ export default function ChatModule() {
               return (
                 <div
                   key={s.id}
-                  className={`group relative rounded-xl border p-3 spring hover:-translate-y-px hover:shadow-glass transition-all duration-200 ease-[cubic-bezier(0.2,0,0,1)] ${
+                  className={`group relative rounded-sm border border-solid p-2 transition-all duration-300 ease-in-out ${
                     active
-                      ? "border-navy-500/30 bg-white/55 backdrop-blur-glass shadow-glass"
-                      : "border-glass bg-white/35 backdrop-blur-glass hover:bg-white/50"
+                      ? "border-[#4f4e4d] bg-white shadow-sm ring-1 ring-[#4f4e4d]"
+                      : "ws-card ws-interactive"
                   }`}
                 >
                   <button
@@ -77,19 +67,19 @@ export default function ChatModule() {
                     onClick={() => setActiveSessionId(s.id)}
                     className="w-full text-left"
                   >
-                    <p className="truncate text-body-sm font-semibold text-navy-900">{s.label}</p>
-                    <p className="mt-1 text-caption text-navy-700">{s.date}</p>
-                    <p className="mt-0.5 text-caption text-navy-500 tabular-nums">
+                    <p className="truncate text-sm font-semibold text-[#1b1a1f]">{s.label}</p>
+                    <p className="mt-0.5 truncate text-sm text-[#4f4e4d]">{s.date}</p>
+                    <p className="mt-0.5 truncate text-sm text-[#6b6a68] tabular-nums">
                       {s.messages.length} message{s.messages.length === 1 ? "" : "s"}
                     </p>
                   </button>
                   <button
                     type="button"
                     onClick={() => deleteSession(s.id)}
-                    className="absolute right-2 top-2 rounded-xl p-1 text-navy-500 hover:bg-red-50/80 hover:text-[var(--ws-danger)] transition-all duration-200 ease-[cubic-bezier(0.2,0,0,1)]"
+                    className="ws-toolbar-btn absolute right-1.5 top-1.5 p-1 text-[#4f4e4d]"
                     aria-label={`Delete ${s.label}`}
                   >
-                    <Trash2 className="h-3.5 w-3.5" />
+                    <Trash2 className="h-3 w-3" />
                   </button>
                 </div>
               )
@@ -98,7 +88,7 @@ export default function ChatModule() {
         </div>
       </aside>
 
-      <div className="flex-1 w-full min-w-0 flex flex-col h-full ws-glass-inner rounded-[30px] p-4 md:p-6 min-h-0 overflow-hidden">
+      <div className="ws-card flex h-full min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-sm p-2 md:p-3">
         <ConversationCanvas
           sessionsOpen={sessionsOpen}
           onToggleSessions={() => setSessionsOpen((open) => !open)}
@@ -108,8 +98,8 @@ export default function ChatModule() {
       </div>
 
       <aside
-        className={`spring shrink-0 min-h-0 overflow-hidden transition-all duration-200 ease-[cubic-bezier(0.2,0,0,1)] ${
-          evidenceOpen ? "w-80 max-w-sm opacity-100" : "w-0 opacity-0 pointer-events-none"
+        className={`spring min-h-0 shrink-0 overflow-hidden transition-all duration-300 ease-in-out ${
+          evidenceOpen ? "w-72 max-w-xs opacity-100" : "w-0 opacity-0 pointer-events-none"
         }`}
         aria-hidden={!evidenceOpen}
       >
@@ -118,7 +108,6 @@ export default function ChatModule() {
             sources={sources}
             selected={selectedEvidence}
             onSelect={setSelectedEvidence}
-            onToggle={() => setEvidenceOpen(false)}
           />
         )}
       </aside>

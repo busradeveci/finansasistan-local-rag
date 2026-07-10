@@ -25,8 +25,8 @@ export default function SidebarNav() {
   const { module, setModule } = useWorkstation()
 
   return (
-    <nav className="flex flex-col gap-1 p-4">
-      <p className="px-3 pb-2 text-[10px] font-semibold uppercase tracking-[0.16em] text-[#9FB0C8]">
+    <nav className="flex flex-col gap-0.5 p-3">
+      <p className="px-3 pb-2 text-[10px] font-semibold uppercase tracking-[0.16em] text-[rgba(252,252,252,0.45)]">
         Workstation
       </p>
       {NAV.map(({ id, label, icon: Icon }) => (
