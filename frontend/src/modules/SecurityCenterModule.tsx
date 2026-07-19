@@ -27,7 +27,7 @@ export default function SecurityCenterModule() {
   )
 
   return (
-    <div className="flex h-full min-h-0 flex-col overflow-hidden bg-white">
+    <div className="flex h-full min-h-0 flex-col overflow-hidden">
       <div className="min-h-0 flex-1 space-y-6 overflow-y-auto fluent-scrollbar ws-module-shell">
         <header className="border-b border-gray-200 pb-4">
           <h1 className="text-page-title">Security Center</h1>

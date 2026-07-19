@@ -10,22 +10,28 @@ export function DashboardView() {
   const { documentIndex } = useWorkstation()
 
   return (
-    <div className="flex flex-col gap-3">
-      <div className="flex items-end justify-between">
+    <div className="grid grid-cols-12 gap-6">
+      <div className="col-span-12 flex items-end justify-between">
         <div className="flex flex-col">
-          <h1 className="text-base font-semibold tracking-tight text-stone-900">Workstation Dashboard</h1>
-          <p className="text-xs text-stone-500">Offline retrieval-augmented generation node · Operations</p>
+          <h1 className="text-base font-semibold tracking-tight text-slate-900">Workstation Dashboard</h1>
+          <p className="text-xs text-slate-500">Offline retrieval-augmented generation node · Operations</p>
         </div>
-        <span className="hidden font-mono text-[11px] text-stone-400 md:block">node-01 · air-gapped</span>
+        <span className="hidden font-mono text-[11px] text-slate-400 md:block">node-01 · air-gapped</span>
       </div>
 
       <KpiStrip analytics={analytics} status={status} vectorCount={documentIndex?.vectors ?? null} />
 
-      <SystemTelemetry telemetry={telemetry} security={security} />
+      <div className="col-span-12 lg:col-span-5">
+        <SystemTelemetry telemetry={telemetry} security={security} />
+      </div>
 
-      <KnowledgeOperations />
+      <div className="col-span-12 lg:col-span-7">
+        <KnowledgeOperations />
+      </div>
 
-      <LlmRouting status={status} analytics={analytics} loading={loading} />
+      <div className="col-span-12">
+        <LlmRouting status={status} analytics={analytics} loading={loading} />
+      </div>
     </div>
   )
 }

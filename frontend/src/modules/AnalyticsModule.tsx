@@ -125,7 +125,7 @@ export default function AnalyticsModule() {
   const hasData = analytics || telemetry
 
   return (
-    <div className="flex h-full min-h-0 flex-col overflow-hidden bg-white ws-module-shell metric-display">
+    <div className="flex h-full min-h-0 flex-col overflow-hidden ws-module-shell metric-display">
       <header className="shrink-0 border-b border-gray-200 pb-4">
         <h1 className="text-page-title">Executive Intelligence</h1>
         <p className="mt-1 truncate text-sm font-medium text-[var(--ws-text-muted)]">

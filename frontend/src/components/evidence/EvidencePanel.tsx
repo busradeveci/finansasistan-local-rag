@@ -6,6 +6,12 @@ import { useWorkstation } from "@/context/WorkstationContext"
 
 import { FileText } from "lucide-react"
 
+const HYPER_GLASS =
+  "bg-white/30 backdrop-blur-md border border-white/60 shadow-[0_4px_12px_rgba(0,0,0,0.05),inset_0_1px_1px_rgba(255,255,255,0.9)] rounded-full hover:bg-white/40 transition-all duration-300"
+
+const GLASS_INNER =
+  "bg-white/20 backdrop-blur-2xl backdrop-saturate-[1.1] border border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.04),inset_0_1px_0_rgba(255,255,255,0.8),inset_0_-1px_0_rgba(255,255,255,0.2)] rounded-3xl"
+
 interface Props {
   sources: EvidenceChunk[]
   selected: EvidenceChunk | null
@@ -29,8 +35,8 @@ export default function EvidencePanel({ sources, selected, onSelect }: Props) {
   }, [active])
 
   return (
-    <aside className="ws-evidence-panel flex h-full w-full shrink-0 flex-col overflow-hidden border border-gray-200 bg-white shadow-sm" style={{ borderRadius: "var(--ws-card-radius)" }}>
-      <header className="mb-1 shrink-0 border-b border-gray-200 pb-1.5">
+    <aside className="ws-evidence-panel flex h-full w-full shrink-0 flex-col overflow-hidden">
+      <header className="mb-1 shrink-0 border-b border-white/40 pb-1.5">
         <h2 className="truncate text-badge font-bold uppercase tracking-wider text-[var(--ws-text)]">
           Evidence Panel
         </h2>
@@ -68,10 +74,10 @@ export default function EvidencePanel({ sources, selected, onSelect }: Props) {
                       <button
                         type="button"
                         onClick={() => onSelect(s)}
-                        className={`w-full rounded-lg border border-solid px-2 py-1.5 text-left text-caption leading-snug tracking-wide transition-colors ${
+                        className={`w-full px-2 py-1.5 text-left text-caption leading-snug tracking-wide transition-colors ${HYPER_GLASS} !rounded-2xl ${
                           isActive
-                            ? "border-[var(--ws-primary)]/40 bg-blue-50 text-[var(--ws-text)] ring-1 ring-[var(--ws-primary)]/20"
-                            : "border-transparent text-[var(--ws-text-secondary)] hover:bg-gray-50"
+                            ? "text-slate-800 ring-1 ring-blue-500/20"
+                            : "text-slate-500"
                         }`}
                       >
                         <span className="truncate">
@@ -111,12 +117,12 @@ export default function EvidencePanel({ sources, selected, onSelect }: Props) {
                   <p className="mb-1 text-badge font-semibold uppercase tracking-wider text-[var(--ws-text-muted)]">
                     Chunk Preview
                   </p>
-                  <pre className="max-h-36 overflow-y-auto whitespace-pre-wrap break-words rounded-lg border border-gray-200 bg-gray-50 p-2.5 text-body-sm leading-relaxed tracking-wide text-[var(--ws-text-secondary)] fluent-scrollbar">
+                  <pre className={`max-h-36 overflow-y-auto whitespace-pre-wrap break-words p-2.5 text-body-sm leading-relaxed tracking-wide text-slate-500 fluent-scrollbar ${GLASS_INNER}`}>
                     {active.content ?? active.preview}
                   </pre>
                 </section>
 
-                <section className="flex flex-wrap items-center gap-1 border-t border-gray-100 pt-2 text-caption tracking-wide text-[var(--ws-text-muted)]">
+                <section className="flex flex-wrap items-center gap-1 border-t border-white/40 pt-2 text-caption tracking-wide text-[var(--ws-text-muted)]">
                   <span className="truncate">
                     <span className="font-semibold text-[var(--ws-text-secondary)]">{active.filename}</span>
                     {" · "}

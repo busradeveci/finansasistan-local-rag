@@ -16,10 +16,10 @@ export default function EvidenceModal({ chunk, onClose }: Props) {
       onClick={onClose}
     >
       <div
-        className="flex max-h-[min(80vh,520px)] w-full max-w-lg flex-col overflow-hidden rounded-xl border border-gray-200 bg-white shadow-md"
+        className="flex max-h-[min(80vh,520px)] w-full max-w-lg flex-col overflow-hidden bg-white/20 backdrop-blur-2xl backdrop-saturate-[1.1] border border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.04),inset_0_1px_0_rgba(255,255,255,0.8),inset_0_-1px_0_rgba(255,255,255,0.2)] rounded-3xl"
         onClick={(e) => e.stopPropagation()}
       >
-        <header className="flex shrink-0 items-start justify-between gap-3 border-b border-gray-200 px-5 py-3.5">
+        <header className="flex shrink-0 items-start justify-between gap-3 border-b border-white/40 px-5 py-3.5">
           <div className="min-w-0">
             <h3 id="evidence-modal-title" className="truncate text-sm font-semibold text-[var(--ws-text)]">
               {chunk.ref != null && (
@@ -48,7 +48,7 @@ export default function EvidenceModal({ chunk, onClose }: Props) {
             {chunk.content ?? chunk.preview}
           </pre>
         </div>
-        <footer className="flex shrink-0 flex-wrap gap-2 border-t border-gray-200 px-5 py-3">
+        <footer className="flex shrink-0 flex-wrap gap-2 border-t border-white/40 px-5 py-3">
           <MetaBadge label="Similarity" value={`${((chunk.score ?? 0) * 100).toFixed(1)}%`} />
           <MetaBadge
             label="Confidence"

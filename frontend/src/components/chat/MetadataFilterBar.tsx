@@ -18,7 +18,7 @@ export default function TargetSourceSelect() {
           const value = event.target.value
           setTargetSource(value === ALL_DOCUMENTS_VALUE ? null : value)
         }}
-        className="min-w-0 max-w-[min(100%,280px)] flex-1 truncate rounded-sm border-0 border-b border-gray-200 bg-transparent px-0 py-1 text-xs font-medium text-[var(--ws-text)] transition-colors focus:border-[var(--ws-primary)] focus:outline-none"
+        className={`min-w-0 max-w-[min(100%,280px)] flex-1 truncate px-3 py-1.5 text-xs font-medium text-slate-800 focus:outline-none bg-white/30 backdrop-blur-md border border-white/60 shadow-[0_4px_12px_rgba(0,0,0,0.05),inset_0_1px_1px_rgba(255,255,255,0.9)] rounded-full hover:bg-white/40 transition-all duration-300`}
         aria-label="Target source document"
       >
         <option value={ALL_DOCUMENTS_VALUE}>All Indexed Documents</option>

@@ -3,6 +3,12 @@ import { getDocumentChunks } from "@/api/client"
 import { useWorkstation } from "@/context/WorkstationContext"
 import type { ChunkIndexRow } from "@/types/workstation"
 
+const HYPER_GLASS =
+  "bg-white/30 backdrop-blur-md border border-white/60 shadow-[0_4px_12px_rgba(0,0,0,0.05),inset_0_1px_1px_rgba(255,255,255,0.9)] rounded-full hover:bg-white/40 transition-all duration-300"
+
+const GLASS_SIDEBAR =
+  "bg-white/20 backdrop-blur-2xl backdrop-saturate-[1.1] border-r border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.04),inset_0_1px_0_rgba(255,255,255,0.8),inset_0_-1px_0_rgba(255,255,255,0.2)]"
+
 export default function KnowledgeBaseModule() {
   const { documentInventory } = useWorkstation()
   const [active, setActive] = useState<string | null>(null)
@@ -19,22 +25,22 @@ export default function KnowledgeBaseModule() {
   const totalChunks = documentInventory.reduce((n, d) => n + d.chunks, 0)
 
   return (
-    <div className="flex h-full min-h-0 flex-1 overflow-hidden bg-white">
-      <div className="w-64 shrink-0 overflow-y-auto border-r border-gray-200 bg-gray-50 p-4 fluent-scrollbar">
+    <div className="flex h-full min-h-0 flex-1 overflow-hidden">
+      <div className={`w-64 shrink-0 overflow-y-auto p-4 fluent-scrollbar ${GLASS_SIDEBAR}`}>
         <h1 className="mb-0.5 text-sm font-semibold text-[var(--ws-text)]">Knowledge Base</h1>
         <p className="mb-3 text-[11px] font-medium text-[var(--ws-text-muted)]">
           {documentInventory.length} docs · {totalChunks} chunks
         </p>
-        <ul className="divide-y divide-gray-100">
+        <ul className="divide-y divide-white/40">
           {documentInventory.map((d) => (
             <li key={d.filename}>
               <button
                 type="button"
                 onClick={() => setActive(d.filename)}
-                className={`w-full border-l-2 px-2 py-2 text-left text-xs transition-colors ${
+                className={`w-full px-2 py-2 text-left text-xs transition-colors ${HYPER_GLASS} !rounded-2xl ${
                   active === d.filename
-                    ? "border-[var(--ws-primary)] bg-white font-medium text-[var(--ws-text)]"
-                    : "border-transparent text-[var(--ws-text-secondary)] hover:bg-white"
+                    ? "font-medium text-slate-800 ring-1 ring-blue-500/20"
+                    : "text-slate-500"
                 }`}
               >
                 <span className="block truncate">{d.filename}</span>

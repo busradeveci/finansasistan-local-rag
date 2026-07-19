@@ -69,7 +69,7 @@ export function WorkstationShell() {
   const isFullBleed = module === "chat" || module === "documents"
 
   return (
-    <div className="ws-workstation flex h-screen min-h-0 w-full max-w-full bg-blueprint text-stone-900">
+    <div className="ws-workstation flex h-screen min-h-0 w-full max-w-full text-slate-900">
       <Sidebar />
       <div className="flex min-w-0 flex-1 flex-col">
         <Header breadcrumb={breadcrumb} />
@@ -78,7 +78,7 @@ export function WorkstationShell() {
             "ws-main-canvas min-h-0 flex-1 overflow-hidden " +
             (isFullBleed
               ? "ws-main-canvas--full-bleed flex flex-col"
-              : "overflow-y-auto")
+              : "overflow-y-auto fluent-scrollbar")
           }
         >
           <div
@@ -92,17 +92,19 @@ export function WorkstationShell() {
         </main>
 
         {!bannerDismissed && (
-          <div className="shrink-0 border-t border-stone-200 bg-white/80 px-3 py-2 backdrop-blur">
+          <div className="shrink-0 border-t border-white/40 bg-white/20 px-4 py-2.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)] backdrop-blur-2xl backdrop-saturate-[1.1]">
             <div className="mx-auto flex max-w-5xl items-center gap-3">
-              <Shield className="h-4 w-4 shrink-0 text-[#1c1917]" />
-              <p className="flex-1 text-xs text-stone-600">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-white/60 bg-white/30 shadow-[0_4px_12px_rgba(0,0,0,0.05),inset_0_1px_1px_rgba(255,255,255,0.9)] backdrop-blur-md">
+                <Shield className="h-4 w-4 text-blue-600" />
+              </div>
+              <p className="flex-1 text-xs leading-relaxed text-slate-600/90">
                 Your AI workstation is secure, offline, and ready. All data stays on your machine. No external
                 connections.
               </p>
               <button
                 type="button"
                 onClick={() => setBannerDismissed(true)}
-                className="rounded-sm p-1 text-stone-400 hover:bg-stone-100 hover:text-stone-700"
+                className="rounded-full p-1.5 text-slate-500 transition-all duration-300 hover:bg-white/40 hover:text-slate-800"
                 aria-label="Dismiss banner"
               >
                 <X className="h-3.5 w-3.5" />

@@ -15,18 +15,24 @@ type Operation = {
   time: string
 }
 
+const GLASS_CARD =
+  "bg-white/20 backdrop-blur-2xl backdrop-saturate-[1.1] border border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.04),inset_0_1px_0_rgba(255,255,255,0.8),inset_0_-1px_0_rgba(255,255,255,0.2)] rounded-3xl"
+
+const HYPER_GLASS =
+  "bg-white/30 backdrop-blur-md border border-white/60 shadow-[0_4px_12px_rgba(0,0,0,0.05),inset_0_1px_1px_rgba(255,255,255,0.9)] rounded-full hover:bg-white/40 transition-all duration-300"
+
 const kindMeta: Record<FileKind, { icon: React.ComponentType<{ className?: string }>; color: string; label: string }> = {
   pdf: { icon: FileType2, color: "text-red-500", label: "PDF" },
-  docx: { icon: FileText, color: "text-[#1c1917]", label: "DOCX" },
+  docx: { icon: FileText, color: "text-slate-800", label: "DOCX" },
   xlsx: { icon: FileSpreadsheet, color: "text-orange-600", label: "XLSX" },
-  other: { icon: FileText, color: "text-stone-500", label: "FILE" },
+  other: { icon: FileText, color: "text-slate-500", label: "FILE" },
 }
 
 const statusMeta: Record<OpStatus, string> = {
-  Indexed: "border-orange-200 bg-orange-50 text-orange-700",
-  Processing: "border-[#1c1917]/20 bg-[#f5f5f4] text-[#1c1917]",
-  Queued: "border-amber-200 bg-amber-50 text-amber-700",
-  Failed: "border-red-200 bg-red-50 text-red-700",
+  Indexed: "text-orange-700",
+  Processing: "text-slate-800",
+  Queued: "text-amber-700",
+  Failed: "text-red-700",
 }
 
 function inferKind(filename: string, type?: string): FileKind {
@@ -101,11 +107,11 @@ export function KnowledgeOperations() {
   const total = documentInventory.length
 
   return (
-    <section className="rounded-sm border border-stone-200 bg-white shadow-sm">
-      <div className="flex items-center justify-between border-b border-stone-200 px-3.5 py-2.5">
+    <section className={`overflow-hidden ${GLASS_CARD}`}>
+      <div className="flex items-center justify-between border-b border-white/40 px-4 py-3">
         <div className="flex items-center gap-2">
-          <h2 className="text-xs font-semibold text-stone-900">Recent Knowledge Operations</h2>
-          <span className="rounded bg-stone-100 px-1.5 py-0.5 font-mono text-[10px] text-stone-500">
+          <h2 className="text-xs font-semibold text-slate-900">Recent Knowledge Operations</h2>
+          <span className={`${HYPER_GLASS} px-1.5 py-0.5 font-mono text-[10px] text-slate-500`}>
             {operations.length} / {total.toLocaleString()}
           </span>
         </div>
@@ -116,11 +122,11 @@ export function KnowledgeOperations() {
             onChange={(e) => setFilter(e.target.value)}
             placeholder="Filter…"
             aria-label="Filter documents"
-            className="h-7 w-32 rounded-sm border border-stone-200 bg-stone-50 px-2 text-[11px] text-stone-700 placeholder:text-stone-400 focus:border-[#1c1917] focus:bg-white focus:outline-none"
+            className={`h-7 w-32 px-3 text-[11px] text-slate-800 placeholder:text-slate-500 focus:outline-none ${HYPER_GLASS}`}
           />
           <button
             type="button"
-            className="inline-flex items-center gap-1.5 rounded-sm border border-stone-200 bg-white px-2 py-1 text-[11px] font-medium text-stone-600 hover:bg-stone-50"
+            className={`inline-flex items-center gap-1.5 px-3 py-1 text-[11px] font-medium text-slate-500 ${HYPER_GLASS}`}
           >
             <Filter className="h-3.5 w-3.5" />
             Filter
@@ -130,22 +136,22 @@ export function KnowledgeOperations() {
 
       <div className="overflow-x-auto">
         {documentInventoryLoading && operations.length === 0 ? (
-          <p className="px-3.5 py-6 text-center text-xs text-stone-400">Loading inventory…</p>
+          <p className="px-4 py-6 text-center text-xs text-slate-400">Loading inventory…</p>
         ) : (
           <table className="w-full text-left text-[13px]">
             <thead>
-              <tr className="border-b border-stone-200 text-[10px] uppercase tracking-wider text-stone-400">
-                <th className="px-3.5 py-2 font-semibold">Document</th>
+              <tr className="border-b border-white/40 text-[10px] uppercase tracking-wider text-slate-400">
+                <th className="px-4 py-2 font-semibold">Document</th>
                 <th className="px-3 py-2 font-semibold">Chunks</th>
                 <th className="px-3 py-2 font-semibold">Status</th>
                 <th className="px-3 py-2 font-semibold">Ingested</th>
-                <th className="px-3.5 py-2" />
+                <th className="px-4 py-2" />
               </tr>
             </thead>
-            <tbody className="divide-y divide-stone-100">
+            <tbody>
               {operations.length === 0 ? (
-                <tr>
-                  <td colSpan={5} className="px-3.5 py-6 text-center text-xs text-stone-400">
+                <tr className="bg-transparent">
+                  <td colSpan={5} className="px-4 py-6 text-center text-xs text-slate-400">
                     No documents indexed yet
                   </td>
                 </tr>
@@ -154,37 +160,40 @@ export function KnowledgeOperations() {
                   const meta = kindMeta[op.kind]
                   const Icon = meta.icon
                   return (
-                    <tr key={op.name} className="transition-colors hover:bg-stone-50/70">
-                      <td className="px-3.5 py-2">
+                    <tr
+                      key={op.name}
+                      className="border-b border-white/40 bg-transparent transition-colors hover:bg-white/30"
+                    >
+                      <td className="px-4 py-2">
                         <div className="flex items-center gap-2.5">
-                          <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-sm border border-stone-200 bg-stone-50">
+                          <div className={`flex h-7 w-7 shrink-0 items-center justify-center ${HYPER_GLASS} !rounded-2xl`}>
                             <Icon className={"h-3.5 w-3.5 " + meta.color} />
                           </div>
                           <div className="min-w-0">
-                            <div className="truncate font-medium text-stone-800">{op.name}</div>
-                            <div className="font-mono text-[10px] text-stone-400">{meta.label}</div>
+                            <div className="truncate font-medium text-slate-800">{op.name}</div>
+                            <div className="font-mono text-[10px] text-slate-400">{meta.label}</div>
                           </div>
                         </div>
                       </td>
-                      <td className="px-3 py-2 font-mono tabular-nums text-stone-600">
+                      <td className="px-3 py-2 font-mono tabular-nums text-slate-600">
                         {op.chunks > 0 ? op.chunks : "—"}
                       </td>
                       <td className="px-3 py-2">
                         <span
                           className={
-                            "inline-flex items-center rounded-sm border px-1.5 py-0.5 text-[11px] font-medium " +
+                            `inline-flex items-center px-2 py-0.5 text-[11px] font-medium ${HYPER_GLASS} ` +
                             statusMeta[op.status]
                           }
                         >
                           {op.status}
                         </span>
                       </td>
-                      <td className="px-3 py-2 text-[11px] text-stone-400">{op.time}</td>
-                      <td className="px-3.5 py-2 text-right">
+                      <td className="px-3 py-2 text-[11px] text-slate-400">{op.time}</td>
+                      <td className="px-4 py-2 text-right">
                         <button
                           type="button"
                           aria-label={`Actions for ${op.name}`}
-                          className="inline-flex h-6 w-6 items-center justify-center rounded-sm text-stone-400 hover:bg-stone-100 hover:text-stone-600"
+                          className="inline-flex h-6 w-6 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-white/30 hover:text-slate-600"
                         >
                           <MoreHorizontal className="h-4 w-4" />
                         </button>
@@ -198,7 +207,7 @@ export function KnowledgeOperations() {
         )}
       </div>
 
-      <div className="flex items-center justify-between border-t border-stone-200 px-3.5 py-2 text-[11px] text-stone-500">
+      <div className="flex items-center justify-between border-t border-white/40 px-4 py-2 text-[11px] text-slate-500">
         <span>
           Showing {operations.length} of {total.toLocaleString()} documents
         </span>

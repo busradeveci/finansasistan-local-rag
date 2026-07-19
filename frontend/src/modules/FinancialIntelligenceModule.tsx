@@ -128,7 +128,7 @@ export default function FinancialIntelligenceModule() {
 
   return (
 
-    <div className="flex h-full min-h-0 flex-col overflow-hidden bg-white ws-module-shell metric-display">
+    <div className="flex h-full min-h-0 flex-col overflow-hidden ws-module-shell metric-display">
 
       <header className="shrink-0 border-b border-gray-200 pb-4">
 

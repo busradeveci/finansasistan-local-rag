@@ -41,6 +41,12 @@ interface ConversationCanvasProps {
 
 
 
+const HYPER_GLASS =
+  "bg-white/30 backdrop-blur-md border border-white/60 shadow-[0_4px_12px_rgba(0,0,0,0.05),inset_0_1px_1px_rgba(255,255,255,0.9)] rounded-full hover:bg-white/40 transition-all duration-300"
+
+const GLASS_CARD =
+  "bg-white/20 backdrop-blur-2xl backdrop-saturate-[1.1] border border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.04),inset_0_1px_0_rgba(255,255,255,0.8),inset_0_-1px_0_rgba(255,255,255,0.2)] rounded-3xl"
+
 function uniqueSourcesByFilename(sources: EvidenceChunk[]): EvidenceChunk[] {
   const seen = new Set<string>()
   return sources.filter((source) => {
@@ -165,7 +171,7 @@ function SessionDropdown() {
 
         onClick={() => setOpen((v) => !v)}
 
-        className="flex w-full items-center gap-1.5 rounded-sm border border-gray-200 bg-white px-2.5 py-1.5 text-left transition-colors hover:border-[var(--ws-primary)]"
+        className={`flex w-full items-center gap-1.5 px-2.5 py-1.5 text-left ${HYPER_GLASS} !rounded-2xl`}
 
       >
 
@@ -187,9 +193,9 @@ function SessionDropdown() {
 
       {open && (
 
-        <div className="absolute left-0 top-full z-30 mt-1 w-56 overflow-hidden rounded-sm border border-gray-200 bg-white shadow-sm">
+        <div className={`absolute left-0 top-full z-30 mt-1 w-56 overflow-hidden ${GLASS_CARD}`}>
 
-          <div className="flex items-center justify-between border-b border-gray-200 px-2.5 py-2">
+          <div className="flex items-center justify-between border-b border-white/40 px-2.5 py-2">
 
             <span className="text-[10px] font-semibold uppercase tracking-wider text-[var(--ws-text-muted)]">
 
@@ -247,8 +253,8 @@ function SessionDropdown() {
 
                     className={`w-full px-3 py-2 text-left transition-colors ${
                       activeSessionId === s.id
-                        ? "bg-blue-50"
-                        : "hover:bg-gray-50"
+                        ? "bg-white/50"
+                        : "hover:bg-white/30"
                     }`}
 
                   >
@@ -405,7 +411,7 @@ export default function ConversationCanvas({
 
     <section className="flex h-full min-h-0 w-full flex-1 flex-col overflow-hidden">
 
-      <header className="ws-chat-header shrink-0 border-b border-gray-200">
+      <header className="ws-chat-header shrink-0 border-b border-white/40">
 
         <div className="flex flex-wrap items-center justify-between gap-2">
 
@@ -421,13 +427,7 @@ export default function ConversationCanvas({
 
                   <span
 
-                    className={`shrink-0 truncate rounded-sm border px-1.5 py-0.5 text-body-sm font-semibold uppercase tracking-wide ${
-                      activeAgentBadge?.includes("RAG")
-                        ? "border-blue-200 bg-blue-50 text-[var(--ws-primary)]"
-                        : activeAgentBadge?.includes("Phi-4")
-                          ? "border-blue-200 bg-blue-50 text-[var(--ws-primary)]"
-                          : "border-gray-200 text-[var(--ws-text-muted)]"
-                    }`}
+                    className={`rounded-full px-1.5 py-0.5 text-body-sm font-semibold uppercase tracking-wide text-slate-800 ${HYPER_GLASS}`}
 
                   >
 
@@ -483,7 +483,7 @@ export default function ConversationCanvas({
 
               disabled={!evidenceOpen}
 
-              className={`ws-toolbar-btn ${evidenceExpanded ? "bg-blue-50 text-[var(--ws-primary)]" : ""} disabled:cursor-not-allowed disabled:opacity-40`}
+              className={`ws-toolbar-btn ${evidenceExpanded ? "text-[var(--ws-primary)]" : ""} disabled:cursor-not-allowed disabled:opacity-40`}
 
               title={evidenceExpanded ? "Collapse evidence panel to sidebar width" : "Expand evidence panel to 60% width"}
 
@@ -550,11 +550,7 @@ export default function ConversationCanvas({
 
                     key={message.id}
 
-                    className={`ws-chat-bubble transition-all duration-200 ease-in-out ${
-                      isUser
-                        ? "border-[var(--ws-border)] bg-[var(--ws-canvas-alt)]"
-                        : "border-[var(--ws-border)] bg-white"
-                    }`}
+                    className="ws-chat-bubble transition-all duration-200 ease-in-out"
 
                     onClick={() => {
 
@@ -578,7 +574,7 @@ export default function ConversationCanvas({
 
                       {!isUser && message.agentBadge && (
 
-                        <span className="truncate rounded-sm border border-blue-200 bg-blue-50 px-1.5 py-0.5 text-body-sm font-semibold tracking-wide text-[var(--ws-primary)]">
+                        <span className={`truncate px-1.5 py-0.5 text-body-sm font-semibold tracking-wide text-slate-800 ${HYPER_GLASS}`}>
 
                           [{message.agentBadge}]
 
@@ -648,7 +644,7 @@ export default function ConversationCanvas({
 
                     {!isUser && message.sources.length > 0 && (
 
-                      <div className="mt-2 border-t border-gray-100 pt-2">
+                      <div className="mt-2 border-t border-white/40 pt-2">
 
                         <p className="mb-1 text-badge font-semibold uppercase tracking-wider text-[var(--ws-text-muted)]">
 
@@ -732,7 +728,7 @@ export default function ConversationCanvas({
 
 
 
-        <footer className="ws-chat-input-footer shrink-0 border-t border-gray-200">
+        <footer className="ws-chat-input-footer shrink-0 border-t border-white/40">
 
           <div className="ws-input-bar flex items-end gap-1.5">
 
@@ -784,7 +780,7 @@ export default function ConversationCanvas({
 
                 disabled={!chatInput.trim()}
 
-                className="ws-chat-send-btn inline-flex shrink-0 items-center rounded-sm bg-[var(--ws-primary)] font-semibold text-white transition-all duration-200 ease-in-out hover:bg-[var(--ws-primary-hover)] disabled:cursor-not-allowed disabled:opacity-40"
+                className="ws-chat-send-btn disabled:cursor-not-allowed disabled:opacity-40"
 
               >
 

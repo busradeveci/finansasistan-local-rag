@@ -1,39 +1,38 @@
-/* Workstation utilities — complements index.css design tokens */
+/* Workstation utilities — glassmorphism complements */
 
-/* Chart tooltip — light enterprise micro typography */
 .ws-chart-tooltip {
-  border-radius: calc(4px);
-  border: 1px solid var(--ws-border);
-  background: #ffffff;
-  padding: calc(0.375rem) calc(0.5rem);
+  border-radius: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(12px) saturate(150%);
+  padding: calc(0.5rem) calc(0.625rem);
   font-family: "Segoe UI Variable", "Segoe UI", system-ui, sans-serif;
   font-size: calc(10px);
   line-height: 1.35;
-  color: var(--ws-text-secondary);
-  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.08);
+  color: rgba(71, 85, 105, 0.9);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.06);
 }
 
 .ws-chart-tooltip-label {
   margin-bottom: calc(0.125rem);
-  color: var(--ws-text-muted);
+  color: rgba(100, 116, 139, 0.8);
   font-weight: 600;
   font-size: calc(9px);
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
 }
 
 .ws-chart-tooltip-value {
   font-weight: 600;
   font-variant-numeric: tabular-nums;
-  color: var(--ws-text);
+  color: #0f172a;
 }
 
-/* Citation link styling */
 .ws-citation-link {
   display: inline;
   margin: 0 1px;
   padding: 0 calc(3px);
-  border-radius: calc(2px);
+  border-radius: calc(4px);
   border: none;
   border-bottom: 1px solid var(--ws-primary);
   background: transparent;
@@ -43,11 +42,11 @@
   color: var(--ws-primary);
   text-decoration: none;
   cursor: pointer;
-  transition: color 0.15s ease, background 0.15s ease;
+  transition: color 0.2s ease, background 0.2s ease;
   vertical-align: baseline;
 }
 
 .ws-citation-link:hover {
-  background: #eff6ff;
+  background: rgba(255, 255, 255, 0.6);
   text-decoration: none;
 }
