@@ -52,7 +52,7 @@ export default function ChatModule() {
 
   const [evidenceOpen, setEvidenceOpen] = useState(initial.evidenceOpen)
 
-  const [chatMaximized, setChatMaximized] = useState(false)
+  const [evidenceExpanded, setEvidenceExpanded] = useState(false)
 
   const [modalChunk, setModalChunk] = useState<EvidenceChunk | null>(null)
 
@@ -98,17 +98,11 @@ export default function ChatModule() {
 
 
 
-  const showEvidence = evidenceOpen && !chatMaximized
-
-
-
   const handleCitationClick = (messageId: string, ref: number) => {
 
     if (!activeSessionId) return
 
     if (!evidenceOpen) setEvidenceOpen(true)
-
-    if (chatMaximized) setChatMaximized(false)
 
     focusEvidenceCitation(activeSessionId, messageId, ref)
 
@@ -132,8 +126,6 @@ export default function ChatModule() {
 
     if (!evidenceOpen) setEvidenceOpen(true)
 
-    if (chatMaximized) setChatMaximized(false)
-
     setActiveEvidenceMessage(activeSessionId, messageId)
 
     setSelectedEvidence(chunk)
@@ -142,37 +134,43 @@ export default function ChatModule() {
 
 
 
+  const handleToggleEvidence = () => {
+
+    setEvidenceExpanded(false)
+
+    setEvidenceOpen((open) => !open)
+
+  }
+
+
+
+  const handleToggleEvidenceExpand = () => {
+
+    if (!evidenceOpen) setEvidenceOpen(true)
+
+    setEvidenceExpanded((expanded) => !expanded)
+
+  }
+
+
+
   return (
 
-    <div className="flex h-full min-h-0 flex-col overflow-hidden bg-[var(--ws-canvas)]">
+    <div className="ws-chat-workspace flex h-full min-h-0 w-full max-w-full flex-col overflow-hidden bg-white">
 
-      <div className="ws-chat-layout ws-module-shell flex h-full min-h-0 flex-1 overflow-hidden">
+      <div className="ws-chat-layout flex h-full min-h-0 w-full flex-1 overflow-hidden">
 
-      <div
-
-        className={`ws-card ws-chat-card flex h-full min-h-0 min-w-0 flex-1 flex-col overflow-hidden transition-all duration-300 ease-in-out ${
-
-          chatMaximized ? "ws-chat-card-maximized" : ""
-
-        }`}
-
-      >
+      <div className="ws-chat-card flex h-full min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
 
         <ConversationCanvas
 
           evidenceOpen={evidenceOpen}
 
-          onToggleEvidence={() => {
+          onToggleEvidence={handleToggleEvidence}
 
-            setChatMaximized(false)
+          evidenceExpanded={evidenceExpanded}
 
-            setEvidenceOpen((open) => !open)
-
-          }}
-
-          chatMaximized={chatMaximized}
-
-          onToggleMaximize={() => setChatMaximized((m) => !m)}
+          onToggleEvidenceExpand={handleToggleEvidenceExpand}
 
           onCitationClick={handleCitationClick}
 
@@ -186,17 +184,25 @@ export default function ChatModule() {
 
       <aside
 
-        className={`spring min-h-0 shrink-0 overflow-hidden transition-all duration-300 ease-in-out ${
+        className={`spring min-h-0 shrink-0 overflow-hidden ${
 
-          showEvidence ? "w-[var(--ws-evidence-width)] max-w-[var(--ws-evidence-width)] opacity-100" : "w-0 opacity-0 pointer-events-none"
+          evidenceOpen
+
+            ? evidenceExpanded
+
+              ? "w-[var(--ws-evidence-width-expanded)] max-w-[var(--ws-evidence-width-expanded)] opacity-100 transition-[width,max-width] duration-300 ease-in-out"
+
+              : "w-[var(--ws-evidence-width)] max-w-[var(--ws-evidence-width)] opacity-100 transition-none"
+
+            : "pointer-events-none w-0 max-w-0 opacity-0 transition-[width,max-width,opacity] duration-300 ease-in-out"
 
         }`}
 
-        aria-hidden={!showEvidence}
+        aria-hidden={!evidenceOpen}
 
       >
 
-        {showEvidence && (
+        {evidenceOpen && (
 
           <EvidencePanel
 
@@ -223,5 +229,4 @@ export default function ChatModule() {
   )
 
 }
-
 

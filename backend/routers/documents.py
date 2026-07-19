@@ -1,9 +1,12 @@
 from datetime import datetime, timezone
 import asyncio
 import logging
+import traceback
 from pathlib import Path
 
 from fastapi import APIRouter, HTTPException, Query, UploadFile
+from fastapi.responses import Response
+from pydantic import BaseModel, Field
 
 from backend.config import DB_PATH, DOCS_DIR, EMBED_MODEL
 from backend.db.vector_store import (
@@ -17,11 +20,31 @@ from backend.services.document_metadata import extract_document_metadata
 from backend.sanitize import sanitize_filename
 from backend.services import metrics
 from backend.services.ingestion import ingest_file
+from backend.services.pdf_export import generate_executive_pdf
 
 router = APIRouter(prefix="/documents", tags=["documents"])
 logger = logging.getLogger(__name__)
 
 _ALLOWED_EXTENSIONS = {".txt", ".md", ".pdf", ".docx", ".xlsx", ".csv"}
+
+
+class ExportPdfSource(BaseModel):
+    filename: str
+    ref: int | None = None
+    confidence: float | None = None
+    chunk_index: int | None = None
+    score: float | None = None
+    preview: str | None = None
+    content: str | None = None
+    file_type: str | None = None
+
+
+class ExportPdfRequest(BaseModel):
+    title: str = Field(..., min_length=1, max_length=500)
+    analysis: str = Field(..., min_length=1)
+    sources: list[ExportPdfSource] = Field(default_factory=list)
+
+
 _ALLOWED_MIME_TYPES = {
     "text/plain",
     "text/markdown",
@@ -155,6 +178,33 @@ async def upload_document(file: UploadFile):
         "chunks": result["chunks"],
         "message": "Upload successful.",
     }
+
+
+@router.post("/export-pdf")
+async def export_executive_pdf(body: ExportPdfRequest):
+    """Render an executive credit analysis report as a downloadable PDF."""
+    try:
+        pdf_bytes, system_id = await asyncio.to_thread(
+            generate_executive_pdf,
+            title=body.title.strip(),
+            analysis=body.analysis,
+            sources=[s.model_dump() for s in body.sources],
+        )
+    except Exception as exc:
+        logger.error("PDF export failed:\n%s", traceback.format_exc())
+        detail = str(exc) if str(exc) else "PDF export failed unexpectedly."
+        raise HTTPException(status_code=500, detail=detail) from exc
+
+    timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
+    filename = f"Foundry_Local_Executive_Report_{timestamp}.pdf"
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={
+            "Content-Disposition": f'attachment; filename="{filename}"',
+            "X-System-Id": system_id,
+        },
+    )
 
 
 @router.delete("/{filename}")

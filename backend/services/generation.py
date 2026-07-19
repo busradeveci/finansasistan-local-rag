@@ -12,6 +12,7 @@ from backend.config import CHAT_MODEL, MAX_CONTEXT_CHUNKS, NO_CONTEXT_ANSWER, SY
 from backend.sanitize import sanitize_query
 from backend.services import metrics
 from backend.services.foundry_client import get_chat_client
+from backend.services.numeric_audit import apply_numeric_audit
 
 # Rough token estimate for local accounting (≈4 chars per token for English).
 _CHARS_PER_TOKEN = 4
@@ -404,11 +405,17 @@ def _build_references_block(answer_text: str, ref_map: dict[str, int]) -> str:
     return f"References:\n{lines}"
 
 
-def _finalize_answer(answer_text: str, ref_map: dict[str, int]) -> str:
+def _finalize_answer(
+    answer_text: str,
+    ref_map: dict[str, int],
+    chunks: list[dict] | None = None,
+) -> str:
     """Strip model bibliographies, refusal leaks, and meta-notes; append refs."""
     cleaned = _strip_refusal_and_meta_notes(
         _strip_model_references(answer_text).rstrip()
     )
+    if chunks:
+        cleaned = apply_numeric_audit(cleaned, chunks)
     references = _build_references_block(cleaned, ref_map)
     if not references:
         return cleaned
@@ -453,8 +460,11 @@ def _build_messages(context: str, query: str, history: list[dict] | None) -> lis
         "If they do, write an exhaustive, professionally structured answer in crisp corporate "
         "financial English — report every relevant figure, sub-clause, exception, and trigger; "
         "do not omit data points for brevity, and never include that refusal sentence or any "
-        "\"(Note: ...)\" meta-commentary. Append the bracketed source number to each factual "
-        "sentence, e.g. \"The collateral ratio was raised to 155% [1].\" "
+        "\"(Note: ...)\" meta-commentary. CRITICAL: You are a financial audit assistant — "
+        "never synthesize, guess, approximate, round, or alter any numeric, credit exposure, "
+        "currency, or financial metric from the sources; report EXACT values only "
+        "(e.g. 150000000 → 150,000,000 USD). Append the bracketed source number to each "
+        "factual sentence, e.g. \"The collateral ratio was raised to 155% [1].\" "
         "Do not write a References or Sources section — it is appended automatically."
     )
     messages.append({"role": "user", "content": user_content})
@@ -482,7 +492,9 @@ async def generate(
     t0 = time.perf_counter()
     response = await asyncio.to_thread(chat_client.complete_chat, messages)
     answer = _finalize_answer(
-        _clean_response_text(response.choices[0].message.content or ""), ref_map
+        _clean_response_text(response.choices[0].message.content or ""),
+        ref_map,
+        chunks,
     )
     elapsed_ms = (time.perf_counter() - t0) * 1000
     metrics.record_generation(elapsed_ms)
@@ -556,6 +568,11 @@ async def stream_generate(
             if tail:
                 emitted_text += tail
                 yield tail
+            audited_text = apply_numeric_audit(emitted_text, chunks)
+            audit_suffix = audited_text[len(emitted_text) :]
+            if audit_suffix:
+                yield audit_suffix
+                emitted_text = audited_text
             references = _build_references_block(emitted_text, ref_map)
             if references:
                 yield f"\n\n{references}"
@@ -567,7 +584,9 @@ async def stream_generate(
             )
             response = await asyncio.to_thread(chat_client.complete_chat, messages)
             answer = _finalize_answer(
-                _clean_response_text(response.choices[0].message.content or ""), ref_map
+                _clean_response_text(response.choices[0].message.content or ""),
+                ref_map,
+                chunks,
             )
             if answer:
                 yield answer

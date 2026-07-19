@@ -23,7 +23,7 @@ export default function CitationContent({ content, sources, onCitationClick }: P
         const isLinked = validRefs.has(ref)
         if (!isLinked) {
           return (
-            <span key={index} className="tabular-nums text-[#94a3b8]">
+            <span key={index} className="tabular-nums text-[var(--ws-text-muted)]">
               {part}
             </span>
           )

@@ -25,3 +25,7 @@ openpyxl>=3.1.0
 # Runs models 100% offline via the Foundry Local Core native library.
 # Install Foundry Local CLI first: winget install Microsoft.FoundryLocal
 foundry-local-sdk>=0.1.0
+
+# ── Executive PDF export (HTML → PDF) ────────────────────────────────────────
+weasyprint>=62.0
+xhtml2pdf>=0.2.16

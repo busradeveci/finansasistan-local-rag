@@ -28,25 +28,25 @@ import {
 
 
 
-const MINT = "#10b981"
+const MINT = "#0078d4"
 
-const CYAN = "#06b6d4"
+const CYAN = "#2b88d8"
 
-const AMBER = "#f59e0b"
+const AMBER = "#ca5010"
 
-const CHART_GRID = "rgba(30, 41, 59, 0.6)"
+const CHART_GRID = "#e5e7eb"
 
 const CHART_AXIS = "#64748b"
 
-const CANVAS = "#0d1527"
+const CANVAS = "#ffffff"
 
 
 
-const RISK_RED = "#ef4444"
+const RISK_RED = "#d13438"
 
 const RISK_AMBER = AMBER
 
-const RISK_GREEN = MINT
+const RISK_GREEN = "#107c10"
 
 
 
@@ -114,11 +114,11 @@ const aiRecommendations = [
 
 const levelStyles = {
 
-  CRITICAL: { color: RISK_RED, bg: "rgba(239, 68, 68, 0.08)" },
+  CRITICAL: { color: RISK_RED, bg: "#fef2f2" },
 
-  NOTICE: { color: CYAN, bg: "rgba(6, 182, 212, 0.08)" },
+  NOTICE: { color: CYAN, bg: "#eff6ff" },
 
-  OPTIMIZE: { color: RISK_GREEN, bg: "rgba(16, 185, 129, 0.08)" },
+  OPTIMIZE: { color: RISK_GREEN, bg: "#f0fdf4" },
 
 }
 
@@ -128,11 +128,11 @@ export default function FinancialIntelligenceModule() {
 
   return (
 
-    <div className="flex h-full min-h-0 flex-col overflow-hidden bg-[var(--ws-canvas)] ws-module-shell metric-display">
+    <div className="flex h-full min-h-0 flex-col overflow-hidden bg-white ws-module-shell metric-display">
 
-      <header className="shrink-0 pb-4">
+      <header className="shrink-0 border-b border-gray-200 pb-4">
 
-        <h1 className="text-page-title text-white">Financial Intelligence Center</h1>
+        <h1 className="text-page-title">Financial Intelligence Center</h1>
 
         <p className="mt-1 truncate text-sm font-medium text-[var(--ws-text-muted)]">
 
@@ -152,7 +152,7 @@ export default function FinancialIntelligenceModule() {
 
           <div className="grid grid-cols-12 ws-module-grid">
 
-            <GlassPanel title="Risk Profile Distribution" className="col-span-12 min-h-[calc(260px*var(--ws-density))] lg:col-span-6">
+            <GlassPanel title="Risk Profile Distribution" className="col-span-12 min-h-[260px] lg:col-span-6">
 
               <ResponsiveContainer width="100%" height={198}>
 
@@ -196,7 +196,7 @@ export default function FinancialIntelligenceModule() {
 
                   />
 
-                  <Tooltip content={<GlassTooltip suffix=" pts" />} cursor={{ fill: "rgba(16, 185, 129, 0.06)" }} />
+                  <Tooltip content={<GlassTooltip suffix=" pts" />} cursor={{ fill: "rgba(0, 120, 212, 0.06)" }} />
 
                   <Bar dataKey="score" radius={[2, 2, 0, 0]} maxBarSize={48}>
 
@@ -218,7 +218,7 @@ export default function FinancialIntelligenceModule() {
 
 
 
-            <GlassPanel title="Asset Leverage & Capital Adequacy Trends" className="col-span-12 min-h-[calc(260px*var(--ws-density))] lg:col-span-6">
+            <GlassPanel title="Asset Leverage & Capital Adequacy Trends" className="col-span-12 min-h-[260px] lg:col-span-6">
 
               <ResponsiveContainer width="100%" height={198}>
 
@@ -346,17 +346,17 @@ export default function FinancialIntelligenceModule() {
 
           <SectionLabel>Executive AI Recommendations</SectionLabel>
 
-          <div className="ws-stat-card flex min-h-[calc(200px*var(--ws-density))] flex-col overflow-hidden p-0">
+          <div className="border-b border-gray-200 pb-4">
 
-            <div className="flex shrink-0 items-center justify-between border-b border-[var(--ws-card-border)] bg-[var(--ws-card-bg-elevated)] px-3 py-2">
+            <div className="mb-3 flex items-center justify-between">
 
-              <p className="text-[11px] font-semibold uppercase tracking-wide text-[var(--ws-text-secondary)]">
+              <p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--ws-text-muted)]">
 
                 Automated AI Recommendations &amp; Insights
 
               </p>
 
-              <span className="rounded-full border border-[var(--ws-card-border)] px-2 py-0.5 text-[10px] font-medium text-[var(--ws-text-muted)]">
+              <span className="text-[10px] font-medium text-[var(--ws-text-muted)]">
 
                 Live · Mock Data
 
@@ -364,7 +364,7 @@ export default function FinancialIntelligenceModule() {
 
             </div>
 
-            <div className="min-h-0 flex-1 overflow-y-auto fluent-scrollbar bg-[var(--ws-card-bg)] p-4 text-xs leading-relaxed">
+            <div className="space-y-3 text-xs leading-relaxed">
 
               {aiRecommendations.map((item) => {
 
@@ -373,13 +373,9 @@ export default function FinancialIntelligenceModule() {
                 return (
 
                   <div
-
                     key={item.level}
-
-                    className="mb-2 rounded-lg border border-[var(--ws-card-border)] px-3 py-2 last:mb-0"
-
-                    style={{ background: style.bg }}
-
+                    className="border-l-2 py-1 pl-3"
+                    style={{ borderColor: style.color, background: style.bg }}
                   >
 
                     <span className="font-semibold" style={{ color: style.color }}>
@@ -396,7 +392,7 @@ export default function FinancialIntelligenceModule() {
 
               })}
 
-              <p className="mt-3 border-t border-[var(--ws-card-border)] pt-2 text-[10px] text-[var(--ws-text-muted)]">
+              <p className="mt-3 border-t border-gray-200 pt-3 text-[10px] text-[var(--ws-text-muted)]">
 
                 Analysis derived from indexed financial documents and corporate banking heuristics.
 
@@ -422,7 +418,7 @@ export default function FinancialIntelligenceModule() {
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
 
-  return <h2 className="mb-2 text-section-title text-white">{children}</h2>
+  return <h2 className="mb-2 text-section-title">{children}</h2>
 
 }
 

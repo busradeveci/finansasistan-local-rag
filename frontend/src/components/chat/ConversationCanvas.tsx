@@ -1,33 +1,25 @@
 import { useEffect, useMemo, useRef, useState } from "react"
 
 import {
-
   ChevronDown,
-
+  FileDown,
   Loader2,
-
-  Maximize2,
-
-  Minimize2,
-
+  PanelLeftClose,
+  PanelLeftOpen,
   PanelRightClose,
-
   Plus,
-
   Send,
-
   Square,
-
   Trash2,
-
 } from "lucide-react"
 
+import { exportExecutivePdf } from "@/api/client"
 import { useWorkstation } from "@/context/WorkstationContext"
 
 import CitationContent from "@/components/chat/CitationContent"
-import MetadataFilterBar from "@/components/chat/MetadataFilterBar"
+import TargetSourceSelect from "@/components/chat/MetadataFilterBar"
 
-import type { EvidenceChunk } from "@/types/workstation"
+import type { ChatMessage, EvidenceChunk } from "@/types/workstation"
 
 
 
@@ -37,9 +29,9 @@ interface ConversationCanvasProps {
 
   onToggleEvidence: () => void
 
-  chatMaximized: boolean
+  evidenceExpanded: boolean
 
-  onToggleMaximize: () => void
+  onToggleEvidenceExpand: () => void
 
   onCitationClick: (messageId: string, ref: number) => void
 
@@ -56,6 +48,67 @@ function uniqueSourcesByFilename(sources: EvidenceChunk[]): EvidenceChunk[] {
     seen.add(source.filename)
     return true
   })
+}
+
+function resolveExportTitle(messages: ChatMessage[], messageIndex: number, sessionLabel: string): string {
+  for (let i = messageIndex - 1; i >= 0; i -= 1) {
+    if (messages[i]?.role === "user" && messages[i].content.trim()) {
+      return messages[i].content.trim().slice(0, 200)
+    }
+  }
+  return sessionLabel || "Executive Credit Analysis"
+}
+
+function ExportPdfButton({
+  title,
+  analysis,
+  sources,
+  disabled,
+}: {
+  title: string
+  analysis: string
+  sources: EvidenceChunk[]
+  disabled?: boolean
+}) {
+  const [exporting, setExporting] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  const handleExport = async (event: React.MouseEvent) => {
+    event.stopPropagation()
+    if (exporting || disabled || !analysis.trim()) return
+    setExporting(true)
+    setError(null)
+    try {
+      await exportExecutivePdf({ title, analysis, sources })
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "PDF export failed")
+    } finally {
+      setExporting(false)
+    }
+  }
+
+  return (
+    <div className="ml-auto flex shrink-0 flex-col items-end gap-0.5">
+      <button
+        type="button"
+        onClick={handleExport}
+        disabled={disabled || exporting || !analysis.trim()}
+        className="ws-export-pdf-btn"
+        title="Export Executive PDF"
+        aria-label="Export Executive PDF"
+      >
+        {exporting ? (
+          <Loader2 className="h-3.5 w-3.5 animate-spin" />
+        ) : (
+          <FileDown className="h-3.5 w-3.5" />
+        )}
+        <span className="hidden sm:inline">Export PDF</span>
+      </button>
+      {error && (
+        <span className="max-w-[180px] truncate text-[10px] text-[var(--ws-danger)]">{error}</span>
+      )}
+    </div>
+  )
 }
 
 
@@ -104,7 +157,7 @@ function SessionDropdown() {
 
   return (
 
-    <div ref={ref} className="relative min-w-0 max-w-[calc(220px*var(--ws-density))]">
+    <div ref={ref} className="relative min-w-0 max-w-[220px]">
 
       <button
 
@@ -112,7 +165,7 @@ function SessionDropdown() {
 
         onClick={() => setOpen((v) => !v)}
 
-        className="flex w-full items-center gap-1.5 rounded-lg border border-[var(--ws-card-border)] bg-[var(--ws-card-bg-elevated)] px-[calc(0.625rem*var(--ws-density))] py-[calc(0.375rem*var(--ws-density))] text-left transition-colors hover:border-[var(--ws-primary)]/35"
+        className="flex w-full items-center gap-1.5 rounded-sm border border-gray-200 bg-white px-2.5 py-1.5 text-left transition-colors hover:border-[var(--ws-primary)]"
 
       >
 
@@ -134,9 +187,9 @@ function SessionDropdown() {
 
       {open && (
 
-        <div className="absolute left-0 top-full z-30 mt-1 w-56 overflow-hidden rounded-xl border border-[var(--ws-card-border)] bg-[var(--ws-card-bg)]">
+        <div className="absolute left-0 top-full z-30 mt-1 w-56 overflow-hidden rounded-sm border border-gray-200 bg-white shadow-sm">
 
-          <div className="flex items-center justify-between border-b border-[var(--ws-card-border)] px-2.5 py-2">
+          <div className="flex items-center justify-between border-b border-gray-200 px-2.5 py-2">
 
             <span className="text-[10px] font-semibold uppercase tracking-wider text-[var(--ws-text-muted)]">
 
@@ -156,7 +209,7 @@ function SessionDropdown() {
 
               }}
 
-              className="rounded-lg p-1 text-[var(--ws-primary)] hover:bg-[rgba(16,185,129,0.08)]"
+              className="rounded-sm p-1 text-[var(--ws-primary)] hover:bg-blue-50"
 
               aria-label="New session"
 
@@ -193,18 +246,14 @@ function SessionDropdown() {
                     }}
 
                     className={`w-full px-3 py-2 text-left transition-colors ${
-
                       activeSessionId === s.id
-
-                        ? "bg-[rgba(16,185,129,0.1)]"
-
-                        : "hover:bg-[var(--ws-card-bg-elevated)]"
-
+                        ? "bg-blue-50"
+                        : "hover:bg-gray-50"
                     }`}
 
                   >
 
-                    <p className="truncate text-xs font-medium text-white">{s.label}</p>
+                    <p className="truncate text-xs font-medium text-[var(--ws-text)]">{s.label}</p>
 
                     <p className="truncate text-[10px] text-[var(--ws-text-muted)]">{s.date}</p>
 
@@ -252,9 +301,9 @@ export default function ConversationCanvas({
 
   onToggleEvidence,
 
-  chatMaximized,
+  evidenceExpanded,
 
-  onToggleMaximize,
+  onToggleEvidenceExpand,
 
   onCitationClick,
 
@@ -322,9 +371,7 @@ export default function ConversationCanvas({
 
     textareaRef.current.style.height = "auto"
 
-    const density = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--ws-density")) || 0.9
-
-    textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 95 * density)}px`
+    textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 95)}px`
 
   }, [chatInput])
 
@@ -358,7 +405,7 @@ export default function ConversationCanvas({
 
     <section className="flex h-full min-h-0 w-full flex-1 flex-col overflow-hidden">
 
-      <header className="ws-chat-header shrink-0 border-b border-[var(--ws-card-border)]">
+      <header className="ws-chat-header shrink-0 border-b border-gray-200">
 
         <div className="flex flex-wrap items-center justify-between gap-2">
 
@@ -368,24 +415,18 @@ export default function ConversationCanvas({
 
               <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-0.5">
 
-                <h2 className="truncate text-card-title text-white">Analysis Workspace</h2>
+                <h2 className="truncate text-card-title">Analysis Workspace</h2>
 
                 {(activeAgentBadge || (isGenerating && !activeAgentBadge)) && (
 
                   <span
 
-                    className={`shrink-0 truncate rounded border px-1.5 py-0.5 text-body-sm font-semibold uppercase tracking-wide ${
-
+                    className={`shrink-0 truncate rounded-sm border px-1.5 py-0.5 text-body-sm font-semibold uppercase tracking-wide ${
                       activeAgentBadge?.includes("RAG")
-
-                        ? "border-[var(--ws-primary)]/40 bg-[rgba(16,185,129,0.08)] text-[var(--ws-primary)]"
-
+                        ? "border-blue-200 bg-blue-50 text-[var(--ws-primary)]"
                         : activeAgentBadge?.includes("Phi-4")
-
-                          ? "border-cyan-500/40 bg-[rgba(6,182,212,0.08)] text-cyan-400"
-
-                          : "border-[var(--ws-card-border)] text-[var(--ws-text-muted)]"
-
+                          ? "border-blue-200 bg-blue-50 text-[var(--ws-primary)]"
+                          : "border-gray-200 text-[var(--ws-text-muted)]"
                     }`}
 
                   >
@@ -414,6 +455,8 @@ export default function ConversationCanvas({
 
             <SessionDropdown />
 
+            <TargetSourceSelect />
+
           </div>
 
 
@@ -436,25 +479,31 @@ export default function ConversationCanvas({
 
               type="button"
 
-              onClick={onToggleMaximize}
+              onClick={onToggleEvidenceExpand}
 
-              className={`ws-toolbar-btn ${chatMaximized ? "bg-[rgba(16,185,129,0.1)] text-[var(--ws-primary)]" : ""}`}
+              disabled={!evidenceOpen}
 
-              title={chatMaximized ? "Restore panels" : "Maximize chat"}
+              className={`ws-toolbar-btn ${evidenceExpanded ? "bg-blue-50 text-[var(--ws-primary)]" : ""} disabled:cursor-not-allowed disabled:opacity-40`}
+
+              title={evidenceExpanded ? "Collapse evidence panel to sidebar width" : "Expand evidence panel to 60% width"}
 
             >
 
-              {chatMaximized ? (
+              {evidenceExpanded ? (
 
-                <Minimize2 className="h-3.5 w-3.5" />
+                <PanelLeftClose className="h-3.5 w-3.5" />
 
               ) : (
 
-                <Maximize2 className="h-3.5 w-3.5" />
+                <PanelLeftOpen className="h-3.5 w-3.5" />
 
               )}
 
-              <span className="hidden sm:inline">{chatMaximized ? "Restore" : "Maximize"}</span>
+              <span className="hidden sm:inline">
+
+                {evidenceExpanded ? "Collapse Panel" : "Expand Panel"}
+
+              </span>
 
             </button>
 
@@ -466,10 +515,6 @@ export default function ConversationCanvas({
 
 
 
-      <MetadataFilterBar />
-
-
-
       <div className="flex min-h-0 w-full flex-1 flex-col overflow-hidden">
 
         <div className="ws-chat-messages scrollbar-hover min-h-0 max-h-full flex-1 overflow-y-auto">
@@ -477,7 +522,6 @@ export default function ConversationCanvas({
           {messages.length === 0 ? (
 
             <div className="ws-chat-empty flex h-full items-center justify-center">
-
               <p className="max-w-lg text-center text-[var(--ws-text-muted)]">
 
                 Foundry Local RAG Engine Active. Submit an executive query to begin analysis.
@@ -506,14 +550,10 @@ export default function ConversationCanvas({
 
                     key={message.id}
 
-                    className={`ws-chat-bubble border border-solid transition-all duration-200 ease-in-out ${
-
+                    className={`ws-chat-bubble transition-all duration-200 ease-in-out ${
                       isUser
-
-                        ? "border-[var(--ws-card-border)] bg-[var(--ws-card-bg-elevated)]"
-
-                        : "border-[var(--ws-card-border)] bg-[var(--ws-card-bg)]"
-
+                        ? "border-[var(--ws-border)] bg-[var(--ws-canvas-alt)]"
+                        : "border-[var(--ws-border)] bg-white"
                     }`}
 
                     onClick={() => {
@@ -538,11 +578,25 @@ export default function ConversationCanvas({
 
                       {!isUser && message.agentBadge && (
 
-                        <span className="truncate rounded border border-[var(--ws-primary)]/35 bg-[rgba(16,185,129,0.08)] px-1.5 py-0.5 text-body-sm font-semibold tracking-wide text-[var(--ws-primary)]">
+                        <span className="truncate rounded-sm border border-blue-200 bg-blue-50 px-1.5 py-0.5 text-body-sm font-semibold tracking-wide text-[var(--ws-primary)]">
 
                           [{message.agentBadge}]
 
                         </span>
+
+                      )}
+
+                      {!isUser && message.content && !isLatestAssistant && (
+
+                        <ExportPdfButton
+
+                          title={resolveExportTitle(messages, index, session?.label ?? "Executive Analysis")}
+
+                          analysis={message.content}
+
+                          sources={message.sources}
+
+                        />
 
                       )}
 
@@ -594,7 +648,7 @@ export default function ConversationCanvas({
 
                     {!isUser && message.sources.length > 0 && (
 
-                      <div className="mt-2 border-t border-[var(--ws-card-border)] pt-2">
+                      <div className="mt-2 border-t border-gray-100 pt-2">
 
                         <p className="mb-1 text-badge font-semibold uppercase tracking-wider text-[var(--ws-text-muted)]">
 
@@ -678,7 +732,7 @@ export default function ConversationCanvas({
 
 
 
-        <footer className="ws-chat-input-footer shrink-0 border-t border-[var(--ws-card-border)]">
+        <footer className="ws-chat-input-footer shrink-0 border-t border-gray-200">
 
           <div className="ws-input-bar flex items-end gap-1.5">
 
@@ -694,7 +748,7 @@ export default function ConversationCanvas({
 
               placeholder="Ask analytical query…"
 
-              className="ws-chat-textarea flex-1 resize-none overflow-y-hidden bg-transparent text-white placeholder:text-[var(--ws-text-muted)] scrollbar-none focus:outline-none"
+              className="ws-chat-textarea flex-1 resize-none overflow-y-hidden bg-transparent text-[var(--ws-text)] placeholder:text-[var(--ws-text-muted)] scrollbar-none focus:outline-none"
 
               disabled={isGenerating}
 
@@ -730,7 +784,7 @@ export default function ConversationCanvas({
 
                 disabled={!chatInput.trim()}
 
-                className="ws-chat-send-btn inline-flex shrink-0 items-center rounded-lg bg-[var(--ws-primary)] font-semibold text-[var(--ws-canvas)] transition-all duration-200 ease-in-out hover:bg-[var(--ws-primary-hover)] disabled:cursor-not-allowed disabled:opacity-40"
+                className="ws-chat-send-btn inline-flex shrink-0 items-center rounded-sm bg-[var(--ws-primary)] font-semibold text-white transition-all duration-200 ease-in-out hover:bg-[var(--ws-primary-hover)] disabled:cursor-not-allowed disabled:opacity-40"
 
               >
 

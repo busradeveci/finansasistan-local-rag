@@ -4,58 +4,80 @@
 
 @layer base {
   :root {
-    /* Global 90% density scale — mimics browser zoom at 90% on 100% viewport */
-    --ws-density: 0.9;
-    --ws-canvas: #060913;
-    --ws-canvas-alt: #090d1a;
-    --ws-card-bg: #0d1527;
-    --ws-card-bg-elevated: #111a30;
-    --ws-card-border: #1e293b;
-    --ws-card-border-muted: #0f172a;
-    --ws-glass-bg: #0d1527;
-    --ws-glass-bg-hover: #111a30;
-    --ws-glass-inner: #111a30;
-    --ws-glass-elevated: #111a30;
-    --ws-glass-elevated-hover: #152038;
-    --ws-glass-border: #1e293b;
-    --ws-surface: #0d1527;
-    --ws-primary: #10b981;
-    --ws-primary-hover: #059669;
-    --ws-teal: #06b6d4;
-    --ws-teal-light: #22d3ee;
-    --ws-success: #10b981;
-    --ws-warning: #f59e0b;
-    --ws-danger: #ef4444;
-    --ws-border: #1e293b;
-    --ws-text: #ffffff;
-    --ws-text-secondary: #94a3b8;
+    /* shadcn/ui — enterprise light theme (Fluent 2 / Azure) */
+    --background: 0 0% 100%;
+    --foreground: 222 47% 11%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+    --primary: 206 100% 42%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 210 20% 96%;
+    --secondary-foreground: 222 47% 11%;
+    --muted: 210 20% 96%;
+    --muted-foreground: 215 16% 47%;
+    --accent: 210 20% 96%;
+    --accent-foreground: 222 47% 11%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 206 100% 42%;
+    --radius: 0.25rem;
+
+    /* Workstation design tokens */
+    --ws-canvas: #ffffff;
+    --ws-canvas-alt: #f9fafb;
+    --ws-card-bg: #ffffff;
+    --ws-card-bg-elevated: #f9fafb;
+    --ws-card-border: #e5e7eb;
+    --ws-card-border-muted: #f3f4f6;
+    --ws-glass-bg: #ffffff;
+    --ws-glass-bg-hover: #f9fafb;
+    --ws-glass-inner: #f9fafb;
+    --ws-glass-elevated: #ffffff;
+    --ws-glass-elevated-hover: #f3f4f6;
+    --ws-glass-border: #e5e7eb;
+    --ws-surface: #f9fafb;
+    --ws-primary: #0078d4;
+    --ws-primary-hover: #106ebe;
+    --ws-teal: #0078d4;
+    --ws-teal-light: #2b88d8;
+    --ws-success: #107c10;
+    --ws-warning: #ca5010;
+    --ws-danger: #d13438;
+    --ws-border: #e5e7eb;
+    --ws-text: #0f172a;
+    --ws-text-secondary: #475569;
     --ws-text-muted: #64748b;
-    --ws-sidebar: #060913;
-    --ws-sidebar-hover: rgba(16, 185, 129, 0.06);
-    --ws-sidebar-active: linear-gradient(90deg, rgba(6, 182, 212, 0.14) 0%, rgba(16, 185, 129, 0.06) 55%, transparent 100%);
+    --ws-sidebar: #f9fafb;
+    --ws-sidebar-hover: #f3f4f6;
+    --ws-sidebar-active: #eef2f7;
     --ws-sidebar-text: #64748b;
-    --ws-sidebar-text-hover: #94a3b8;
-    --ws-sidebar-text-active: #ffffff;
-    --ws-sidebar-width: calc(248px * var(--ws-density));
-    --ws-sidebar-collapsed: calc(60px * var(--ws-density));
-    --ws-evidence-width: calc(20rem * var(--ws-density));
-    --ws-card-radius: calc(14px * var(--ws-density));
-    --ws-chart-sm: calc(88px * var(--ws-density));
-    --ws-chart-md: calc(120px * var(--ws-density));
-    --ws-chart-lg: calc(160px * var(--ws-density));
-    --ws-chart-xl: calc(220px * var(--ws-density));
+    --ws-sidebar-text-hover: #334155;
+    --ws-sidebar-text-active: #0f172a;
+    --ws-sidebar-width: 248px;
+    --ws-sidebar-collapsed: 60px;
+    --ws-evidence-width: 20rem;
+    --ws-evidence-width-expanded: 60vw;
+    --ws-card-radius: 4px;
+    --ws-chart-sm: 88px;
+    --ws-chart-md: 120px;
+    --ws-chart-lg: 160px;
+    --ws-chart-xl: 220px;
     --ws-card-shadow: none;
     --ws-ease: cubic-bezier(0.2, 0, 0, 1);
-    --ws-chart-mint: #10b981;
-    --ws-chart-cyan: #06b6d4;
-    --ws-chart-amber: #f59e0b;
-    --ws-chart-blue: #3b82f6;
-    --ws-chart-purple: #a855f7;
-    --ws-chart-orange: #f97316;
+    --ws-chart-mint: #0078d4;
+    --ws-chart-cyan: #2b88d8;
+    --ws-chart-amber: #ca5010;
+    --ws-chart-blue: #0078d4;
+    --ws-chart-purple: #5c2d91;
+    --ws-chart-orange: #ca5010;
   }
 
   html {
-    font-size: calc(16px * var(--ws-density));
+    font-size: 16px;
   }
 
   html,
@@ -66,8 +88,8 @@
   }
 
   body {
-    font-family: "Manrope Variable", Manrope, "Segoe UI Variable", "Segoe UI", system-ui, sans-serif;
-    font-size: calc(14px * var(--ws-density));
+    font-family: "Segoe UI Variable", "Segoe UI", system-ui, sans-serif;
+    font-size: 14px;
     font-weight: 400;
     line-height: 1.45;
     color: var(--ws-text);
@@ -81,12 +103,12 @@
   *::before,
   *::after {
     scrollbar-width: thin;
-    scrollbar-color: rgba(100, 116, 139, 0.35) transparent;
+    scrollbar-color: rgba(148, 163, 184, 0.45) transparent;
   }
 
   *::-webkit-scrollbar {
-    width: calc(8px * var(--ws-density));
-    height: calc(8px * var(--ws-density));
+    width: calc(8px);
+    height: calc(8px);
   }
 
   *::-webkit-scrollbar-track {
@@ -94,7 +116,7 @@
   }
 
   *::-webkit-scrollbar-thumb {
-    background: rgba(100, 116, 139, 0.35);
+    background: rgba(148, 163, 184, 0.45);
     border-radius: 9999px;
   }
 }
@@ -104,84 +126,122 @@
     transition: all 0.3s cubic-bezier(0.2, 0, 0, 1);
   }
 
+  /* Minimal containers — no carditis */
   .ws-card,
   .ws-panel,
   .ws-strong-panel,
   .ws-stat-card {
-    background: var(--ws-card-bg);
-    border: 1px solid var(--ws-card-border);
-    border-radius: var(--ws-card-radius);
-    box-shadow: var(--ws-card-shadow);
-  }
-
-  .ws-glass {
-    background: var(--ws-glass-bg);
-    border: 1px solid var(--ws-card-border);
-    border-radius: var(--ws-card-radius);
-    box-shadow: var(--ws-card-shadow);
-  }
-
-  .ws-glass-inner {
-    background: var(--ws-glass-inner);
-    border: 1px solid var(--ws-card-border-muted);
-    border-radius: calc(12px * var(--ws-density));
+    background: transparent;
+    border: none;
+    border-radius: 0;
     box-shadow: none;
   }
 
+  .ws-glass,
+  .ws-glass-inner,
   .ws-glass-elevated {
-    background: var(--ws-glass-elevated);
-    border: 1px solid var(--ws-card-border);
-    border-radius: var(--ws-card-radius);
-    box-shadow: var(--ws-card-shadow);
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
   }
 
   .ws-header {
-    background: var(--ws-card-bg);
-    border: 1px solid var(--ws-card-border);
-    border-radius: var(--ws-card-radius);
-    box-shadow: var(--ws-card-shadow);
+    background: var(--ws-canvas);
+    border-bottom: 1px solid var(--ws-border);
+    border-radius: 0;
+    box-shadow: none;
   }
 
   .ws-surface {
     border-radius: var(--ws-card-radius);
-    background: var(--ws-canvas-alt);
+    background: var(--ws-surface);
   }
 
   .ws-interactive {
-    border-color: var(--ws-card-border);
-    transition: all 0.2s ease-in-out;
+    transition: background 0.15s ease-in-out, color 0.15s ease-in-out;
   }
 
   .ws-interactive:hover {
-    border-color: rgba(16, 185, 129, 0.35);
-    background: rgba(16, 185, 129, 0.04);
+    background: var(--ws-sidebar-hover);
+  }
+
+  .ws-section {
+    padding-bottom: calc(1rem);
+    border-bottom: 1px solid var(--ws-border);
+  }
+
+  .ws-section:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  .ws-kpi-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0;
+    border-bottom: 1px solid var(--ws-border);
+  }
+
+  .ws-kpi-item {
+    flex: 1 1 auto;
+    min-width: 120px;
+    padding: 0.75rem 1rem;
+    border-right: 1px solid var(--ws-border);
+  }
+
+  .ws-kpi-item:last-child {
+    border-right: none;
+  }
+
+  .ws-data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  .ws-data-table thead th {
+    padding: 0.5rem 0.625rem;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ws-text-muted);
+    text-align: left;
+    border-bottom: 1px solid var(--ws-border);
+  }
+
+  .ws-data-table tbody td {
+    padding: 0.5rem 0.625rem;
+    color: var(--ws-text-secondary);
+    border-bottom: 1px solid #f3f4f6;
   }
 
   .ws-nav-item {
-    @apply relative flex w-full items-center overflow-hidden rounded-lg border-l-[3px] border-l-transparent font-medium;
-    gap: calc(0.625rem * var(--ws-density));
-    padding: calc(0.4375rem * var(--ws-density)) calc(0.625rem * var(--ws-density));
+    @apply relative flex w-full items-center overflow-hidden rounded-sm border-l-[3px] border-l-transparent font-medium;
+    gap: 0.625rem;
+    padding: 0.4375rem 0.625rem;
     font-size: 13px;
     line-height: 1.45;
     letter-spacing: 0.005em;
     color: var(--ws-sidebar-text);
-    transition: all 0.25s var(--ws-ease);
+    transition: background 0.15s var(--ws-ease), color 0.15s var(--ws-ease);
   }
 
   .ws-nav-item svg {
-    width: calc(0.9375rem * var(--ws-density));
-    height: calc(0.9375rem * var(--ws-density));
+    width: calc(0.9375rem);
+    height: calc(0.9375rem);
   }
 
   .ws-nav-item-collapsed svg {
-    width: calc(1.25rem * var(--ws-density));
-    height: calc(1.25rem * var(--ws-density));
+    width: calc(1.25rem);
+    height: calc(1.25rem);
   }
 
   .ws-nav-section-label {
-    font-size: calc(11px * var(--ws-density));
+    font-size: calc(11px);
     line-height: 1.4;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.1em;
   }
 
   .ws-nav-indicator {
@@ -205,56 +265,74 @@
   }
 
   .ws-input-bar {
-    @apply rounded-xl border border-solid;
-    padding: calc(0.375rem * var(--ws-density));
-    border-color: var(--ws-card-border);
-    background: var(--ws-card-bg-elevated);
-    transition: all 0.25s var(--ws-ease);
+    @apply rounded-sm border-b border-solid border-transparent;
+    padding: calc(0.375rem) 0;
+    border-bottom-color: var(--ws-border);
+    background: transparent;
+    transition: border-color 0.15s var(--ws-ease);
   }
 
   .ws-input-bar:focus-within {
-    border-color: rgba(16, 185, 129, 0.45);
-    box-shadow: 0 0 0 1px rgba(16, 185, 129, 0.15);
+    border-bottom-color: var(--ws-primary);
   }
 
   .ws-toolbar-btn {
-    @apply inline-flex items-center rounded-lg border border-solid border-transparent font-medium;
-    gap: calc(0.375rem * var(--ws-density));
-    padding: calc(0.25rem * var(--ws-density)) calc(0.5rem * var(--ws-density));
-    font-size: calc(0.75rem * var(--ws-density));
+    @apply inline-flex items-center rounded-sm border border-solid border-transparent font-medium;
+    gap: calc(0.375rem);
+    padding: calc(0.25rem) calc(0.5rem);
+    font-size: calc(0.75rem);
     color: var(--ws-text-secondary);
-    transition: all 0.2s ease-in-out;
+    transition: background 0.15s ease-in-out, color 0.15s ease-in-out;
   }
 
   .ws-toolbar-btn:hover {
-    border-color: var(--ws-card-border);
-    background: rgba(16, 185, 129, 0.06);
+    background: var(--ws-sidebar-hover);
     color: var(--ws-text);
   }
 
+  .ws-export-pdf-btn {
+    @apply inline-flex items-center rounded-sm border border-solid font-semibold;
+    gap: calc(0.3rem);
+    padding: calc(0.2rem) calc(0.45rem);
+    font-size: calc(0.6875rem);
+    color: var(--ws-text-muted);
+    border-color: var(--ws-border);
+    background: var(--ws-canvas);
+    transition: color 0.15s ease-in-out, border-color 0.15s ease-in-out, background 0.15s ease-in-out;
+  }
+
+  .ws-export-pdf-btn:hover:not(:disabled) {
+    color: var(--ws-primary);
+    border-color: var(--ws-primary);
+    background: #eff6ff;
+  }
+
+  .ws-export-pdf-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
+  }
+
   .ws-settings-row {
-    @apply rounded-lg border border-solid transition-all duration-200 ease-in-out;
-    border-color: var(--ws-card-border);
+    @apply transition-colors duration-150 ease-in-out;
   }
 
   .ws-settings-row:hover {
-    border-color: rgba(16, 185, 129, 0.3);
-    background: rgba(16, 185, 129, 0.04);
+    background: var(--ws-sidebar-hover);
   }
 
   .ws-row-interactive {
-    @apply border-l-2 border-solid border-l-transparent transition-all duration-200 ease-in-out;
+    @apply border-l-2 border-solid border-l-transparent transition-colors duration-150 ease-in-out;
   }
 
   .ws-row-interactive:hover {
     border-left-color: var(--ws-primary);
-    background: rgba(16, 185, 129, 0.04);
+    background: #f8fafc;
   }
 
   .ws-badge {
-    @apply inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide;
-    border: 1px solid var(--ws-card-border);
-    background: var(--ws-card-bg-elevated);
+    @apply inline-flex items-center gap-1 rounded-sm px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide;
+    border: 1px solid var(--ws-border);
+    background: var(--ws-canvas-alt);
     color: var(--ws-text-muted);
   }
 
@@ -264,104 +342,108 @@
   }
 
   .ws-status-pill {
-    @apply inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-semibold;
-    border: 1px solid var(--ws-card-border);
-    background: rgba(16, 185, 129, 0.08);
-    color: var(--ws-primary);
+    @apply inline-flex items-center gap-1.5 rounded-sm px-2.5 py-1 text-[10px] font-semibold;
+    border: 1px solid var(--ws-border);
+    background: var(--ws-canvas-alt);
+    color: var(--ws-text-secondary);
   }
 
   .ws-status-dot {
     @apply h-1.5 w-1.5 rounded-full;
-    background: var(--ws-primary);
-  }
-
-  .fluent-transition {
-    transition: all 0.3s cubic-bezier(0.2, 0, 0, 1);
-  }
-
-  .text-hero {
-    font-size: calc(28px * var(--ws-density));
-    line-height: 1.2;
-    font-weight: 700;
-    color: var(--ws-text);
-    letter-spacing: -0.02em;
+    background: var(--ws-success);
   }
 
   .text-page-title {
-    font-size: calc(26px * var(--ws-density));
+    font-size: calc(26px);
     line-height: 1.25;
-    font-weight: 700;
+    font-weight: 600;
     color: var(--ws-text);
     letter-spacing: -0.02em;
   }
 
   .text-section-title {
-    font-size: calc(17px * var(--ws-density));
+    font-size: calc(17px);
     line-height: 1.3;
     font-weight: 600;
     color: var(--ws-text);
   }
 
   .text-card-title {
-    font-size: calc(16px * var(--ws-density));
+    font-size: calc(16px);
     line-height: 1.35;
     font-weight: 600;
     color: var(--ws-text);
   }
 
   .text-body {
-    font-size: calc(14px * var(--ws-density));
+    font-size: 14px;
     line-height: 1.45;
     font-weight: 400;
     color: var(--ws-text);
   }
 
   .text-body-sm {
-    font-size: calc(13px * var(--ws-density));
+    font-size: calc(13px);
     line-height: 1.45;
     font-weight: 400;
     color: var(--ws-text);
   }
 
   .text-caption {
-    font-size: calc(12px * var(--ws-density));
+    font-size: calc(12px);
     line-height: 1.45;
     font-weight: 500;
   }
 
   .text-caption-muted {
-    font-size: calc(12px * var(--ws-density));
+    font-size: calc(12px);
     line-height: 1.45;
     font-weight: 500;
     color: var(--ws-text-muted);
   }
 
   .text-badge {
-    font-size: calc(11px * var(--ws-density));
+    font-size: calc(11px);
     line-height: 1.4;
     font-weight: 600;
   }
 
-  .text-button {
-    font-size: calc(14px * var(--ws-density));
-    line-height: 1.4;
-    font-weight: 600;
+  .ws-workstation {
+    width: 100%;
+    max-width: 100%;
   }
 
-  /* Module shell — compact page gutters applied globally */
+  .ws-workstation .ws-main-canvas {
+    width: 100%;
+    max-width: 100%;
+    padding: 0.75rem 1rem;
+  }
+
+  .ws-workstation .ws-main-canvas--full-bleed {
+    padding: 0;
+  }
+
+  /* Never apply workstation canvas density to the chat workspace */
+  .ws-workstation .ws-chat-workspace,
+  .ws-workstation .ws-main-canvas--full-bleed .ws-chat-workspace {
+    padding: 0;
+    width: 100%;
+    max-width: 100%;
+  }
+
   .ws-module-shell {
-    padding: calc(1.25rem * var(--ws-density));
+    padding: 1.25rem;
   }
 
   .ws-module-grid {
     display: grid;
-    gap: calc(1.25rem * var(--ws-density));
+    gap: 1.25rem;
   }
 
   .ws-module-stack {
     display: flex;
     flex-direction: column;
-    gap: calc(1.25rem * var(--ws-density));
+    gap: 1.25rem;
   }
 
   .metric-display,
@@ -369,83 +451,203 @@
     font-variant-numeric: tabular-nums;
   }
 
-  .ws-greeting-wave {
-    background:
-      radial-gradient(ellipse 80% 60% at 90% 20%, rgba(6, 182, 212, 0.12) 0%, transparent 55%),
-      radial-gradient(ellipse 60% 50% at 10% 80%, rgba(16, 185, 129, 0.08) 0%, transparent 50%),
-      var(--ws-card-bg);
-  }
-
-  /* Chat workspace — density-compact, aligned with Home dashboard */
   .ws-chat-layout {
     display: flex;
-    gap: calc(0.75rem * var(--ws-density));
+    gap: calc(0.75rem);
   }
 
   .ws-chat-card {
-    padding: calc(0.75rem * var(--ws-density));
-  }
-
-  .ws-chat-card-maximized {
-    padding: calc(1rem * var(--ws-density));
+    padding: calc(0.75rem);
+    border: 1px solid var(--ws-border);
+    border-radius: var(--ws-card-radius);
+    background: var(--ws-canvas);
   }
 
   .ws-chat-header {
-    padding-bottom: calc(0.5rem * var(--ws-density));
+    padding-bottom: calc(0.5rem);
   }
 
   .ws-chat-messages {
-    padding: calc(0.5rem * var(--ws-density)) calc(0.375rem * var(--ws-density));
+    padding: calc(0.5rem) calc(0.375rem);
   }
 
   .ws-chat-message-list {
     display: flex;
     flex-direction: column;
-    gap: calc(0.5rem * var(--ws-density));
+    gap: calc(0.75rem);
   }
 
   .ws-chat-bubble {
-    padding: calc(0.625rem * var(--ws-density)) calc(0.75rem * var(--ws-density));
-    border-radius: calc(12px * var(--ws-density));
+    padding: calc(0.625rem) 0;
+    border-radius: 0;
+    border: none;
+    border-bottom: 1px solid var(--ws-border);
   }
 
   .ws-chat-empty {
-    min-height: calc(12rem * var(--ws-density));
-    padding: calc(1.25rem * var(--ws-density));
-    font-size: calc(13px * var(--ws-density));
+    min-height: calc(12rem);
+    padding: calc(1.25rem);
+    font-size: calc(13px);
     line-height: 1.5;
   }
 
   .ws-chat-input-footer {
-    padding-top: calc(0.5rem * var(--ws-density));
+    padding-top: calc(0.5rem);
   }
 
   .ws-chat-hint {
-    margin-top: calc(0.375rem * var(--ws-density));
-    font-size: calc(11px * var(--ws-density));
+    margin-top: calc(0.375rem);
+    font-size: calc(11px);
     line-height: 1.4;
   }
 
   .ws-chat-textarea {
-    max-height: calc(95px * var(--ws-density));
-    min-height: calc(18px * var(--ws-density));
-    font-size: calc(13px * var(--ws-density));
+    max-height: calc(95px);
+    min-height: calc(18px);
+    font-size: calc(13px);
     line-height: 1.45;
   }
 
   .ws-chat-send-btn {
-    padding: calc(0.4375rem * var(--ws-density)) calc(0.75rem * var(--ws-density));
-    font-size: calc(13px * var(--ws-density));
-    gap: calc(0.375rem * var(--ws-density));
+    padding: calc(0.4375rem) calc(0.75rem);
+    font-size: calc(13px);
+    gap: calc(0.375rem);
+    border-radius: calc(4px);
   }
 
   .ws-chat-send-btn svg {
-    width: calc(0.875rem * var(--ws-density));
-    height: calc(0.875rem * var(--ws-density));
+    width: calc(0.875rem);
+    height: calc(0.875rem);
   }
 
   .ws-evidence-panel {
-    padding: calc(0.625rem * var(--ws-density));
+    padding: calc(0.625rem);
+  }
+
+  /*
+   * Chat workspace — isolated from .ws-workstation / .ws-main-canvas density.
+   * Keeps comfortable, native sizing for conversation + evidence UI.
+   */
+  .ws-chat-workspace {
+    --ws-density: 1;
+    --ws-evidence-width: 20rem;
+    width: 100%;
+    max-width: 100%;
+    min-height: 0;
+    flex: 1;
+    font-size: 14px;
+  }
+
+  .ws-chat-workspace .ws-chat-layout {
+    gap: 0.75rem;
+  }
+
+  .ws-chat-workspace .ws-chat-card {
+    padding: 0.75rem;
+    border: 1px solid var(--ws-border);
+    border-radius: var(--ws-card-radius);
+    background: var(--ws-canvas);
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  }
+
+  .ws-chat-workspace .ws-chat-header {
+    padding-bottom: 0.5rem;
+  }
+
+  .ws-chat-workspace .ws-chat-messages {
+    padding: 0.5rem 0.375rem;
+  }
+
+  .ws-chat-workspace .ws-chat-message-list {
+    gap: 0.75rem;
+  }
+
+  .ws-chat-workspace .ws-chat-bubble {
+    padding: 0.625rem 0.75rem;
+    border: 1px solid var(--ws-border);
+    border-radius: 12px;
+  }
+
+  .ws-chat-workspace .ws-chat-empty {
+    min-height: 12rem;
+    padding: 1.25rem;
+    font-size: 13px;
+  }
+
+  .ws-chat-workspace .ws-chat-input-footer {
+    padding-top: 0.5rem;
+  }
+
+  .ws-chat-workspace .ws-chat-hint {
+    margin-top: 0.375rem;
+    font-size: 11px;
+  }
+
+  .ws-chat-workspace .ws-chat-textarea {
+    max-height: 95px;
+    min-height: 18px;
+    font-size: 13px;
+  }
+
+  .ws-chat-workspace .ws-chat-send-btn {
+    padding: 0.4375rem 0.75rem;
+    font-size: 13px;
+    gap: 0.375rem;
+    border-radius: 6px;
+  }
+
+  .ws-chat-workspace .ws-chat-send-btn svg {
+    width: 0.875rem;
+    height: 0.875rem;
+  }
+
+  .ws-chat-workspace .ws-input-bar {
+    @apply rounded-xl border border-solid;
+    padding: 0.375rem;
+    border-color: var(--ws-border);
+    background: var(--ws-canvas-alt);
+    transition: border-color 0.15s var(--ws-ease), box-shadow 0.15s var(--ws-ease);
+  }
+
+  .ws-chat-workspace .ws-input-bar:focus-within {
+    border-color: var(--ws-primary);
+    box-shadow: 0 0 0 1px rgba(0, 120, 212, 0.15);
+  }
+
+  .ws-chat-workspace .ws-toolbar-btn {
+    gap: 0.375rem;
+    padding: 0.3125rem 0.625rem;
+    font-size: 0.8125rem;
+  }
+
+  .ws-chat-workspace .ws-export-pdf-btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+  }
+
+  .ws-chat-workspace .ws-badge {
+    font-size: 10px;
+    padding: 0.125rem 0.5rem;
+  }
+
+  .ws-chat-workspace .ws-evidence-panel {
+    padding: 0.75rem;
+  }
+
+  .ws-chat-workspace .text-body-sm {
+    font-size: 13px;
+  }
+
+  .ws-chat-workspace .text-caption {
+    font-size: 12px;
+  }
+
+  .ws-chat-workspace .text-badge {
+    font-size: 11px;
+  }
+
+  .ws-chat-workspace .text-card-title {
+    font-size: 16px;
   }
 }
 
@@ -464,13 +666,13 @@
   }
 
   .fluent-scrollbar::-webkit-scrollbar-thumb {
-    background: rgba(100, 116, 139, 0.35);
+    background: rgba(148, 163, 184, 0.45);
     border-radius: 9999px;
   }
 
   .fluent-scrollbar {
     scrollbar-width: thin;
-    scrollbar-color: rgba(100, 116, 139, 0.35) transparent;
+    scrollbar-color: rgba(148, 163, 184, 0.45) transparent;
   }
 
   .scrollbar-none {
@@ -503,10 +705,51 @@
   }
 
   .scrollbar-hover:hover {
-    scrollbar-color: rgba(100, 116, 139, 0.35) transparent;
+    scrollbar-color: rgba(148, 163, 184, 0.45) transparent;
   }
 
   .scrollbar-hover:hover::-webkit-scrollbar-thumb {
-    background: rgba(100, 116, 139, 0.35);
+    background: rgba(148, 163, 184, 0.45);
+  }
+
+  /* Industrial drafting-paper grid (blueprint aesthetic) */
+  .bg-blueprint {
+    background-color: #f4f4f2;
+    background-image:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E"),
+      linear-gradient(to right, rgba(28, 25, 23, 0.07) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(28, 25, 23, 0.07) 1px, transparent 1px),
+      linear-gradient(to right, rgba(28, 25, 23, 0.035) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(28, 25, 23, 0.035) 1px, transparent 1px);
+    background-size:
+      120px 120px,
+      100px 100px,
+      100px 100px,
+      20px 20px,
+      20px 20px;
+  }
+
+  .texture-noise {
+    position: relative;
+  }
+
+  .texture-noise::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+    opacity: 0.06;
+    border-radius: inherit;
+  }
+
+  .panel {
+    background-color: #ffffff;
+    border: 1px solid #e2e0dc;
+    box-shadow: 0 1px 0 0 rgba(28, 25, 23, 0.02);
+  }
+
+  .lucide {
+    stroke-width: 1.5px;
   }
 }

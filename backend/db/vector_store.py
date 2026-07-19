@@ -317,11 +317,10 @@ def search(
         where_clauses: list[str] = []
         params: list[str] = []
         if metadata_filters:
-            for key, col in (("year", "year"), ("quarter", "quarter"), ("file_type", "file_type")):
-                value = (metadata_filters.get(key) or "").strip()
-                if value:
-                    where_clauses.append(f"{col} = ?")
-                    params.append(value)
+            filename = (metadata_filters.get("filename") or "").strip()
+            if filename:
+                where_clauses.append("filename = ?")
+                params.append(filename)
         where_sql = f" WHERE {' AND '.join(where_clauses)}" if where_clauses else ""
         rows = conn.execute(
             f"SELECT filename, chunk_index, content, embedding, year, quarter, file_type "

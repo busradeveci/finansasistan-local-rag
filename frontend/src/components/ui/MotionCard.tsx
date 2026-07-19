@@ -20,7 +20,7 @@ export default function MotionCard({
     <Component
       type={as === "button" ? "button" : undefined}
       onClick={onClick}
-      className={`ws-card ${className}`}
+      className={`ws-section ${className}`}
       transition={{ type: "spring", stiffness: 400, damping: 28 }}
     >
       {children}

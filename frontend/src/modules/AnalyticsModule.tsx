@@ -20,12 +20,12 @@ import {
 import { getAnalytics, getSecurity, getTelemetry } from "@/api/client"
 import type { AnalyticsPacket, SecurityPacket, TelemetryPacket } from "@/types/workstation"
 
-const PRIMARY = "#10b981"
+const PRIMARY = "#0078d4"
 const SECONDARY = "#64748b"
-const GRID = "rgba(30, 41, 59, 0.6)"
-const CANVAS = "#0d1527"
-const DANGER = "#ef4444"
-const CYAN = "#06b6d4"
+const GRID = "#e5e7eb"
+const CANVAS = "#ffffff"
+const DANGER = "#d13438"
+const CYAN = "#2b88d8"
 
 const MAX_SPARK_POINTS = 24
 const MAX_STORAGE_POINTS = 8
@@ -125,30 +125,29 @@ export default function AnalyticsModule() {
   const hasData = analytics || telemetry
 
   return (
-    <div className="flex h-full min-h-0 flex-col overflow-hidden bg-[var(--ws-canvas)] ws-module-shell metric-display">
-      <header className="shrink-0 pb-4">
-        <h1 className="text-page-title text-white">Executive Intelligence</h1>
+    <div className="flex h-full min-h-0 flex-col overflow-hidden bg-white ws-module-shell metric-display">
+      <header className="shrink-0 border-b border-gray-200 pb-4">
+        <h1 className="text-page-title">Executive Intelligence</h1>
         <p className="mt-1 truncate text-sm font-medium text-[var(--ws-text-muted)]">
           Real-time pipeline telemetry and risk posture
         </p>
       </header>
 
-      <div className="flex h-[calc(100vh-160px)] min-h-0 flex-col ws-module-stack overflow-y-auto fluent-scrollbar">
-        {/* ── Performance Overview ── */}
+      <div className="flex h-[calc(100vh-160px)] min-h-0 flex-col ws-module-stack overflow-y-auto fluent-scrollbar pt-4">
         <section className="shrink-0">
           <SectionLabel>Performance Overview</SectionLabel>
           {loading && !hasData ? (
             <EmptyState message="Loading pipeline metrics…" />
           ) : (
-            <div className="grid grid-cols-1 ws-module-grid sm:grid-cols-2">
-              <SparkCard
+            <div className="ws-kpi-row">
+              <SparkMetric
                 label="Latency"
                 unit="ms"
                 value={latestLatency}
                 data={latencyHistory.length > 1 ? latencyHistory : seedSpark(latestLatency)}
                 color={PRIMARY}
               />
-              <SparkCard
+              <SparkMetric
                 label="Query Frequency"
                 unit="/poll"
                 value={latestQueryRate}
@@ -159,7 +158,6 @@ export default function AnalyticsModule() {
           )}
         </section>
 
-        {/* ── System Health ── */}
         <section className="min-h-0 flex-1">
           <SectionLabel>System Health</SectionLabel>
           {loading && !telemetry ? (
@@ -167,8 +165,8 @@ export default function AnalyticsModule() {
           ) : !telemetry ? (
             <EmptyState message="Telemetry unavailable — ensure the backend is running on port 8000." />
           ) : (
-            <div className="grid min-h-[calc(220px*var(--ws-density))] grid-cols-1 ws-module-grid lg:grid-cols-3">
-              <GlassPanel title="Query Success vs. Failure" className="min-h-[calc(200px*var(--ws-density))]">
+            <div className="grid min-h-[220px] grid-cols-1 gap-8 lg:grid-cols-3">
+              <ChartSection title="Query Success vs. Failure" className="min-h-[200px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie
@@ -190,16 +188,16 @@ export default function AnalyticsModule() {
                   </PieChart>
                 </ResponsiveContainer>
                 <DonutLegend items={queryOutcome} />
-              </GlassPanel>
+              </ChartSection>
 
-              <GlassPanel title="Resource Utilization" className="min-h-[calc(200px*var(--ws-density))]">
+              <ChartSection title="Resource Utilization" className="min-h-[200px]">
                 <div className="flex h-full items-center justify-around gap-2 px-1">
                   <GaugeRing label="CPU" percent={telemetry.cpu.percent} data={cpuGauge} />
                   <GaugeRing label="RAM" percent={memPercent} data={ramGauge} detail={`${telemetry.memory.used_gb} / ${telemetry.memory.total_gb} GB`} />
                 </div>
-              </GlassPanel>
+              </ChartSection>
 
-              <GlassPanel title="Vector Database Storage" className="min-h-[calc(200px*var(--ws-density))]">
+              <ChartSection title="Vector Database Storage" className="min-h-[200px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart
                     data={storageHistory.length > 0 ? storageHistory : [{ label: "—", vectors: telemetry.vector_db.vectors }]}
@@ -217,7 +215,7 @@ export default function AnalyticsModule() {
                       tickLine={false}
                       width={36}
                     />
-                    <Tooltip content={<GlassTooltip />} cursor={{ fill: "rgba(16, 185, 129, 0.06)" }} />
+                    <Tooltip content={<GlassTooltip />} cursor={{ fill: "rgba(0, 120, 212, 0.06)" }} />
                     <Bar dataKey="vectors" radius={[2, 2, 0, 0]} maxBarSize={28}>
                       {storageHistory.map((_, i) => (
                         <Cell key={i} fill={i === storageHistory.length - 1 ? PRIMARY : "rgba(100, 116, 139, 0.35)"} />
@@ -226,20 +224,19 @@ export default function AnalyticsModule() {
                     </Bar>
                   </BarChart>
                 </ResponsiveContainer>
-                <p className="mt-1 text-center text-[11px] text-[var(--ws-text-muted)]">
+                <p className="mt-1 text-[11px] text-[var(--ws-text-muted)]">
                   {telemetry.vector_db.vectors.toLocaleString()} vectors · {telemetry.vector_db.documents} docs
                 </p>
-              </GlassPanel>
+              </ChartSection>
             </div>
           )}
         </section>
 
-        {/* ── Risk Telemetry ── */}
         <section className="shrink-0 pb-1">
           <SectionLabel>Risk Telemetry</SectionLabel>
-          <GlassPanel title="Risk Score Distribution — Last 5 Analysis Sessions" className="min-h-[calc(160px*var(--ws-density))]">
+          <ChartSection title="Risk Score Distribution — Last 5 Analysis Sessions" className="min-h-[160px]">
             {riskSessions.length === 0 ? (
-              <div className="flex h-full min-h-[calc(120px*var(--ws-density))] items-center justify-center">
+              <div className="flex h-full min-h-[120px] items-center">
                 <p className="text-sm text-[var(--ws-text-muted)]">
                   Risk scores populate after analysis sessions complete.
                 </p>
@@ -252,7 +249,7 @@ export default function AnalyticsModule() {
                 >
                   <defs>
                     <linearGradient id="riskGradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor={PRIMARY} stopOpacity={0.18} />
+                      <stop offset="0%" stopColor={PRIMARY} stopOpacity={0.12} />
                       <stop offset="100%" stopColor={PRIMARY} stopOpacity={0} />
                     </linearGradient>
                   </defs>
@@ -284,11 +281,11 @@ export default function AnalyticsModule() {
               </ResponsiveContainer>
             )}
             {security && (
-              <p className="mt-1 text-center text-[11px] text-[var(--ws-text-muted)]">
+              <p className="mt-1 text-[11px] text-[var(--ws-text-muted)]">
                 Current tier: {security.risk_tier}
               </p>
             )}
-          </GlassPanel>
+          </ChartSection>
         </section>
       </div>
     </div>
@@ -296,10 +293,10 @@ export default function AnalyticsModule() {
 }
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
-  return <h2 className="mb-2 text-section-title text-white">{children}</h2>
+  return <h2 className="mb-2 text-section-title">{children}</h2>
 }
 
-function GlassPanel({
+function ChartSection({
   title,
   children,
   className = "",
@@ -309,8 +306,8 @@ function GlassPanel({
   className?: string
 }) {
   return (
-    <MotionCard className={`flex flex-col overflow-hidden p-4 ${className}`}>
-      <p className="mb-1 shrink-0 truncate text-[11px] font-semibold uppercase tracking-wide text-[var(--ws-text-muted)]">
+    <MotionCard className={`flex flex-col ${className}`}>
+      <p className="mb-2 shrink-0 truncate text-[10px] font-semibold uppercase tracking-wider text-[var(--ws-text-muted)]">
         {title}
       </p>
       <div className="min-h-0 flex-1">{children}</div>
@@ -318,7 +315,7 @@ function GlassPanel({
   )
 }
 
-function SparkCard({
+function SparkMetric({
   label,
   unit,
   value,
@@ -332,15 +329,15 @@ function SparkCard({
   color: string
 }) {
   return (
-    <MotionCard className="flex min-h-[var(--ws-chart-sm)] flex-col p-3">
-      <div className="mb-1 flex items-baseline justify-between gap-2">
-        <p className="truncate text-[11px] font-semibold uppercase tracking-wide text-[var(--ws-text-muted)]">{label}</p>
-        <p className="shrink-0 text-sm font-semibold text-white tabular-nums">
+    <div className="ws-kpi-item flex min-h-[var(--ws-chart-sm)] flex-col">
+      <div className="mb-1 flex items-baseline gap-2">
+        <p className="truncate text-[10px] font-semibold uppercase tracking-wider text-[var(--ws-text-muted)]">{label}</p>
+        <p className="text-2xl font-semibold tabular-nums text-[var(--ws-text)]">
           {value.toLocaleString(undefined, { maximumFractionDigits: 1 })}
-          <span className="ml-0.5 text-[10px] font-medium text-[var(--ws-text-muted)]">{unit}</span>
+          <span className="ml-1 text-xs font-medium text-[var(--ws-text-muted)]">{unit}</span>
         </p>
       </div>
-      <div className="min-h-[calc(48px*var(--ws-density))] flex-1">
+      <div className="min-h-[48px] flex-1">
         <ResponsiveContainer width="100%" height={43}>
           <LineChart data={data} margin={{ top: 4, right: 4, left: 4, bottom: 0 }}>
             <Line
@@ -355,7 +352,7 @@ function SparkCard({
           </LineChart>
         </ResponsiveContainer>
       </div>
-    </MotionCard>
+    </div>
   )
 }
 
@@ -388,16 +385,16 @@ function GaugeRing({
             <RadialBar
               background={{ fill: GRID }}
               dataKey="value"
-              cornerRadius={3}
+              cornerRadius={2}
               stroke="none"
             />
           </RadialBarChart>
         </ResponsiveContainer>
         <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
-          <span className="text-lg font-semibold text-white tabular-nums">{clamped}%</span>
+          <span className="text-lg font-semibold tabular-nums text-[var(--ws-text)]">{clamped}%</span>
         </div>
       </div>
-      <p className="mt-0.5 text-[11px] font-semibold text-white">{label}</p>
+      <p className="mt-0.5 text-[11px] font-semibold text-[var(--ws-text)]">{label}</p>
       {detail && <p className="text-[10px] text-[var(--ws-text-muted)] tabular-nums">{detail}</p>}
     </div>
   )
@@ -405,12 +402,12 @@ function GaugeRing({
 
 function DonutLegend({ items }: { items: { name: string; value: number; color: string }[] }) {
   return (
-    <div className="mt-1 flex justify-center gap-3">
+    <div className="mt-1 flex gap-3">
       {items.map((item) => (
         <div key={item.name} className="flex items-center gap-1">
-          <span className="h-2 w-2 rounded-full" style={{ background: item.color }} />
+          <span className="h-2 w-2 rounded-sm" style={{ background: item.color }} />
           <span className="text-[10px] text-[var(--ws-text-muted)]">
-            {item.name} <span className="font-semibold text-white">{item.value}</span>
+            {item.name} <span className="font-semibold text-[var(--ws-text)]">{item.value}</span>
           </span>
         </div>
       ))}

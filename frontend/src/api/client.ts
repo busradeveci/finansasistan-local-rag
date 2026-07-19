@@ -40,9 +40,6 @@ api.interceptors.request.use((config) => {
   return config
 })
 
-export const getDocuments = () =>
-  api.get("/documents").then((r) => r.data.documents as { filename: string; chunks: number }[])
-
 export const getDocumentInventory = () =>
   api.get("/documents/inventory", { timeout: 15_000 }).then((r) => ({
     documents: r.data.documents as DocumentInventoryRow[],
@@ -93,34 +90,47 @@ export const getSecurity = () =>
 
 export const getStatus = () => api.get("/api/status", { timeout: 10_000 }).then((r) => r.data)
 
-export const getMetadataFilters = () =>
-  api
-    .get("/documents/metadata/filters", { timeout: 10_000 })
-    .then(
-      (r) =>
-        r.data as {
-          years: string[]
-          quarters: string[]
-          file_types: string[]
-        }
-    )
-
 export const streamQuery = (
   question: string,
   topK = 4,
-  filters?: { year?: string | null; quarter?: string | null; file_type?: string | null }
+  filename: string | null = null
 ) => {
   const params = new URLSearchParams({
     question,
     top_k: String(topK),
   })
-  if (filters?.year) params.set("year", filters.year)
-  if (filters?.quarter) params.set("quarter", filters.quarter)
-  if (filters?.file_type) params.set("file_type", filters.file_type)
+  if (filename) params.set("filename", filename)
   const path = `/query/stream?${params.toString()}`
   const url = API_BASE ? `${API_BASE}${path}` : path
   return new EventSource(url)
 }
 
+export interface ExportPdfPayload {
+  title: string
+  analysis: string
+  sources: EvidenceChunk[]
+}
+
+export const exportExecutivePdf = async (payload: ExportPdfPayload): Promise<void> => {
+  const response = await api.post("/documents/export-pdf", payload, {
+    responseType: "blob",
+    timeout: 120_000,
+  })
+  const timestamp = new Date()
+    .toISOString()
+    .replace(/[-:]/g, "")
+    .replace(/\..+/, "")
+    .slice(0, 15)
+  const filename = `Foundry_Local_Executive_Report_${timestamp}.pdf`
+  const blob = new Blob([response.data], { type: "application/pdf" })
+  const url = URL.createObjectURL(blob)
+  const anchor = document.createElement("a")
+  anchor.href = url
+  anchor.download = filename
+  document.body.appendChild(anchor)
+  anchor.click()
+  anchor.remove()
+  URL.revokeObjectURL(url)
+}
+
 export type { EvidenceChunk }
-export default api

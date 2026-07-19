@@ -16,6 +16,7 @@ from backend.config import (
     SCORE_THRESHOLD,
     TOP_K,
 )
+from backend.sanitize import sanitize_filename
 from backend.services import metrics
 from backend.services.chat_handler import generate_chat, stream_chat
 from backend.services.foundry_client import get_chat_client
@@ -49,23 +50,15 @@ class QueryRequest(BaseModel):
     question: str
     top_k: int = TOP_K
     history: list[dict] | None = None
-    year: str | None = None
-    quarter: str | None = None
-    file_type: str | None = None
+    filename: str | None = None
 
 
-def _metadata_filters_from_request(
-    year: str | None = None,
-    quarter: str | None = None,
-    file_type: str | None = None,
+def _search_filters_from_request(
+    filename: str | None = None,
 ) -> dict[str, str] | None:
     filters: dict[str, str] = {}
-    if year and year.strip():
-        filters["year"] = year.strip()
-    if quarter and quarter.strip():
-        filters["quarter"] = quarter.strip()
-    if file_type and file_type.strip():
-        filters["file_type"] = file_type.strip()
+    if filename and filename.strip():
+        filters["filename"] = sanitize_filename(filename.strip())
     return filters or None
 
 
@@ -131,7 +124,7 @@ async def query(body: QueryRequest):
         }
 
     # LOCAL_RAG
-    metadata_filters = _metadata_filters_from_request(body.year, body.quarter, body.file_type)
+    metadata_filters = _search_filters_from_request(body.filename)
     chunks = await retrieve(body.question, body.top_k, metadata_filters=metadata_filters)
     if not chunks:
         metrics.record_query((time.perf_counter() - t0) * 1000)
@@ -157,9 +150,7 @@ async def query_stream(
     request: Request,
     question: str = Query(..., description="User question"),
     top_k: int = Query(TOP_K, description="Maximum number of chunks to return"),
-    year: str | None = Query(None, description="Filter by document year"),
-    quarter: str | None = Query(None, description="Filter by quarter (Q1–Q4)"),
-    file_type: str | None = Query(None, description="Filter by file type (CSV, PDF, Excel, …)"),
+    filename: str | None = Query(None, description="Restrict search to a single indexed document"),
 ):
     """Answer a question as a Server-Sent Events stream."""
 
@@ -231,11 +222,11 @@ async def query_stream(
         yield _format_sse_data(
             f"{_STATUS_PREFIX}Step 2: Scanning Document Vault (Qwen embedded index)…"
         )
-        metadata_filters = _metadata_filters_from_request(year, quarter, file_type)
+        metadata_filters = _search_filters_from_request(filename)
         if metadata_filters:
             active = ", ".join(f"{k}={v}" for k, v in metadata_filters.items())
             yield _format_sse_data(
-                f"{_STATUS_PREFIX}Metadata scope active — {active}"
+                f"{_STATUS_PREFIX}Target source active — {active}"
             )
         chunks = await retrieve(question, top_k, metadata_filters=metadata_filters)
         if await request.is_disconnected():

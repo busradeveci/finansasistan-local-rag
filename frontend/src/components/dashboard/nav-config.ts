@@ -1,0 +1,63 @@
+import {
+  LayoutDashboard,
+  FolderSearch,
+  FileStack,
+  Database,
+  Brain,
+  Route,
+  ShieldCheck,
+  Activity,
+  Settings,
+  Cpu,
+  MessagesSquare,
+} from "lucide-react"
+import type { AppModule } from "@/types/workstation"
+
+export type NavItem = {
+  id: AppModule
+  label: string
+  icon: React.ComponentType<{ className?: string }>
+  badge?: string
+}
+
+export type NavGroup = {
+  title: string
+  items: NavItem[]
+}
+
+export const navGroups: NavGroup[] = [
+  {
+    title: "Workspace",
+    items: [
+      { id: "chat", label: "Chat", icon: MessagesSquare },
+      { id: "dashboard", label: "Workstation", icon: LayoutDashboard },
+      { id: "knowledge", label: "Knowledge Base", icon: FolderSearch },
+      { id: "documents", label: "Documents", icon: FileStack },
+      { id: "vector", label: "Vector Store", icon: Database },
+    ],
+  },
+  {
+    title: "Intelligence",
+    items: [
+      { id: "router", label: "Model Router", icon: Route },
+      { id: "inference", label: "Inference", icon: Brain },
+      { id: "telemetry", label: "Telemetry", icon: Activity },
+    ],
+  },
+  {
+    title: "System",
+    items: [
+      { id: "security", label: "Security", icon: ShieldCheck },
+      { id: "compute", label: "Compute", icon: Cpu },
+      { id: "settings", label: "Settings", icon: Settings },
+    ],
+  },
+]
+
+export function findNavItem(id: AppModule): { group: string; item: NavItem } {
+  for (const group of navGroups) {
+    const item = group.items.find((i) => i.id === id)
+    if (item) return { group: group.title, item }
+  }
+  return { group: navGroups[0].title, item: navGroups[0].items[0] }
+}

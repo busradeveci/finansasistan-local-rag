@@ -10,7 +10,6 @@ import {
 } from "react"
 import {
   getDocumentInventory,
-  getMetadataFilters,
   streamQuery,
   uploadDocument,
   uploadErrorMessage,
@@ -23,8 +22,7 @@ import type {
   ChatMessage,
   ConversationSession,
   DocumentInventoryRow,
-  MetadataFacetOptions,
-  MetadataFilters,
+  TargetSource,
   SessionEvidenceState,
   UploadQueueItem,
   WorkstationAlert,
@@ -62,17 +60,7 @@ const SOURCES_PREFIX = "[SOURCES]"
 const STATUS_PREFIX = "[STATUS]"
 const AGENT_PREFIX = "[AGENT]"
 
-const DEFAULT_METADATA_FILTERS: MetadataFilters = {
-  year: null,
-  quarter: null,
-  file_type: null,
-}
-
-const DEFAULT_METADATA_FACETS: MetadataFacetOptions = {
-  years: [],
-  quarters: [],
-  file_types: [],
-}
+const DEFAULT_TARGET_SOURCE: TargetSource = null
 
 interface WorkstationContextValue {
   module: AppModule
@@ -98,11 +86,8 @@ interface WorkstationContextValue {
   documentInventoryLoading: boolean
   documentInventoryError: string | null
   refreshDocumentInventory: () => Promise<void>
-  metadataFilters: MetadataFilters
-  metadataFacets: MetadataFacetOptions
-  hasActiveMetadataFilters: boolean
-  setMetadataFilter: (key: keyof MetadataFilters, value: string | null) => void
-  clearMetadataFilters: () => void
+  targetSource: TargetSource
+  setTargetSource: (filename: TargetSource) => void
   uploadQueue: UploadQueueItem[]
   uploadFiles: (files: FileList | File[]) => void
   isGenerating: boolean
@@ -132,7 +117,7 @@ function nowLabel() {
 }
 
 export function WorkstationProvider({ children }: { children: ReactNode }) {
-  const [module, setModule] = useState<AppModule>("home")
+  const [module, setModule] = useState<AppModule>("dashboard")
   const [sessions, setSessions] = useState<ConversationSession[]>([])
   const [activeSessionId, setActiveSessionId] = useState<string | null>(null)
   const [sessionEvidenceStates, setSessionEvidenceStates] = useState<
@@ -144,8 +129,7 @@ export function WorkstationProvider({ children }: { children: ReactNode }) {
   const [documentIndex, setDocumentIndex] = useState<{ vectors: number; dimensions: number } | null>(null)
   const [documentInventoryLoading, setDocumentInventoryLoading] = useState(false)
   const [documentInventoryError, setDocumentInventoryError] = useState<string | null>(null)
-  const [metadataFilters, setMetadataFilters] = useState<MetadataFilters>(DEFAULT_METADATA_FILTERS)
-  const [metadataFacets, setMetadataFacets] = useState<MetadataFacetOptions>(DEFAULT_METADATA_FACETS)
+  const [targetSource, setTargetSource] = useState<TargetSource>(DEFAULT_TARGET_SOURCE)
   const [uploadQueue, setUploadQueue] = useState<UploadQueueItem[]>([])
 
   const [isGenerating, setIsGenerating] = useState(false)
@@ -175,13 +159,9 @@ export function WorkstationProvider({ children }: { children: ReactNode }) {
     setDocumentInventoryLoading(true)
     setDocumentInventoryError(null)
     try {
-      const [{ documents, index }, facets] = await Promise.all([
-        getDocumentInventory(),
-        getMetadataFilters().catch(() => DEFAULT_METADATA_FACETS),
-      ])
+      const { documents, index } = await getDocumentInventory()
       setDocumentInventory(documents)
       setDocumentIndex(index)
-      setMetadataFacets(facets)
     } catch (e: unknown) {
       const message =
         (e as { message?: string }).message === "Network Error"
@@ -193,18 +173,6 @@ export function WorkstationProvider({ children }: { children: ReactNode }) {
       setDocumentInventoryLoading(false)
     }
   }, [pushAlert])
-
-  const hasActiveMetadataFilters = Boolean(
-    metadataFilters.year || metadataFilters.quarter || metadataFilters.file_type
-  )
-
-  const setMetadataFilter = useCallback((key: keyof MetadataFilters, value: string | null) => {
-    setMetadataFilters((prev) => ({ ...prev, [key]: value }))
-  }, [])
-
-  const clearMetadataFilters = useCallback(() => {
-    setMetadataFilters(DEFAULT_METADATA_FILTERS)
-  }, [])
 
   useEffect(() => {
     refreshDocumentInventory()
@@ -481,7 +449,7 @@ export function WorkstationProvider({ children }: { children: ReactNode }) {
       appendMessage(sid, asstMsg)
       setIsGenerating(true)
 
-      const es = streamQuery(text, 4, metadataFilters)
+      const es = streamQuery(text, 4, targetSource)
       esRef.current = es
       let sources: EvidenceChunk[] = []
       let accumulated = ""
@@ -553,7 +521,7 @@ export function WorkstationProvider({ children }: { children: ReactNode }) {
       appendReasoningStep,
       pushAlert,
       patchSessionEvidenceState,
-      metadataFilters,
+      targetSource,
     ]
   )
 
@@ -585,11 +553,8 @@ export function WorkstationProvider({ children }: { children: ReactNode }) {
       documentInventoryLoading,
       documentInventoryError,
       refreshDocumentInventory,
-      metadataFilters,
-      metadataFacets,
-      hasActiveMetadataFilters,
-      setMetadataFilter,
-      clearMetadataFilters,
+      targetSource,
+      setTargetSource,
       uploadQueue,
       uploadFiles,
       isGenerating,
@@ -616,11 +581,8 @@ export function WorkstationProvider({ children }: { children: ReactNode }) {
       documentInventoryLoading,
       documentInventoryError,
       refreshDocumentInventory,
-      metadataFilters,
-      metadataFacets,
-      hasActiveMetadataFilters,
-      setMetadataFilter,
-      clearMetadataFilters,
+      targetSource,
+      setTargetSource,
       uploadQueue,
       uploadFiles,
       isGenerating,

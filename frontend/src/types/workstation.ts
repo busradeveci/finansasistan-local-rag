@@ -1,13 +1,16 @@
 /** Foundry Local workstation — shared type contracts. */
 
 export type AppModule =
-  | "home"
   | "chat"
-  | "documents"
-  | "financial"
+  | "dashboard"
   | "knowledge"
-  | "analytics"
+  | "documents"
+  | "vector"
+  | "router"
+  | "inference"
+  | "telemetry"
   | "security"
+  | "compute"
   | "settings"
 
 export interface TelemetryPacket {
@@ -65,11 +68,6 @@ export interface ChatMessage {
   agentBadge?: string
 }
 
-export type AgentTrackBadge =
-  | "Local Agent: Phi-4 Reasoning"
-  | "Local RAG: Qwen Embedded Index"
-  | "Standard Chat: Phi-3.5"
-
 export interface DocumentInventoryRow {
   filename: string
   type: string
@@ -84,17 +82,8 @@ export interface DocumentInventoryRow {
   file_type?: string
 }
 
-export interface MetadataFilters {
-  year: string | null
-  quarter: string | null
-  file_type: string | null
-}
-
-export interface MetadataFacetOptions {
-  years: string[]
-  quarters: string[]
-  file_types: string[]
-}
+/** null = search across all indexed documents */
+export type TargetSource = string | null
 
 export interface ChunkIndexRow {
   chunk_index: number

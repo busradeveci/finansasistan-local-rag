@@ -1,61 +1,29 @@
-/* Workstation layout utilities — complements index.css design tokens */
+/* Workstation utilities — complements index.css design tokens */
 
-.ws-sidebar-toggle {
-  position: absolute;
-  top: calc(0.625rem * var(--ws-density));
-  right: calc(0.625rem * var(--ws-density));
-  z-index: 2;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: calc(1.625rem * var(--ws-density));
-  height: calc(1.625rem * var(--ws-density));
-  border-radius: calc(8px * var(--ws-density));
-  border: 1px solid var(--ws-card-border);
-  background: var(--ws-card-bg-elevated);
-  color: var(--ws-text-muted);
-  transition: all 0.25s cubic-bezier(0.2, 0, 0, 1);
-}
-
-.ws-sidebar-toggle:hover {
-  border-color: rgba(16, 185, 129, 0.35);
-  background: rgba(16, 185, 129, 0.08);
-  color: var(--ws-text);
-}
-
-.ws-sidebar-toggle svg {
-  width: calc(0.875rem * var(--ws-density));
-  height: calc(0.875rem * var(--ws-density));
-}
-
-.ws-nav-item-collapsed {
-  gap: 0;
-}
-
-/* Chart tooltip — dark enterprise micro typography */
+/* Chart tooltip — light enterprise micro typography */
 .ws-chart-tooltip {
-  border-radius: calc(8px * var(--ws-density));
-  border: 1px solid var(--ws-card-border);
-  background: rgba(13, 21, 39, 0.96);
-  padding: calc(0.375rem * var(--ws-density)) calc(0.5rem * var(--ws-density));
-  font-family: "Manrope Variable", Manrope, system-ui, sans-serif;
-  font-size: calc(10px * var(--ws-density));
+  border-radius: calc(4px);
+  border: 1px solid var(--ws-border);
+  background: #ffffff;
+  padding: calc(0.375rem) calc(0.5rem);
+  font-family: "Segoe UI Variable", "Segoe UI", system-ui, sans-serif;
+  font-size: calc(10px);
   line-height: 1.35;
   color: var(--ws-text-secondary);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.08);
 }
 
 .ws-chart-tooltip-label {
-  margin-bottom: calc(0.125rem * var(--ws-density));
+  margin-bottom: calc(0.125rem);
   color: var(--ws-text-muted);
   font-weight: 600;
-  font-size: calc(9px * var(--ws-density));
+  font-size: calc(9px);
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
 
 .ws-chart-tooltip-value {
-  font-weight: 700;
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
   color: var(--ws-text);
 }
@@ -64,23 +32,22 @@
 .ws-citation-link {
   display: inline;
   margin: 0 1px;
-  padding: 0 calc(4px * var(--ws-density));
-  border-radius: calc(4px * var(--ws-density));
-  border: 1px solid rgba(16, 185, 129, 0.3);
-  background: rgba(16, 185, 129, 0.1);
-  font-size: calc(0.7rem * var(--ws-density));
-  font-weight: 700;
+  padding: 0 calc(3px);
+  border-radius: calc(2px);
+  border: none;
+  border-bottom: 1px solid var(--ws-primary);
+  background: transparent;
+  font-size: calc(0.7rem);
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
   color: var(--ws-primary);
   text-decoration: none;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: color 0.15s ease, background 0.15s ease;
   vertical-align: baseline;
 }
 
 .ws-citation-link:hover {
-  border-color: var(--ws-primary);
-  background: rgba(16, 185, 129, 0.18);
-  text-decoration: underline;
-  text-underline-offset: 2px;
+  background: #eff6ff;
+  text-decoration: none;
 }

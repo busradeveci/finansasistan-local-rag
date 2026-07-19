@@ -19,22 +19,22 @@ export default function KnowledgeBaseModule() {
   const totalChunks = documentInventory.reduce((n, d) => n + d.chunks, 0)
 
   return (
-    <div className="flex h-full min-h-0 flex-1 overflow-hidden bg-[var(--ws-canvas)]">
-      <div className="w-64 shrink-0 overflow-y-auto border-r border-[var(--ws-card-border)] bg-[var(--ws-card-bg)] p-4 fluent-scrollbar">
-        <h1 className="mb-0.5 text-sm font-semibold text-white">Knowledge Base</h1>
+    <div className="flex h-full min-h-0 flex-1 overflow-hidden bg-white">
+      <div className="w-64 shrink-0 overflow-y-auto border-r border-gray-200 bg-gray-50 p-4 fluent-scrollbar">
+        <h1 className="mb-0.5 text-sm font-semibold text-[var(--ws-text)]">Knowledge Base</h1>
         <p className="mb-3 text-[11px] font-medium text-[var(--ws-text-muted)]">
           {documentInventory.length} docs · {totalChunks} chunks
         </p>
-        <ul className="space-y-0.5">
+        <ul className="divide-y divide-gray-100">
           {documentInventory.map((d) => (
             <li key={d.filename}>
               <button
                 type="button"
                 onClick={() => setActive(d.filename)}
-                className={`w-full rounded-lg border border-solid px-2 py-1.5 text-left text-xs transition-colors ${
+                className={`w-full border-l-2 px-2 py-2 text-left text-xs transition-colors ${
                   active === d.filename
-                    ? "border-[var(--ws-primary)]/40 bg-[rgba(16,185,129,0.1)] font-medium text-white"
-                    : "border-transparent text-[var(--ws-text-secondary)] hover:bg-[var(--ws-card-bg-elevated)]"
+                    ? "border-[var(--ws-primary)] bg-white font-medium text-[var(--ws-text)]"
+                    : "border-transparent text-[var(--ws-text-secondary)] hover:bg-white"
                 }`}
               >
                 <span className="block truncate">{d.filename}</span>
@@ -53,29 +53,27 @@ export default function KnowledgeBaseModule() {
           </p>
         ) : (
           <>
-            <h2 className="mb-3 truncate text-base font-semibold text-white">{active}</h2>
-            <div className="ws-card overflow-hidden">
-              <table className="w-full text-xs">
-                <thead>
-                  <tr className="border-b border-[var(--ws-card-border)] text-left text-[var(--ws-text-muted)]">
-                    <th className="px-2.5 py-1.5 font-semibold">Chunk #</th>
-                    <th className="px-2.5 py-1.5 font-semibold">Characters</th>
-                    <th className="px-2.5 py-1.5 font-semibold">Preview</th>
+            <h2 className="mb-4 truncate border-b border-gray-200 pb-3 text-base font-semibold text-[var(--ws-text)]">
+              {active}
+            </h2>
+            <table className="ws-data-table">
+              <thead>
+                <tr>
+                  <th>Chunk #</th>
+                  <th>Characters</th>
+                  <th>Preview</th>
+                </tr>
+              </thead>
+              <tbody>
+                {chunks.map((c) => (
+                  <tr key={c.chunk_index}>
+                    <td className="tabular-nums font-medium text-[var(--ws-text)]">{c.chunk_index}</td>
+                    <td className="tabular-nums">{c.chars}</td>
+                    <td className="max-w-md truncate">{c.preview}</td>
                   </tr>
-                </thead>
-                <tbody>
-                  {chunks.map((c) => (
-                    <tr key={c.chunk_index} className="border-b border-[var(--ws-card-border)]">
-                      <td className="px-2.5 py-1.5 tabular-nums text-white">{c.chunk_index}</td>
-                      <td className="px-2.5 py-1.5 tabular-nums text-[var(--ws-text-muted)]">{c.chars}</td>
-                      <td className="max-w-md truncate px-2.5 py-1.5 text-[var(--ws-text-secondary)]">
-                        {c.preview}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                ))}
+              </tbody>
+            </table>
           </>
         )}
       </div>
