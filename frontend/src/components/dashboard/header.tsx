@@ -5,8 +5,7 @@ type HeaderProps = {
   breadcrumb: string[]
 }
 
-const HYPER_GLASS =
-  "bg-white/30 backdrop-blur-md border border-white/60 shadow-[0_4px_12px_rgba(0,0,0,0.05),inset_0_1px_1px_rgba(255,255,255,0.9)] rounded-full hover:bg-white/40 transition-all duration-300"
+const HYPER_GLASS = "ws-hyper-glass"
 
 export function Header({ breadcrumb }: HeaderProps) {
   const { hasBackgroundActivity, uploadQueue, isGenerating, alerts, dismissAlert } = useWorkstation()
@@ -17,7 +16,7 @@ export function Header({ breadcrumb }: HeaderProps) {
       <header className="ws-header sticky top-0 z-20 flex h-12 shrink-0 items-center gap-3 px-3 md:px-4">
         <nav aria-label="Breadcrumb" className="hidden md:block">
           <ol className="flex items-center gap-1.5 text-sm">
-            <li className="text-slate-400">Foundry Local</li>
+            <li className="text-slate-400">VAULTMIND</li>
             {breadcrumb.map((crumb, i) => {
               const last = i === breadcrumb.length - 1
               return (

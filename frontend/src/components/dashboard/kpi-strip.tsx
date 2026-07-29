@@ -18,8 +18,7 @@ type Kpi = {
   hint?: string
 }
 
-const GLASS_CARD =
-  "bg-white/20 backdrop-blur-2xl backdrop-saturate-[1.1] border border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.04),inset_0_1px_0_rgba(255,255,255,0.8),inset_0_-1px_0_rgba(255,255,255,0.2)] rounded-3xl"
+const GLASS_CARD = "ws-glass-card"
 
 function buildKpis(analytics: AnalyticsPacket | null, status: StatusPacket | null, vectorCount?: number | null): Kpi[] {
   const queries = analytics?.queries_processed_today ?? 0
@@ -70,7 +69,7 @@ export function KpiStrip({ analytics, status, vectorCount }: KpiStripProps) {
           <div
             key={kpi.label}
             aria-label={kpi.label}
-            className={`col-span-12 flex flex-col gap-1.5 px-4 py-4 sm:col-span-6 lg:col-span-3 ${GLASS_CARD}`}
+            className={`flex flex-col gap-1.5 px-4 py-4 ${GLASS_CARD}`}
           >
             <div className="flex items-center justify-between">
               <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-500">{kpi.label}</span>

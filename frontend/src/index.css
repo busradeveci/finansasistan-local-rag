@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -26,54 +28,53 @@
     --ring: 221 83% 53%;
     --radius: 1rem;
 
-    /* Workstation design tokens — glassmorphism / Mica */
-    --ws-canvas: #f8fafc;
-    --ws-canvas-alt: rgba(255, 255, 255, 0.5);
-    --ws-card-bg: rgba(255, 255, 255, 0.5);
-    --ws-card-bg-elevated: rgba(255, 255, 255, 0.65);
-    --ws-card-border: rgba(255, 255, 255, 0.6);
-    --ws-card-border-muted: rgba(255, 255, 255, 0.4);
-    --ws-glass-bg: rgba(255, 255, 255, 0.5);
-    --ws-glass-bg-hover: rgba(255, 255, 255, 0.7);
-    --ws-glass-inner: rgba(255, 255, 255, 0.35);
-    --ws-glass-elevated: rgba(255, 255, 255, 0.6);
-    --ws-glass-elevated-hover: rgba(255, 255, 255, 0.75);
-    --ws-glass-border: rgba(255, 255, 255, 0.6);
-    --ws-surface: rgba(255, 255, 255, 0.45);
-    --ws-primary: #2563eb;
-    --ws-primary-hover: #1d4ed8;
-    --ws-teal: #0d9488;
-    --ws-teal-light: #14b8a6;
-    --ws-success: #059669;
-    --ws-warning: #d97706;
-    --ws-danger: #dc2626;
-    --ws-border: rgba(255, 255, 255, 0.6);
-    --ws-text: #0f172a;
-    --ws-text-secondary: rgba(71, 85, 105, 0.9);
-    --ws-text-muted: rgba(100, 116, 139, 0.8);
-    --ws-sidebar: rgba(37, 99, 235, 0.05);
-    --ws-sidebar-hover: rgba(255, 255, 255, 0.45);
-    --ws-sidebar-active: rgba(255, 255, 255, 0.65);
-    --ws-sidebar-text: rgba(100, 116, 139, 0.9);
-    --ws-sidebar-text-hover: #334155;
-    --ws-sidebar-text-active: #0f172a;
+    /* Premium glassmorphism design tokens */
+    --ws-canvas: #e0ecf8;
+    --ws-canvas-alt: #f4f8fc;
+    --ws-card-bg: rgba(255, 255, 255, 0.72);
+    --ws-card-bg-elevated: rgba(255, 255, 255, 0.85);
+    --ws-card-border: rgba(255, 255, 255, 0.55);
+    --ws-card-border-muted: rgba(255, 255, 255, 0.35);
+    --ws-glass-bg: rgba(255, 255, 255, 0.72);
+    --ws-glass-bg-hover: rgba(255, 255, 255, 0.85);
+    --ws-glass-inner: rgba(255, 255, 255, 0.5);
+    --ws-glass-elevated: rgba(255, 255, 255, 0.8);
+    --ws-glass-elevated-hover: rgba(255, 255, 255, 0.9);
+    --ws-glass-border: rgba(255, 255, 255, 0.55);
+    --ws-surface: rgba(255, 255, 255, 0.6);
+    --ws-primary: #2563EB;
+    --ws-primary-hover: #3B82F6;
+    --ws-primary-selection: #60A5FA;
+    --ws-success: #16A34A;
+    --ws-danger: #DC2626;
+    --ws-border: rgba(255, 255, 255, 0.55);
+    --ws-text: #111827;
+    --ws-text-secondary: #64748B;
+    --ws-text-muted: #94A3B8;
+    --ws-sidebar: rgba(255, 255, 255, 0.4);
+    --ws-sidebar-hover: rgba(255, 255, 255, 0.7);
+    --ws-sidebar-active: rgba(255, 255, 255, 0.85);
+    --ws-sidebar-text: #64748B;
+    --ws-sidebar-text-hover: #111827;
+    --ws-sidebar-text-active: #111827;
     --ws-sidebar-width: 248px;
     --ws-sidebar-collapsed: 60px;
     --ws-evidence-width: 20rem;
     --ws-evidence-width-expanded: 60vw;
-    --ws-card-radius: 1rem;
+    --ws-card-radius: 20px;
+    --ws-input-radius: 14px;
+    --ws-button-radius: 14px;
+    --ws-dialog-radius: 20px;
     --ws-chart-sm: 88px;
     --ws-chart-md: 120px;
     --ws-chart-lg: 160px;
     --ws-chart-xl: 220px;
-    --ws-card-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.04);
+    --ws-card-shadow: 0 10px 40px rgba(15, 23, 42, 0.08);
+    --ws-card-shadow-hover: 0 20px 60px rgba(15, 23, 42, 0.10);
     --ws-ease: cubic-bezier(0.2, 0, 0, 1);
-    --ws-chart-mint: #2563eb;
-    --ws-chart-cyan: #0ea5e9;
-    --ws-chart-amber: #eab308;
-    --ws-chart-blue: #2563eb;
-    --ws-chart-purple: #7c3aed;
-    --ws-chart-orange: #f97316;
+    --ws-chart-blue: #2563EB;
+    --ws-chart-cyan: #0EA5E9;
+    --ws-chart-purple: #7C3AED;
   }
 
   html {
@@ -88,15 +89,13 @@
   }
 
   body {
-    font-family: "Segoe UI Variable", "Segoe UI", system-ui, sans-serif;
+    font-family: "Inter", "Inter Variable", system-ui, sans-serif;
     font-size: 14px;
     font-weight: 400;
     line-height: 1.5;
     color: var(--ws-text);
-    background: radial-gradient(circle at 15% 50%, rgba(191, 219, 254, 0.5) 0%, transparent 50%),
-      radial-gradient(circle at 85% 30%, rgba(167, 243, 208, 0.4) 0%, transparent 50%),
-      radial-gradient(circle at 50% 80%, rgba(226, 232, 240, 0.6) 0%, transparent 50%),
-      #f1f5f9;
+    /* CRITICAL: Rich ice-blue atmospheric gradient — NOT solid white */
+    background: linear-gradient(135deg, #e0ecf8 0%, #f4f8fc 50%, #e8f1fb 100%);
     background-attachment: fixed;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -127,55 +126,120 @@
 
 @layer components {
   .spring {
-    transition: all 0.3s cubic-bezier(0.2, 0, 0, 1);
+    transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
   }
 
-  /* Volumetric glass — canonical bento card surface */
+  /* Atmospheric ambient glow behind glass surfaces */
+  .atmos-glow {
+    position: relative;
+  }
+
+  .atmos-glow::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: inherit;
+    background: radial-gradient(ellipse at 50% 0%, rgba(37, 99, 235, 0.06) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Premium glass card — the canonical surface */
   .ws-volumetric-glass {
-    @apply bg-white/20 backdrop-blur-2xl backdrop-saturate-[1.1] border border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.04),inset_0_1px_0_rgba(255,255,255,0.8),inset_0_-1px_0_rgba(255,255,255,0.2)] rounded-3xl;
+    background: rgba(255, 255, 255, 0.72);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(15, 23, 42, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.8);
   }
 
   .ws-hyper-glass {
-    @apply bg-white/30 backdrop-blur-md border border-white/60 shadow-[0_4px_12px_rgba(0,0,0,0.05),inset_0_1px_1px_rgba(255,255,255,0.9)] rounded-full hover:bg-white/40 transition-all duration-300;
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    border-radius: 14px;
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
+  }
+
+  .ws-hyper-glass:hover {
+    background: rgba(255, 255, 255, 0.8);
   }
 
   .ws-glass-panel {
-    @apply bg-white/20 backdrop-blur-2xl backdrop-saturate-[1.1] border border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.04),inset_0_1px_0_rgba(255,255,255,0.8),inset_0_-1px_0_rgba(255,255,255,0.2)] rounded-3xl p-6;
+    background: rgba(255, 255, 255, 0.72);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(15, 23, 42, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    padding: 1.5rem;
   }
 
   .ws-glass-panel-compact {
-    @apply bg-white/20 backdrop-blur-2xl backdrop-saturate-[1.1] border border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.04),inset_0_1px_0_rgba(255,255,255,0.8),inset_0_-1px_0_rgba(255,255,255,0.2)] rounded-3xl;
+    background: rgba(255, 255, 255, 0.72);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(15, 23, 42, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.8);
   }
 
   .ws-glass-card {
-    @apply bg-white/20 backdrop-blur-2xl backdrop-saturate-[1.1] border border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.04),inset_0_1px_0_rgba(255,255,255,0.8),inset_0_-1px_0_rgba(255,255,255,0.2)] rounded-3xl;
+    background: rgba(255, 255, 255, 0.72);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(15, 23, 42, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.8);
   }
 
   .ws-glass-sidebar {
-    @apply bg-white/20 backdrop-blur-2xl backdrop-saturate-[1.1] border-r border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.04),inset_0_1px_0_rgba(255,255,255,0.8),inset_0_-1px_0_rgba(255,255,255,0.2)];
+    background: rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border-right: 1px solid rgba(255, 255, 255, 0.6);
+    box-shadow: 0 10px 40px rgba(15, 23, 42, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.8);
   }
 
   .ws-card,
   .ws-panel,
   .ws-strong-panel,
   .ws-stat-card {
-    @apply bg-white/20 backdrop-blur-2xl backdrop-saturate-[1.1] border border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.04),inset_0_1px_0_rgba(255,255,255,0.8),inset_0_-1px_0_rgba(255,255,255,0.2)] rounded-3xl;
+    background: rgba(255, 255, 255, 0.72);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(15, 23, 42, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.8);
   }
 
   .ws-glass,
   .ws-glass-inner,
   .ws-glass-elevated {
-    @apply bg-white/20 backdrop-blur-2xl backdrop-saturate-[1.1] border border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.04),inset_0_1px_0_rgba(255,255,255,0.8),inset_0_-1px_0_rgba(255,255,255,0.2)] rounded-3xl;
+    background: rgba(255, 255, 255, 0.72);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(15, 23, 42, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.8);
   }
 
   .ws-header {
-    @apply bg-white/20 backdrop-blur-2xl backdrop-saturate-[1.1] border-b border-white/40 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)] rounded-none;
+    background: rgba(255, 255, 255, 0.72);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.55);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    border-radius: 0;
   }
 
   .ws-surface {
     border-radius: var(--ws-card-radius);
     background: var(--ws-surface);
-    backdrop-filter: blur(12px) saturate(150%);
+    backdrop-filter: blur(18px) saturate(150%);
   }
 
   .ws-interactive {
@@ -225,7 +289,7 @@
     font-weight: 600;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: rgba(100, 116, 139, 0.8);
+    color: #94A3B8;
     text-align: left;
     border-bottom: 1px solid rgba(255, 255, 255, 0.5);
   }
@@ -245,7 +309,14 @@
   }
 
   .ws-nav-item {
-    @apply relative flex w-full items-center overflow-hidden rounded-xl border border-transparent font-medium;
+    position: relative;
+    display: flex;
+    width: 100%;
+    align-items: center;
+    overflow: hidden;
+    border-radius: 14px;
+    border: 1px solid transparent;
+    font-weight: 500;
     gap: 0.625rem;
     padding: 0.5rem 0.75rem;
     font-size: 13px;
@@ -276,53 +347,85 @@
   }
 
   .ws-nav-item:hover {
-    @apply bg-white/30 backdrop-blur-md border border-white/60;
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(18px);
+    border: 1px solid rgba(255, 255, 255, 0.55);
     color: var(--ws-sidebar-text-hover);
   }
 
   .ws-nav-item-active {
-    @apply bg-white/30 backdrop-blur-md border border-white/60;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(18px);
+    border: 1px solid rgba(255, 255, 255, 0.55);
     color: var(--ws-sidebar-text-active);
     font-weight: 600;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05), inset 0 1px 1px rgba(255, 255, 255, 0.9);
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.9);
   }
 
   .ws-nav-item-collapsed {
-    @apply justify-center px-2;
+    justify-content: center;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
   }
 
   .ws-input-bar {
-    @apply bg-white/30 backdrop-blur-md border border-white/60 shadow-[0_4px_12px_rgba(0,0,0,0.05),inset_0_1px_1px_rgba(255,255,255,0.9)] rounded-full transition-all duration-300;
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    border-radius: 14px;
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
     padding: calc(0.375rem) 0.875rem;
   }
 
   .ws-input-bar:focus-within {
-    @apply bg-white/40;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05), inset 0 1px 1px rgba(255, 255, 255, 0.9), 0 0 0 3px rgba(37, 99, 235, 0.08);
+    background: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 0 0 3px rgba(37, 99, 235, 0.08);
   }
 
   .ws-toolbar-btn {
-    @apply ws-hyper-glass inline-flex items-center font-medium;
+    display: inline-flex;
+    align-items: center;
+    font-weight: 500;
     gap: calc(0.375rem);
     padding: calc(0.3125rem) calc(0.75rem);
     font-size: calc(0.75rem);
     color: var(--ws-text-secondary);
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    border-radius: 14px;
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
   }
 
   .ws-toolbar-btn:hover {
     color: var(--ws-text);
+    background: rgba(255, 255, 255, 0.8);
   }
 
   .ws-export-pdf-btn {
-    @apply ws-hyper-glass inline-flex items-center font-semibold;
+    display: inline-flex;
+    align-items: center;
+    font-weight: 600;
     gap: calc(0.3rem);
     padding: calc(0.25rem) calc(0.625rem);
     font-size: calc(0.6875rem);
     color: var(--ws-text-muted);
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    border-radius: 14px;
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
   }
 
   .ws-export-pdf-btn:hover:not(:disabled) {
     color: var(--ws-primary);
+    background: rgba(255, 255, 255, 0.8);
   }
 
   .ws-export-pdf-btn:disabled {
@@ -331,61 +434,95 @@
   }
 
   .ws-settings-row {
-    @apply rounded-xl transition-colors duration-200 ease-in-out;
+    border-radius: 14px;
+    transition: background 0.2s cubic-bezier(0.2, 0, 0, 1);
   }
 
   .ws-settings-row:hover {
-    background: rgba(255, 255, 255, 0.45);
+    background: rgba(255, 255, 255, 0.6);
   }
 
   .ws-row-interactive {
-    @apply rounded-lg border-l-2 border-solid border-l-transparent transition-colors duration-200 ease-in-out;
+    border-radius: 12px;
+    border-left: 2px solid transparent;
+    transition: background 0.2s cubic-bezier(0.2, 0, 0, 1), border-color 0.2s cubic-bezier(0.2, 0, 0, 1);
   }
 
   .ws-row-interactive:hover {
     border-left-color: var(--ws-primary);
-    background: rgba(255, 255, 255, 0.4);
+    background: rgba(255, 255, 255, 0.5);
   }
 
   .ws-badge {
-    @apply ws-hyper-glass inline-flex items-center gap-1 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-slate-500;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.125rem 0.625rem;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #64748B;
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    border-radius: 14px;
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.9);
   }
 
   .ws-badge-value {
-    @apply font-semibold tabular-nums normal-case tracking-normal;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    text-transform: none;
+    letter-spacing: normal;
     color: var(--ws-text);
   }
 
   .ws-status-pill {
-    @apply ws-hyper-glass inline-flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-semibold text-slate-500;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.25rem 0.625rem;
+    font-size: 10px;
+    font-weight: 600;
+    color: #64748B;
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    border-radius: 14px;
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.9);
   }
 
   .ws-status-dot {
-    @apply h-1.5 w-1.5 rounded-full;
+    height: 0.375rem;
+    width: 0.375rem;
+    border-radius: 9999px;
     background: var(--ws-success);
   }
 
   .text-page-title {
-    font-size: calc(26px);
+    font-size: 26px;
     line-height: 1.25;
     font-weight: 600;
-    color: #0f172a;
+    color: #111827;
     letter-spacing: -0.025em;
   }
 
   .text-section-title {
-    font-size: calc(17px);
+    font-size: 17px;
     line-height: 1.3;
     font-weight: 600;
-    color: #0f172a;
+    color: #111827;
     letter-spacing: -0.015em;
   }
 
   .text-card-title {
-    font-size: calc(16px);
+    font-size: 16px;
     line-height: 1.35;
     font-weight: 600;
-    color: #0f172a;
+    color: #111827;
     letter-spacing: -0.01em;
   }
 
@@ -393,31 +530,31 @@
     font-size: 14px;
     line-height: 1.5;
     font-weight: 400;
-    color: #0f172a;
+    color: #111827;
   }
 
   .text-body-sm {
-    font-size: calc(13px);
+    font-size: 13px;
     line-height: 1.5;
     font-weight: 400;
-    color: rgba(71, 85, 105, 0.9);
+    color: #64748B;
   }
 
   .text-caption {
-    font-size: calc(12px);
+    font-size: 12px;
     line-height: 1.5;
     font-weight: 500;
   }
 
   .text-caption-muted {
-    font-size: calc(12px);
+    font-size: 12px;
     line-height: 1.5;
     font-weight: 500;
-    color: rgba(100, 116, 139, 0.8);
+    color: #94A3B8;
   }
 
   .text-badge {
-    font-size: calc(11px);
+    font-size: 11px;
     line-height: 1.4;
     font-weight: 600;
   }
@@ -431,7 +568,7 @@
   .ws-workstation .ws-main-canvas {
     width: 100%;
     max-width: 100%;
-    padding: 1rem 1.25rem;
+    padding: 1.5rem 1.5rem;
   }
 
   .ws-workstation .ws-main-canvas--full-bleed {
@@ -446,7 +583,7 @@
   }
 
   .ws-module-shell {
-    padding: 1.25rem;
+    padding: 1.5rem;
   }
 
   .ws-module-grid {
@@ -471,7 +608,12 @@
   }
 
   .ws-chat-card {
-    @apply bg-white/20 backdrop-blur-2xl backdrop-saturate-[1.1] border border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.04),inset_0_1px_0_rgba(255,255,255,0.8),inset_0_-1px_0_rgba(255,255,255,0.2)] rounded-3xl;
+    background: rgba(255, 255, 255, 0.72);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(15, 23, 42, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.8);
     padding: 1rem;
   }
 
@@ -490,16 +632,21 @@
   }
 
   .ws-chat-bubble {
-    @apply bg-white/20 backdrop-blur-2xl backdrop-saturate-[1.1] border border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.04),inset_0_1px_0_rgba(255,255,255,0.8),inset_0_-1px_0_rgba(255,255,255,0.2)] rounded-3xl;
+    background: rgba(255, 255, 255, 0.72);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(15, 23, 42, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.8);
     padding: calc(0.75rem) calc(0.875rem);
   }
 
   .ws-chat-empty {
     min-height: calc(12rem);
     padding: calc(1.25rem);
-    font-size: calc(13px);
+    font-size: 13px;
     line-height: 1.5;
-    color: rgba(100, 116, 139, 0.8);
+    color: #94A3B8;
   }
 
   .ws-chat-input-footer {
@@ -508,23 +655,33 @@
 
   .ws-chat-hint {
     margin-top: calc(0.375rem);
-    font-size: calc(11px);
+    font-size: 11px;
     line-height: 1.4;
-    color: rgba(100, 116, 139, 0.8);
+    color: #94A3B8;
   }
 
   .ws-chat-textarea {
     max-height: calc(95px);
     min-height: calc(18px);
-    font-size: calc(13px);
+    font-size: 13px;
     line-height: 1.45;
   }
 
   .ws-chat-send-btn {
-    @apply ws-hyper-glass inline-flex items-center font-semibold text-slate-800;
+    display: inline-flex;
+    align-items: center;
+    font-weight: 600;
+    color: #111827;
     padding: calc(0.4375rem) calc(0.875rem);
-    font-size: calc(13px);
+    font-size: 13px;
     gap: calc(0.375rem);
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    border-radius: 14px;
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
   }
 
   .ws-chat-send-btn svg {
@@ -532,8 +689,17 @@
     height: calc(0.875rem);
   }
 
+  .ws-chat-send-btn:hover {
+    background: rgba(255, 255, 255, 0.8);
+  }
+
   .ws-evidence-panel {
-    @apply bg-white/20 backdrop-blur-2xl backdrop-saturate-[1.1] border border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.04),inset_0_1px_0_rgba(255,255,255,0.8),inset_0_-1px_0_rgba(255,255,255,0.2)] rounded-3xl;
+    background: rgba(255, 255, 255, 0.72);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(15, 23, 42, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.8);
     padding: calc(0.875rem);
   }
 
@@ -553,7 +719,12 @@
   }
 
   .ws-chat-workspace .ws-chat-card {
-    @apply bg-white/20 backdrop-blur-2xl backdrop-saturate-[1.1] border border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.04),inset_0_1px_0_rgba(255,255,255,0.8),inset_0_-1px_0_rgba(255,255,255,0.2)] rounded-3xl;
+    background: rgba(255, 255, 255, 0.72);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(15, 23, 42, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.8);
     padding: 1rem;
   }
 
@@ -570,7 +741,12 @@
   }
 
   .ws-chat-workspace .ws-chat-bubble {
-    @apply bg-white/20 backdrop-blur-2xl backdrop-saturate-[1.1] border border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.04),inset_0_1px_0_rgba(255,255,255,0.8),inset_0_-1px_0_rgba(255,255,255,0.2)] rounded-3xl;
+    background: rgba(255, 255, 255, 0.72);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(15, 23, 42, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.8);
     padding: 0.75rem 0.875rem;
   }
 
@@ -596,10 +772,20 @@
   }
 
   .ws-chat-workspace .ws-chat-send-btn {
-    @apply ws-hyper-glass inline-flex items-center font-semibold text-slate-800;
+    display: inline-flex;
+    align-items: center;
+    font-weight: 600;
+    color: #111827;
     padding: 0.4375rem 0.875rem;
     font-size: 13px;
     gap: 0.375rem;
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    border-radius: 14px;
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
   }
 
   .ws-chat-workspace .ws-chat-send-btn svg {
@@ -608,13 +794,19 @@
   }
 
   .ws-chat-workspace .ws-input-bar {
-    @apply bg-white/30 backdrop-blur-md border border-white/60 shadow-[0_4px_12px_rgba(0,0,0,0.05),inset_0_1px_1px_rgba(255,255,255,0.9)] rounded-full transition-all duration-300;
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    border-radius: 14px;
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
     padding: 0.375rem 0.875rem;
   }
 
   .ws-chat-workspace .ws-input-bar:focus-within {
-    @apply bg-white/40;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05), inset 0 1px 1px rgba(255, 255, 255, 0.9), 0 0 0 3px rgba(37, 99, 235, 0.08);
+    background: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 0 0 3px rgba(37, 99, 235, 0.08);
   }
 
   .ws-chat-workspace .ws-toolbar-btn {
@@ -716,7 +908,12 @@
   }
 
   .panel {
-    @apply bg-white/20 backdrop-blur-2xl backdrop-saturate-[1.1] border border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.04),inset_0_1px_0_rgba(255,255,255,0.8),inset_0_-1px_0_rgba(255,255,255,0.2)] rounded-3xl;
+    background: rgba(255, 255, 255, 0.72);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(15, 23, 42, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.8);
   }
 
   .lucide {

@@ -16,7 +16,7 @@ export default function EvidenceModal({ chunk, onClose }: Props) {
       onClick={onClose}
     >
       <div
-        className="flex max-h-[min(80vh,520px)] w-full max-w-lg flex-col overflow-hidden bg-white/20 backdrop-blur-2xl backdrop-saturate-[1.1] border border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.04),inset_0_1px_0_rgba(255,255,255,0.8),inset_0_-1px_0_rgba(255,255,255,0.2)] rounded-3xl"
+        className="ws-glass-card flex max-h-[min(80vh,520px)] w-full max-w-lg flex-col overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         <header className="flex shrink-0 items-start justify-between gap-3 border-b border-white/40 px-5 py-3.5">

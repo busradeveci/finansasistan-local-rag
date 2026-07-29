@@ -1,16 +1,13 @@
 import { useState } from "react"
-import { ChevronsLeftRight, ChevronDown, Plus, Trash2 } from "lucide-react"
+import { Shield, ChevronDown, Plus, Trash2 } from "lucide-react"
 import { navGroups } from "@/components/dashboard/nav-config"
 import { useWorkstation } from "@/context/WorkstationContext"
 
-const GLASS_SIDEBAR =
-  "bg-white/20 backdrop-blur-2xl backdrop-saturate-[1.1] border-r border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.04),inset_0_1px_0_rgba(255,255,255,0.8),inset_0_-1px_0_rgba(255,255,255,0.2)]"
+const GLASS_SIDEBAR = "ws-glass-sidebar"
 
-const HYPER_GLASS =
-  "bg-white/30 backdrop-blur-md border border-white/60 shadow-[0_4px_12px_rgba(0,0,0,0.05),inset_0_1px_1px_rgba(255,255,255,0.9)] rounded-full hover:bg-white/40 transition-all duration-300"
+const HYPER_GLASS = "ws-hyper-glass"
 
-const GLASS_CARD =
-  "bg-white/20 backdrop-blur-2xl backdrop-saturate-[1.1] border border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.04),inset_0_1px_0_rgba(255,255,255,0.8),inset_0_-1px_0_rgba(255,255,255,0.2)] rounded-3xl"
+const GLASS_CARD = "ws-glass-card"
 
 function ChatSessionsPanel() {
   const [open, setOpen] = useState(true)
@@ -97,11 +94,11 @@ export function Sidebar() {
     <aside className={`flex hidden w-56 shrink-0 flex-col lg:flex ${GLASS_SIDEBAR}`}>
       <div className="flex h-14 items-center gap-2.5 border-b border-white/40 px-4">
         <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-slate-900 text-white shadow-[0_4px_16px_0_rgba(15,23,42,0.15)]">
-          <ChevronsLeftRight className="h-4 w-4" />
+          <Shield className="h-4 w-4" />
         </div>
         <div className="leading-tight">
-          <div className="text-[13px] font-semibold tracking-tight text-slate-900">Foundry Local</div>
-          <div className="text-[10px] font-medium text-slate-600/80">RAG Workstation</div>
+          <div className="text-[13px] font-semibold tracking-tight text-slate-900">VAULTMIND</div>
+          <div className="text-[10px] font-medium text-slate-600/80">Enterprise AI Knowledge Node</div>
         </div>
       </div>
 
@@ -125,13 +122,13 @@ export function Sidebar() {
                       className={
                         "group flex w-full items-center gap-2.5 px-2.5 py-2 text-left text-[13px] font-medium transition-all duration-200 " +
                         (active
-                          ? `${HYPER_GLASS} !rounded-2xl text-slate-800`
-                          : `${HYPER_GLASS} !rounded-2xl border-transparent text-slate-500 hover:text-slate-800`)
+                          ? "bg-[#2563eb]/10 text-[#2563eb] font-semibold rounded-2xl"
+                          : "rounded-2xl border-transparent text-slate-500 hover:bg-white/50 hover:text-slate-800")
                       }
                     >
                       <Icon
                         className={
-                          "h-4 w-4 " + (active ? "text-blue-600" : "text-slate-500 group-hover:text-slate-700")
+                          "h-4 w-4 " + (active ? "text-[#2563eb]" : "text-slate-500 group-hover:text-slate-700")
                         }
                       />
                       <span className="flex-1">{item.label}</span>

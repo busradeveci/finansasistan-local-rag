@@ -3,11 +3,9 @@ import { getDocumentChunks } from "@/api/client"
 import { useWorkstation } from "@/context/WorkstationContext"
 import type { ChunkIndexRow } from "@/types/workstation"
 
-const HYPER_GLASS =
-  "bg-white/30 backdrop-blur-md border border-white/60 shadow-[0_4px_12px_rgba(0,0,0,0.05),inset_0_1px_1px_rgba(255,255,255,0.9)] rounded-full hover:bg-white/40 transition-all duration-300"
+const HYPER_GLASS = "ws-hyper-glass"
 
-const GLASS_SIDEBAR =
-  "bg-white/20 backdrop-blur-2xl backdrop-saturate-[1.1] border-r border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.04),inset_0_1px_0_rgba(255,255,255,0.8),inset_0_-1px_0_rgba(255,255,255,0.2)]"
+const GLASS_SIDEBAR = "ws-glass-sidebar"
 
 export default function KnowledgeBaseModule() {
   const { documentInventory } = useWorkstation()
