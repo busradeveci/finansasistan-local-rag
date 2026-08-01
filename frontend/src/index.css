@@ -93,10 +93,11 @@
     font-weight: 400;
     line-height: 1.5;
     color: var(--ws-text);
-    background: radial-gradient(circle at 15% 50%, rgba(191, 219, 254, 0.5) 0%, transparent 50%),
-      radial-gradient(circle at 85% 30%, rgba(167, 243, 208, 0.4) 0%, transparent 50%),
-      radial-gradient(circle at 50% 80%, rgba(226, 232, 240, 0.6) 0%, transparent 50%),
-      #f1f5f9;
+    background:
+      radial-gradient(circle at 14% 18%, rgba(191, 219, 254, 0.78) 0%, transparent 34%),
+      radial-gradient(circle at 84% 16%, rgba(167, 243, 208, 0.52) 0%, transparent 30%),
+      radial-gradient(circle at 50% 84%, rgba(219, 234, 254, 0.72) 0%, transparent 36%),
+      linear-gradient(180deg, #f8fbff 0%, #eef5ff 52%, #f8fbff 100%);
     background-attachment: fixed;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -132,44 +133,44 @@
 
   /* Volumetric glass — canonical bento card surface */
   .ws-volumetric-glass {
-    @apply bg-white/20 backdrop-blur-2xl backdrop-saturate-[1.1] border border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.04),inset_0_1px_0_rgba(255,255,255,0.8),inset_0_-1px_0_rgba(255,255,255,0.2)] rounded-3xl;
+    @apply bg-white/40 backdrop-blur-2xl backdrop-saturate-[1.12] border border-white/70 shadow-[0_14px_38px_rgba(20,40,70,0.06),inset_0_1px_0_rgba(255,255,255,0.86),inset_0_-1px_0_rgba(255,255,255,0.28)] rounded-3xl;
   }
 
   .ws-hyper-glass {
-    @apply bg-white/30 backdrop-blur-md border border-white/60 shadow-[0_4px_12px_rgba(0,0,0,0.05),inset_0_1px_1px_rgba(255,255,255,0.9)] rounded-full hover:bg-white/40 transition-all duration-300;
+    @apply bg-white/40 backdrop-blur-md border border-white/80 shadow-[0_4px_14px_rgba(0,0,0,0.05),inset_0_1px_1px_rgba(255,255,255,0.92)] rounded-full hover:bg-white/60 transition-all duration-300;
   }
 
   .ws-glass-panel {
-    @apply bg-white/20 backdrop-blur-2xl backdrop-saturate-[1.1] border border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.04),inset_0_1px_0_rgba(255,255,255,0.8),inset_0_-1px_0_rgba(255,255,255,0.2)] rounded-3xl p-6;
+    @apply bg-white/40 backdrop-blur-2xl backdrop-saturate-[1.12] border border-white/70 shadow-[0_14px_38px_rgba(20,40,70,0.06),inset_0_1px_0_rgba(255,255,255,0.86),inset_0_-1px_0_rgba(255,255,255,0.28)] rounded-3xl p-6;
   }
 
   .ws-glass-panel-compact {
-    @apply bg-white/20 backdrop-blur-2xl backdrop-saturate-[1.1] border border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.04),inset_0_1px_0_rgba(255,255,255,0.8),inset_0_-1px_0_rgba(255,255,255,0.2)] rounded-3xl;
+    @apply bg-white/40 backdrop-blur-2xl backdrop-saturate-[1.12] border border-white/70 shadow-[0_14px_38px_rgba(20,40,70,0.06),inset_0_1px_0_rgba(255,255,255,0.86),inset_0_-1px_0_rgba(255,255,255,0.28)] rounded-3xl;
   }
 
   .ws-glass-card {
-    @apply bg-white/20 backdrop-blur-2xl backdrop-saturate-[1.1] border border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.04),inset_0_1px_0_rgba(255,255,255,0.8),inset_0_-1px_0_rgba(255,255,255,0.2)] rounded-3xl;
+    @apply bg-white/40 backdrop-blur-2xl backdrop-saturate-[1.12] border border-white/70 shadow-[0_14px_38px_rgba(20,40,70,0.06),inset_0_1px_0_rgba(255,255,255,0.86),inset_0_-1px_0_rgba(255,255,255,0.28)] rounded-3xl;
   }
 
   .ws-glass-sidebar {
-    @apply bg-white/20 backdrop-blur-2xl backdrop-saturate-[1.1] border-r border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.04),inset_0_1px_0_rgba(255,255,255,0.8),inset_0_-1px_0_rgba(255,255,255,0.2)];
+    @apply bg-white/40 backdrop-blur-2xl backdrop-saturate-[1.12] border-r border-white/70 shadow-[0_14px_38px_rgba(20,40,70,0.06),inset_0_1px_0_rgba(255,255,255,0.86),inset_0_-1px_0_rgba(255,255,255,0.28)];
   }
 
   .ws-card,
   .ws-panel,
   .ws-strong-panel,
   .ws-stat-card {
-    @apply bg-white/20 backdrop-blur-2xl backdrop-saturate-[1.1] border border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.04),inset_0_1px_0_rgba(255,255,255,0.8),inset_0_-1px_0_rgba(255,255,255,0.2)] rounded-3xl;
+    @apply bg-white/40 backdrop-blur-2xl backdrop-saturate-[1.12] border border-white/70 shadow-[0_14px_38px_rgba(20,40,70,0.06),inset_0_1px_0_rgba(255,255,255,0.86),inset_0_-1px_0_rgba(255,255,255,0.28)] rounded-3xl;
   }
 
   .ws-glass,
   .ws-glass-inner,
   .ws-glass-elevated {
-    @apply bg-white/20 backdrop-blur-2xl backdrop-saturate-[1.1] border border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.04),inset_0_1px_0_rgba(255,255,255,0.8),inset_0_-1px_0_rgba(255,255,255,0.2)] rounded-3xl;
+    @apply bg-white/40 backdrop-blur-2xl backdrop-saturate-[1.12] border border-white/70 shadow-[0_14px_38px_rgba(20,40,70,0.06),inset_0_1px_0_rgba(255,255,255,0.86),inset_0_-1px_0_rgba(255,255,255,0.28)] rounded-3xl;
   }
 
   .ws-header {
-    @apply bg-white/20 backdrop-blur-2xl backdrop-saturate-[1.1] border-b border-white/40 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)] rounded-none;
+    @apply bg-white/40 backdrop-blur-2xl backdrop-saturate-[1.12] border-b border-white/70 shadow-[inset_0_1px_0_rgba(255,255,255,0.86)] rounded-none;
   }
 
   .ws-surface {
@@ -425,13 +426,22 @@
   .ws-workstation {
     width: 100%;
     max-width: 100%;
-    background: transparent;
+    background:
+      radial-gradient(circle at 12% 12%, rgba(191, 219, 254, 0.55) 0%, transparent 36%),
+      radial-gradient(circle at 86% 12%, rgba(167, 243, 208, 0.35) 0%, transparent 32%),
+      radial-gradient(circle at 50% 88%, rgba(219, 234, 254, 0.5) 0%, transparent 34%),
+      linear-gradient(180deg, rgba(248, 251, 255, 0.95) 0%, rgba(239, 246, 255, 0.9) 100%);
+    background-attachment: fixed;
   }
 
   .ws-workstation .ws-main-canvas {
     width: 100%;
     max-width: 100%;
     padding: 1rem 1.25rem;
+    background:
+      radial-gradient(circle at 16% 0%, rgba(191, 219, 254, 0.18) 0%, transparent 28%),
+      radial-gradient(circle at 100% 0%, rgba(167, 243, 208, 0.12) 0%, transparent 24%),
+      linear-gradient(180deg, rgba(255, 255, 255, 0.24) 0%, rgba(248, 251, 255, 0.12) 100%);
   }
 
   .ws-workstation .ws-main-canvas--full-bleed {
@@ -471,7 +481,7 @@
   }
 
   .ws-chat-card {
-    @apply bg-white/75 backdrop-blur-xl border border-white/75 shadow-[0_8px_24px_rgba(20,40,70,0.06),inset_0_1px_0_rgba(255,255,255,0.9)] rounded-3xl;
+    @apply bg-white/80 backdrop-blur-xl border border-white/80 shadow-[0_8px_24px_rgba(20,40,70,0.06),inset_0_1px_0_rgba(255,255,255,0.9)] rounded-3xl;
     padding: 1rem;
   }
 
@@ -543,7 +553,7 @@
   }
 
   .ws-evidence-panel {
-    @apply bg-white/75 backdrop-blur-xl border border-white/75 shadow-[0_8px_24px_rgba(20,40,70,0.06),inset_0_1px_0_rgba(255,255,255,0.9)] rounded-3xl;
+    @apply bg-white/80 backdrop-blur-xl border border-white/80 shadow-[0_8px_24px_rgba(20,40,70,0.06),inset_0_1px_0_rgba(255,255,255,0.9)] rounded-3xl;
     padding: calc(0.875rem);
   }
 
@@ -566,7 +576,7 @@
   }
 
   .ws-chat-workspace .ws-chat-card {
-    @apply bg-white/75 backdrop-blur-xl border border-white/75 shadow-[0_8px_24px_rgba(20,40,70,0.06),inset_0_1px_0_rgba(255,255,255,0.9)] rounded-3xl;
+    @apply bg-white/80 backdrop-blur-xl border border-white/80 shadow-[0_8px_24px_rgba(20,40,70,0.06),inset_0_1px_0_rgba(255,255,255,0.9)] rounded-3xl;
     padding: 1rem;
   }
 

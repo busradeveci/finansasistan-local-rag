@@ -19,7 +19,7 @@ type Kpi = {
 }
 
 const GLASS_CARD =
-  "rounded-3xl border border-white/55 bg-white/72 shadow-[0_8px_32px_rgba(40,60,90,0.05)] backdrop-blur-[10px]"
+  "rounded-3xl border border-white/75 bg-white/82 shadow-[0_14px_36px_rgba(40,60,90,0.07)] backdrop-blur-[14px]"
 
 function buildKpis(analytics: AnalyticsPacket | null, status: StatusPacket | null, vectorCount?: number | null): Kpi[] {
   const queries = analytics?.queries_processed_today ?? 0

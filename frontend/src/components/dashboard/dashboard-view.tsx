@@ -10,7 +10,7 @@ export function DashboardView() {
   const { documentIndex } = useWorkstation()
 
   return (
-    <div className="grid grid-cols-12 gap-6 rounded-3xl border border-white/50 bg-white/35 p-4 shadow-[0_8px_32px_rgba(40,60,90,0.05)] backdrop-blur-[10px] sm:p-5 lg:p-6">
+    <div className="grid grid-cols-12 gap-6 rounded-3xl border border-white/72 bg-white/45 p-4 shadow-[0_16px_40px_rgba(40,60,90,0.08)] backdrop-blur-[18px] sm:p-5 lg:p-6">
       <div className="col-span-12 flex items-end justify-between">
         <div className="flex flex-col">
           <h1 className="text-base font-semibold tracking-tight text-slate-900">Workstation</h1>

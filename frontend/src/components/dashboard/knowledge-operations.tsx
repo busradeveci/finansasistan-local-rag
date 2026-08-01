@@ -16,10 +16,10 @@ type Operation = {
 }
 
 const GLASS_CARD =
-  "bg-white/70 backdrop-blur-[10px] backdrop-saturate-[1.02] border border-white/60 shadow-[0_10px_30px_rgba(20,40,70,0.05)] rounded-3xl"
+  "bg-white/82 backdrop-blur-[14px] backdrop-saturate-[1.08] border border-white/78 shadow-[0_14px_36px_rgba(20,40,70,0.06)] rounded-3xl"
 
 const HYPER_GLASS =
-  "bg-white/60 backdrop-blur-sm border border-white/70 shadow-[0_4px_14px_rgba(20,40,70,0.04)] rounded-full hover:bg-white/75 transition-all duration-300"
+  "bg-white/72 backdrop-blur-sm border border-white/80 shadow-[0_4px_14px_rgba(20,40,70,0.05)] rounded-full hover:bg-white/86 transition-all duration-300"
 
 const kindMeta: Record<FileKind, { icon: React.ComponentType<{ className?: string }>; color: string; label: string }> = {
   pdf: { icon: FileType2, color: "text-red-500", label: "PDF" },

@@ -21,21 +21,21 @@ type Layer = {
 }
 
 const GLASS_CARD =
-  "bg-white/70 backdrop-blur-[10px] backdrop-saturate-[1.02] border border-white/60 shadow-[0_10px_30px_rgba(20,40,70,0.05)] rounded-3xl"
+  "bg-white/82 backdrop-blur-[14px] backdrop-saturate-[1.08] border border-white/78 shadow-[0_14px_36px_rgba(20,40,70,0.06)] rounded-3xl"
 
 const HYPER_GLASS =
-  "bg-white/60 backdrop-blur-sm border border-white/70 shadow-[0_4px_14px_rgba(20,40,70,0.04)] rounded-full hover:bg-white/75 transition-all duration-300"
+  "bg-white/72 backdrop-blur-sm border border-white/80 shadow-[0_4px_14px_rgba(20,40,70,0.05)] rounded-full hover:bg-white/86 transition-all duration-300"
 
 function MeterCard({ meter }: { meter: Meter }) {
   const Icon = meter.icon
   const color =
     meter.value >= 80 ? "bg-red-500" : meter.value >= 60 ? "bg-amber-400" : "bg-blue-600"
   return (
-    <div className="flex flex-col gap-2 px-4 py-4">
-      <div className="flex items-center justify-between">
-        <span className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-slate-600/80">
+    <div className="flex min-w-0 flex-col gap-2 rounded-2xl border border-white/70 bg-white/55 px-4 py-4 shadow-[0_6px_16px_rgba(20,40,70,0.05)]">
+      <div className="flex min-w-0 items-center justify-between gap-3">
+        <span className="flex min-w-0 items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-slate-600/80">
           <Icon className="h-3.5 w-3.5 text-slate-500" />
-          {meter.label}
+          <span className="truncate">{meter.label}</span>
         </span>
         <span className="font-mono text-xs font-semibold tabular-nums text-slate-800">{meter.value}%</span>
       </div>
@@ -53,7 +53,7 @@ function MeterCard({ meter }: { meter: Meter }) {
 function LayerCard({ layer }: { layer: Layer }) {
   const Icon = layer.icon
   return (
-      <div className="flex items-center gap-3 px-4 py-4">
+    <div className="flex min-w-0 items-center gap-3 rounded-2xl border border-white/70 bg-white/55 px-4 py-4 shadow-[0_6px_16px_rgba(20,40,70,0.05)]">
       <div className={`flex h-8 w-8 shrink-0 items-center justify-center text-slate-600 ${HYPER_GLASS} !rounded-2xl`}>
         <Icon className="h-3.5 w-3.5 text-slate-600" />
       </div>
@@ -61,7 +61,9 @@ function LayerCard({ layer }: { layer: Layer }) {
         <div className="truncate text-[11px] font-medium text-slate-900">{layer.short}</div>
         <div className="text-[10px] text-slate-600/70">blocked today</div>
       </div>
-      <span className="font-mono text-sm font-semibold tabular-nums text-slate-800">{layer.blocked}</span>
+      <span className="shrink-0 font-mono text-sm font-semibold tabular-nums text-slate-800">
+        {layer.blocked}
+      </span>
     </div>
   )
 }
@@ -131,13 +133,17 @@ export function SystemTelemetry({ telemetry, security }: SystemTelemetryProps) {
           {sanitizationActive ? "Active" : "Offline"}
         </span>
       </div>
-      <div className="grid grid-cols-2 divide-x divide-y divide-white/40 sm:grid-cols-3 sm:divide-y-0 lg:grid-cols-5">
-        {meters.map((m) => (
-          <MeterCard key={m.label} meter={m} />
-        ))}
-        {layers.map((l) => (
-          <LayerCard key={l.label} layer={l} />
-        ))}
+      <div className="flex flex-col gap-3 p-4">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          {meters.map((m) => (
+            <MeterCard key={m.label} meter={m} />
+          ))}
+        </div>
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {layers.map((l) => (
+            <LayerCard key={l.label} layer={l} />
+          ))}
+        </div>
       </div>
     </section>
   )

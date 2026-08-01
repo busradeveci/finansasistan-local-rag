@@ -17,10 +17,10 @@ type LlmRoutingProps = {
 }
 
 const GLASS_CARD =
-  "bg-white/20 backdrop-blur-2xl backdrop-saturate-[1.1] border border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.04),inset_0_1px_0_rgba(255,255,255,0.8),inset_0_-1px_0_rgba(255,255,255,0.2)] rounded-3xl"
+  "bg-white/35 backdrop-blur-2xl backdrop-saturate-[1.12] border border-white/70 shadow-[0_14px_38px_rgba(20,40,70,0.06),inset_0_1px_0_rgba(255,255,255,0.86),inset_0_-1px_0_rgba(255,255,255,0.28)] rounded-3xl"
 
 const HYPER_GLASS =
-  "bg-white/30 backdrop-blur-md border border-white/60 shadow-[0_4px_12px_rgba(0,0,0,0.05),inset_0_1px_1px_rgba(255,255,255,0.9)] rounded-full hover:bg-white/40 transition-all duration-300"
+  "bg-white/42 backdrop-blur-md border border-white/75 shadow-[0_4px_14px_rgba(0,0,0,0.05),inset_0_1px_1px_rgba(255,255,255,0.92)] rounded-full hover:bg-white/55 transition-all duration-300"
 
 export function LlmRouting(props: LlmRoutingProps = {}) {
   const polled = useDashboardData(undefined, props.status === undefined)
