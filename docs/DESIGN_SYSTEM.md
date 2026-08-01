@@ -675,3 +675,60 @@ The interface should preserve:
 - Microsoft Fluent-inspired consistency
 
 The objective is evolution, never redesign.
+
+# Official Design Tokens (Strict)
+
+These colors are mandatory throughout the application.
+
+No other primary colors may be introduced.
+
+## Background
+
+App Background
+#F5F8FC
+
+Surface
+rgba(255,255,255,.72)
+
+Glass
+rgba(255,255,255,.82)
+
+Sidebar
+#EEF4FA
+
+Sidebar Active
+rgba(255,255,255,.82)
+
+Primary Button
+#007FFF
+
+Primary Hover
+#0067D6
+
+Headings
+#1C0F45
+
+Body Text
+#4B6075
+
+Secondary Text
+#718096
+
+Borders
+rgba(255,255,255,.55)
+
+Charts
+
+#007FFF
+#009ACD
+#00CED1
+#87CEFA
+
+Success
+#00CED1
+
+Warning
+#F4B400
+
+Error
+#D14343
