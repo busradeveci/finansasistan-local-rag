@@ -34,7 +34,7 @@ export default function CitationContent({ content, sources, onCitationClick }: P
             type="button"
             onClick={() => onCitationClick(ref)}
             className="ws-citation-link"
-            title={`Focus evidence slice [${ref}]`}
+            title={`References [${ref}]`}
           >
             {part}
           </button>

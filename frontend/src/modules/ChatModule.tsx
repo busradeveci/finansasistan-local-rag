@@ -83,7 +83,7 @@ export default function ChatModule() {
 
   return (
     <div className="ws-chat-workspace flex h-full min-h-0 w-full max-w-full flex-col overflow-hidden">
-      <div className="ws-chat-layout flex h-full min-h-0 w-full flex-1 gap-6 overflow-hidden p-1">
+      <div className="ws-chat-layout flex h-full min-h-0 w-full flex-1 gap-6 overflow-hidden p-1.5">
         <div className="ws-chat-card flex h-full min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
           <ConversationCanvas
             evidenceOpen={evidenceOpen}

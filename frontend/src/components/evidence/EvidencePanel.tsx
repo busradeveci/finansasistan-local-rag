@@ -7,10 +7,10 @@ import { useWorkstation } from "@/context/WorkstationContext"
 import { FileText } from "lucide-react"
 
 const HYPER_GLASS =
-  "bg-white/30 backdrop-blur-md border border-white/60 shadow-[0_4px_12px_rgba(0,0,0,0.05),inset_0_1px_1px_rgba(255,255,255,0.9)] rounded-full hover:bg-white/40 transition-all duration-300"
+  "bg-white/58 backdrop-blur-md border border-white/74 shadow-[0_6px_16px_rgba(20,40,70,0.06),inset_0_1px_0_rgba(255,255,255,0.88)] rounded-full hover:bg-white/68 transition-all duration-200"
 
 const GLASS_INNER =
-  "bg-white/20 backdrop-blur-2xl backdrop-saturate-[1.1] border border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.04),inset_0_1px_0_rgba(255,255,255,0.8),inset_0_-1px_0_rgba(255,255,255,0.2)] rounded-3xl"
+  "bg-white/70 backdrop-blur-lg border border-white/74 shadow-[0_6px_18px_rgba(20,40,70,0.06),inset_0_1px_0_rgba(255,255,255,0.88)] rounded-3xl"
 
 interface Props {
   sources: EvidenceChunk[]
@@ -38,17 +38,17 @@ export default function EvidencePanel({ sources, selected, onSelect }: Props) {
     <aside className="ws-evidence-panel flex h-full w-full shrink-0 flex-col overflow-hidden">
       <header className="mb-1 shrink-0 border-b border-white/40 pb-1.5">
         <h2 className="truncate text-badge font-bold uppercase tracking-wider text-[var(--ws-text)]">
-          Evidence Panel
+          Retrieved Sources
         </h2>
         <p className="mt-0.5 truncate text-badge leading-snug tracking-wide text-[var(--ws-text-muted)]">
-          Retrieved sources &amp; chunk audit
+          Supporting Documents
         </p>
       </header>
 
       <div className="fluent-scrollbar min-h-0 flex-1 space-y-2 overflow-y-auto metric-display">
         {sources.length === 0 ? (
           <p className="text-body-sm leading-relaxed tracking-wide text-[var(--ws-text-muted)]">
-            Run a query to populate retrieved sources and similarity metrics.
+            No active conversations.
           </p>
         ) : (
           <>
@@ -115,7 +115,7 @@ export default function EvidencePanel({ sources, selected, onSelect }: Props) {
 
                 <section>
                   <p className="mb-1 text-badge font-semibold uppercase tracking-wider text-[var(--ws-text-muted)]">
-                    Chunk Preview
+                    Context
                   </p>
                   <pre className={`max-h-36 overflow-y-auto whitespace-pre-wrap break-words p-2.5 text-body-sm leading-relaxed tracking-wide text-slate-500 fluent-scrollbar ${GLASS_INNER}`}>
                     {active.content ?? active.preview}
@@ -134,7 +134,7 @@ export default function EvidencePanel({ sources, selected, onSelect }: Props) {
                     className="ws-toolbar-btn mt-0.5 text-[10px]"
                   >
                     <FileText className="h-3 w-3" strokeWidth={1.75} />
-                    Document Vault
+                    Documents
                   </button>
                 </section>
               </>

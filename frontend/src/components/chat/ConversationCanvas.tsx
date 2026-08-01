@@ -42,10 +42,10 @@ interface ConversationCanvasProps {
 
 
 const HYPER_GLASS =
-  "bg-white/30 backdrop-blur-md border border-white/60 shadow-[0_4px_12px_rgba(0,0,0,0.05),inset_0_1px_1px_rgba(255,255,255,0.9)] rounded-full hover:bg-white/40 transition-all duration-300"
+  "bg-white/55 backdrop-blur-md border border-white/70 shadow-[0_6px_18px_rgba(20,40,70,0.06),inset_0_1px_0_rgba(255,255,255,0.86)] rounded-full hover:bg-white/65 transition-all duration-200"
 
 const GLASS_CARD =
-  "bg-white/20 backdrop-blur-2xl backdrop-saturate-[1.1] border border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.04),inset_0_1px_0_rgba(255,255,255,0.8),inset_0_-1px_0_rgba(255,255,255,0.2)] rounded-3xl"
+  "bg-white/72 backdrop-blur-xl border border-white/70 shadow-[0_8px_26px_rgba(20,40,70,0.06),inset_0_1px_0_rgba(255,255,255,0.86)] rounded-3xl"
 
 function uniqueSourcesByFilename(sources: EvidenceChunk[]): EvidenceChunk[] {
   const seen = new Set<string>()
@@ -421,7 +421,7 @@ export default function ConversationCanvas({
 
               <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-0.5">
 
-                <h2 className="truncate text-card-title">Analysis Workspace</h2>
+                <h2 className="truncate text-card-title">Workspace Chat</h2>
 
                 {(activeAgentBadge || (isGenerating && !activeAgentBadge)) && (
 
@@ -431,7 +431,7 @@ export default function ConversationCanvas({
 
                   >
 
-                    [{activeAgentBadge ?? "Routing…"}]
+                    [Active Model: {activeAgentBadge ?? "Inference"}]
 
                   </span>
 
@@ -447,7 +447,7 @@ export default function ConversationCanvas({
 
                 )}
 
-                {isGenerating ? (streamStatusText ?? "Streaming…") : "Ready"}
+                {isGenerating ? (streamStatusText ?? "Loading...") : "Ready"}
 
               </span>
 
@@ -469,7 +469,7 @@ export default function ConversationCanvas({
 
               <span className="hidden sm:inline">
 
-                {evidenceOpen ? "Hide Evidence" : "Show Evidence"}
+                {evidenceOpen ? "Close" : "References"}
 
               </span>
 
@@ -501,7 +501,7 @@ export default function ConversationCanvas({
 
               <span className="hidden sm:inline">
 
-                {evidenceExpanded ? "Collapse Panel" : "Expand Panel"}
+                {evidenceExpanded ? "Close" : "View Details"}
 
               </span>
 
@@ -524,7 +524,7 @@ export default function ConversationCanvas({
             <div className="ws-chat-empty flex h-full items-center justify-center">
               <p className="max-w-lg text-center text-[var(--ws-text-muted)]">
 
-                Foundry Local RAG Engine Active. Submit an executive query to begin analysis.
+                No active conversations.
 
               </p>
 
@@ -568,7 +568,7 @@ export default function ConversationCanvas({
 
                       <p className="text-badge font-semibold uppercase tracking-wider text-[var(--ws-text-muted)]">
 
-                        {isUser ? "Query" : "Executive Analysis"}
+                        {isUser ? "Prompt" : "Response"}
 
                       </p>
 
@@ -634,9 +634,9 @@ export default function ConversationCanvas({
 
                         {isLatestAssistant
 
-                          ? (streamStatusText ?? "Generating report…")
+                          ? (streamStatusText ?? "Loading...")
 
-                          : "Awaiting response…"}
+                          : "Response"}
 
                       </p>
 
@@ -648,7 +648,7 @@ export default function ConversationCanvas({
 
                         <p className="mb-1 text-badge font-semibold uppercase tracking-wider text-[var(--ws-text-muted)]">
 
-                          Source documents
+                          Supporting Documents
 
                         </p>
 
@@ -742,7 +742,7 @@ export default function ConversationCanvas({
 
               onKeyDown={handleKeyDown}
 
-              placeholder="Ask analytical query…"
+              placeholder="Prompt"
 
               className="ws-chat-textarea flex-1 resize-none overflow-y-hidden bg-transparent text-[var(--ws-text)] placeholder:text-[var(--ws-text-muted)] scrollbar-none focus:outline-none"
 
@@ -766,7 +766,7 @@ export default function ConversationCanvas({
 
                 <Square className="h-3.5 w-3.5" />
 
-                Stop
+                Stop Generation
 
               </button>
 
@@ -796,7 +796,7 @@ export default function ConversationCanvas({
 
           <p className="ws-chat-hint text-[var(--ws-text-muted)]">
 
-            Enter to send · Shift+Enter for new line
+            Enter to send. Shift+Enter for new line.
 
           </p>
 
