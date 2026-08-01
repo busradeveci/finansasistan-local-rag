@@ -19,7 +19,7 @@ type Kpi = {
 }
 
 const GLASS_CARD =
-  "bg-white/20 backdrop-blur-2xl backdrop-saturate-[1.1] border border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.04),inset_0_1px_0_rgba(255,255,255,0.8),inset_0_-1px_0_rgba(255,255,255,0.2)] rounded-3xl"
+  "rounded-3xl border border-white/55 bg-white/72 shadow-[0_8px_32px_rgba(40,60,90,0.05)] backdrop-blur-[10px]"
 
 function buildKpis(analytics: AnalyticsPacket | null, status: StatusPacket | null, vectorCount?: number | null): Kpi[] {
   const queries = analytics?.queries_processed_today ?? 0
@@ -30,14 +30,14 @@ function buildKpis(analytics: AnalyticsPacket | null, status: StatusPacket | nul
 
   return [
     {
-      label: "Total Queries (Today)",
+      label: "Today's Queries",
       value: queries.toLocaleString(),
       icon: MessagesSquare,
       delta: analytics ? "+12.4%" : undefined,
       trend: "up",
     },
     {
-      label: "Avg Response Time",
+      label: "Average Response Time",
       value: avgSec || "—",
       unit: avgSec ? "s" : undefined,
       icon: Timer,
@@ -51,7 +51,7 @@ function buildKpis(analytics: AnalyticsPacket | null, status: StatusPacket | nul
       hint: "docx · pdf · xlsx",
     },
     {
-      label: "Vector Store Count",
+      label: "Vector Store Entries",
       value: vectors.toLocaleString(),
       icon: Boxes,
       hint: "SQLite F32 Blobs",
@@ -70,11 +70,11 @@ export function KpiStrip({ analytics, status, vectorCount }: KpiStripProps) {
           <div
             key={kpi.label}
             aria-label={kpi.label}
-            className={`col-span-12 flex flex-col gap-1.5 px-4 py-4 sm:col-span-6 lg:col-span-3 ${GLASS_CARD}`}
+            className={`col-span-12 flex flex-col gap-1.5 px-5 py-4 sm:col-span-6 lg:col-span-3 ${GLASS_CARD}`}
           >
             <div className="flex items-center justify-between">
-              <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-500">{kpi.label}</span>
-              <Icon className="h-3.5 w-3.5 text-slate-400" />
+              <span className="text-[11px] font-semibold tracking-tight text-slate-500">{kpi.label}</span>
+              <Icon className="h-3.5 w-3.5 text-slate-400/90" />
             </div>
             <div className="flex items-baseline gap-1">
               <span className="font-mono text-2xl font-semibold tracking-tight text-slate-800">{kpi.value}</span>
@@ -84,8 +84,10 @@ export function KpiStrip({ analytics, status, vectorCount }: KpiStripProps) {
               {kpi.delta ? (
                 <span
                   className={
-                    "inline-flex items-center gap-1 font-medium " +
-                    (kpi.trend === "up" ? "text-orange-600" : "text-slate-800")
+                    "inline-flex items-center gap-1 rounded-full px-2 py-0.5 font-medium " +
+                    (kpi.trend === "up"
+                      ? "border border-blue-100 bg-blue-50/80 text-blue-700"
+                      : "border border-cyan-100 bg-cyan-50/80 text-cyan-700")
                   }
                 >
                   {kpi.trend === "up" ? (

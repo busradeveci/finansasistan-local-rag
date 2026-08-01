@@ -10,13 +10,15 @@ export function DashboardView() {
   const { documentIndex } = useWorkstation()
 
   return (
-    <div className="grid grid-cols-12 gap-6">
+    <div className="grid grid-cols-12 gap-6 rounded-3xl border border-white/50 bg-white/35 p-4 shadow-[0_8px_32px_rgba(40,60,90,0.05)] backdrop-blur-[10px] sm:p-5 lg:p-6">
       <div className="col-span-12 flex items-end justify-between">
         <div className="flex flex-col">
-          <h1 className="text-base font-semibold tracking-tight text-slate-900">Workstation Dashboard</h1>
-          <p className="text-xs text-slate-500">Offline retrieval-augmented generation node · Operations</p>
+          <h1 className="text-base font-semibold tracking-tight text-slate-900">Workstation</h1>
+          <p className="text-xs text-slate-500">Enterprise knowledge operations overview.</p>
         </div>
-        <span className="hidden font-mono text-[11px] text-slate-400 md:block">node-01 · air-gapped</span>
+        <span className="hidden rounded-full border border-sky-100/80 bg-sky-50/80 px-3 py-1 font-mono text-[11px] text-sky-700 md:block">
+          node-01 · air-gapped
+        </span>
       </div>
 
       <KpiStrip analytics={analytics} status={status} vectorCount={documentIndex?.vectors ?? null} />
