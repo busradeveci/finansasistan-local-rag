@@ -28,9 +28,9 @@ export function LlmRouting(props: LlmRoutingProps = {}) {
   const analytics = props.analytics !== undefined ? props.analytics : polled.analytics
   const loading = props.loading !== undefined ? props.loading : polled.loading
 
-  const routerModel = status?.models.router_model ?? "phi-4-mini"
-  const chatModel = status?.models.chat_model ?? "phi-3.5-mini"
-  const embedModel = status?.models.embed_model ?? "qwen3-embedding-0.6b"
+  const routerModel = status?.models?.router_model ?? "phi-4-mini"
+  const chatModel = status?.models?.chat_model ?? "phi-3.5-mini"
+  const embedModel = status?.models?.embed_model ?? "qwen3-embedding-0.6b"
 
   const chatLoad =
     analytics && analytics.queries_processed_today > 0
@@ -61,7 +61,7 @@ export function LlmRouting(props: LlmRoutingProps = {}) {
           <Route className="h-4 w-4 text-slate-800" />
           <h2 className="text-xs font-semibold text-slate-900">Active LLM Routing</h2>
         </div>
-        <span className="font-mono text-[10px] text-slate-400">
+        <span className="font-mono text-[10px] text-slate-500">
           {loading ? "SYNCING…" : "SEMANTIC ROUTER v2"}
         </span>
       </div>
@@ -85,7 +85,7 @@ export function LlmRouting(props: LlmRoutingProps = {}) {
         </div>
 
         <div className="flex items-center justify-center" aria-hidden="true">
-          <div className="flex flex-col items-center gap-1 text-slate-300">
+          <div className="flex flex-col items-center gap-1 text-slate-400">
             <ArrowRight className="hidden h-5 w-5 md:block" />
             <span className="hidden font-mono text-[10px] uppercase tracking-wider text-slate-400 md:block">
               routes
@@ -101,19 +101,19 @@ export function LlmRouting(props: LlmRoutingProps = {}) {
                 key={node.model}
                 className="flex items-center gap-2.5 rounded-3xl border border-white/40 bg-white/20 p-2.5 shadow-[0_8px_30px_rgb(0,0,0,0.04),inset_0_1px_0_rgba(255,255,255,0.8),inset_0_-1px_0_rgba(255,255,255,0.2)] backdrop-blur-2xl backdrop-saturate-[1.1]"
               >
-                <div className={`flex h-8 w-8 items-center justify-center text-slate-600 ${HYPER_GLASS} !rounded-2xl`}>
+                <div className={`flex h-8 w-8 items-center justify-center text-slate-700 ${HYPER_GLASS} !rounded-2xl`}>
                   <Icon className="h-4 w-4" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="font-mono text-[13px] font-semibold text-slate-800">{node.model}</div>
-                  <div className="text-[10px] font-medium uppercase tracking-wider text-slate-400">{node.role}</div>
+                  <div className="text-[10px] font-medium uppercase tracking-wider text-slate-500">{node.role}</div>
                 </div>
                 <div className="text-right">
                   <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 text-[10px] font-semibold text-orange-700 ${HYPER_GLASS}`}>
                     <span className="h-1.5 w-1.5 rounded-full bg-orange-500" />
                     {node.status}
                   </span>
-                  <div className="mt-1 font-mono text-[10px] text-slate-400">{node.load}</div>
+                  <div className="mt-1 font-mono text-[10px] text-slate-500">{node.load}</div>
                 </div>
               </div>
             )

@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react"
-import { FileText, FileSpreadsheet, FileType2, MoreHorizontal, Filter } from "lucide-react"
+import { FileText, FileSpreadsheet, FileType2, MoreHorizontal, Filter, Search } from "lucide-react"
 import { useWorkstation } from "@/context/WorkstationContext"
 import type { DocumentInventoryRow, UploadQueueItem } from "@/types/workstation"
 
@@ -44,7 +44,7 @@ function inferKind(filename: string, type?: string): FileKind {
 }
 
 function mapIndexState(state: string): OpStatus {
-  const s = state.toLowerCase()
+  const s = (state || "").toLowerCase()
   if (s.includes("fail")) return "Failed"
   if (s.includes("process") || s.includes("indexing")) return "Processing"
   if (s.includes("queue") || s.includes("pending")) return "Queued"
@@ -69,7 +69,7 @@ function rowFromInventory(doc: DocumentInventoryRow): Operation {
     name: doc.filename,
     kind: inferKind(doc.filename, doc.type || doc.file_type),
     size: "—",
-    chunks: doc.chunks,
+    chunks: doc.chunks || 0,
     status: mapIndexState(doc.indexation_state),
     time: formatRelativeTime(doc.last_updated),
   }
@@ -92,43 +92,51 @@ export function KnowledgeOperations() {
   const { documentInventory, documentInventoryLoading, uploadQueue } = useWorkstation()
   const [filter, setFilter] = useState("")
 
-  const operations = useMemo(() => {
+  const { operations, totalFilteredCount } = useMemo(() => {
     const uploadNames = new Set(uploadQueue.map((q) => q.name))
     const fromInventory = documentInventory
       .filter((d) => !uploadNames.has(d.filename))
       .map(rowFromInventory)
     const fromQueue = uploadQueue.map(rowFromUpload)
     const merged = [...fromQueue, ...fromInventory]
+
     const q = filter.trim().toLowerCase()
-    if (!q) return merged.slice(0, 7)
-    return merged.filter((o) => o.name.toLowerCase().includes(q)).slice(0, 7)
+    const filtered = !q ? merged : merged.filter((o) => o.name.toLowerCase().includes(q))
+
+    return {
+      operations: filtered.slice(0, 7),
+      totalFilteredCount: filtered.length,
+    }
   }, [documentInventory, uploadQueue, filter])
 
-  const total = documentInventory.length
+  const total = documentInventory.length + uploadQueue.length
 
   return (
     <section className={`overflow-hidden ${GLASS_CARD}`}>
       <div className="flex items-center justify-between border-b border-white/50 px-4 py-3">
         <div className="flex items-center gap-2">
           <h2 className="text-xs font-semibold text-slate-900">Operations</h2>
-          <span className={`${HYPER_GLASS} px-1.5 py-0.5 font-mono text-[10px] text-slate-500`}>
-            {operations.length} / {total.toLocaleString()}
+          <span className={`${HYPER_GLASS} px-2 py-0.5 font-mono text-[10px] text-slate-600`}>
+            {totalFilteredCount} / {total.toLocaleString()}
           </span>
         </div>
         <div className="flex items-center gap-2">
-          <input
-            type="search"
-            value={filter}
-            onChange={(e) => setFilter(e.target.value)}
-            placeholder="Filter…"
-            aria-label="Filter documents"
-            className={`h-7 w-32 px-3 text-[11px] text-slate-800 placeholder:text-slate-500 focus:outline-none ${HYPER_GLASS}`}
-          />
+          <div className="relative">
+            <Search className="absolute left-2.5 top-1/2 h-3 w-3 -translate-y-1/2 text-slate-400" />
+            <input
+              type="search"
+              value={filter}
+              onChange={(e) => setFilter(e.target.value)}
+              placeholder="Filter operations…"
+              aria-label="Filter documents"
+              className={`h-7 w-36 pl-7 pr-3 text-[11px] text-slate-800 placeholder:text-slate-400 focus:outline-none ${HYPER_GLASS}`}
+            />
+          </div>
           <button
             type="button"
-            className={`inline-flex items-center gap-1.5 px-3 py-1 text-[11px] font-medium text-slate-500 ${HYPER_GLASS}`}
+            className={`inline-flex items-center gap-1.5 px-3 py-1 text-[11px] font-medium text-slate-600 ${HYPER_GLASS}`}
           >
-            <Filter className="h-3.5 w-3.5" />
+            <Filter className="h-3.5 w-3.5 text-slate-500" />
             Filter
           </button>
         </div>
@@ -152,12 +160,12 @@ export function KnowledgeOperations() {
               {operations.length === 0 ? (
                 <tr className="bg-transparent">
                   <td colSpan={5} className="px-4 py-6 text-center text-xs text-slate-400">
-                    No documents indexed yet
+                    No matching operations found
                   </td>
                 </tr>
               ) : (
                 operations.map((op) => {
-                  const meta = kindMeta[op.kind]
+                  const meta = kindMeta[op.kind] || kindMeta.other
                   const Icon = meta.icon
                   return (
                     <tr
@@ -209,7 +217,7 @@ export function KnowledgeOperations() {
 
       <div className="flex items-center justify-between border-t border-white/40 px-4 py-2 text-[11px] text-slate-500">
         <span>
-          Showing {operations.length} of {total.toLocaleString()} documents
+          Showing {operations.length} of {totalFilteredCount} filtered operations
         </span>
       </div>
     </section>

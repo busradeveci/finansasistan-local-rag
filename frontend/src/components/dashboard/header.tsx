@@ -17,7 +17,7 @@ export function Header({ breadcrumb }: HeaderProps) {
       <header className="ws-header sticky top-0 z-20 flex h-12 shrink-0 items-center gap-3 px-3 md:px-4">
         <nav aria-label="Breadcrumb" className="hidden md:block">
           <ol className="flex items-center gap-1.5 text-sm">
-            <li className="text-slate-400">Foundry Local</li>
+            <li className="text-slate-400">BetaVector</li>
             {breadcrumb.map((crumb, i) => {
               const last = i === breadcrumb.length - 1
               return (
@@ -34,7 +34,7 @@ export function Header({ breadcrumb }: HeaderProps) {
           <Search className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" />
           <input
             type="search"
-            placeholder="Search documents, chunks, or queries…"
+            placeholder="Search knowledge, documents or evidence..."
             aria-label="Search"
             readOnly
             className={`h-8 w-full pl-8 pr-3 text-[13px] text-slate-800 placeholder:text-slate-500 focus:outline-none ${HYPER_GLASS}`}
@@ -58,7 +58,7 @@ export function Header({ breadcrumb }: HeaderProps) {
           </span>
           <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold text-slate-800 ${HYPER_GLASS}`}>
             <ShieldCheck className="h-3.5 w-3.5" />
-            Secured
+            Verified
           </span>
         </div>
 

@@ -64,17 +64,17 @@ function ChatSessionsPanel() {
                     className={
                       "w-full px-2.5 py-2 text-left transition-all duration-200 " +
                       (active
-                          ? "rounded-2xl border border-white/80 bg-white/80 text-slate-900 shadow-[0_8px_24px_rgba(70,92,122,0.12)]"
-                          : `${HYPER_GLASS} !rounded-2xl border-transparent text-slate-600 hover:text-slate-900`)
+                        ? "rounded-2xl border border-white/80 bg-white/80 text-slate-900 shadow-[0_8px_24px_rgba(70,92,122,0.12)]"
+                        : `${HYPER_GLASS} !rounded-2xl border-transparent text-slate-600 hover:text-slate-900`)
                     }
                   >
                     <p className="truncate text-[11px] font-medium leading-tight">{s.label}</p>
-                      <p className="truncate text-[9px] leading-tight text-slate-500">{s.date}</p>
+                    <p className="truncate text-[9px] leading-tight text-slate-500">{s.date}</p>
                   </button>
                   <button
                     type="button"
                     onClick={() => deleteSession(s.id)}
-                      className="absolute right-1.5 top-1.5 rounded-lg p-0.5 text-slate-500 opacity-0 transition-opacity hover:text-slate-800 group-hover:opacity-100"
+                    className="absolute right-1.5 top-1.5 rounded-lg p-0.5 text-slate-500 opacity-0 transition-opacity hover:text-slate-800 group-hover:opacity-100"
                     aria-label={`Delete ${s.label}`}
                   >
                     <Trash2 className="h-2.5 w-2.5" />
@@ -100,8 +100,8 @@ export function Sidebar() {
           <ChevronsLeftRight className="h-4 w-4" />
         </div>
         <div className="leading-tight">
-          <div className="text-[13px] font-semibold tracking-tight text-slate-900">Sentinel</div>
-          <div className="text-[10px] font-medium text-slate-600">Workstation</div>
+          <div className="text-[13px] font-semibold tracking-tight text-slate-900">BetaVector</div>
+          <div className="text-[10px] font-medium text-slate-600">Control Center</div>
         </div>
       </div>
 
@@ -134,7 +134,7 @@ export function Sidebar() {
                       />
                       <span className="flex-1">{item.label}</span>
                       {badge && (
-                          <span className={`px-1.5 py-0.5 font-mono text-[10px] text-slate-700 ${HYPER_GLASS}`}>
+                        <span className={`px-1.5 py-0.5 font-mono text-[10px] text-slate-700 ${HYPER_GLASS}`}>
                           {badge}
                         </span>
                       )}
@@ -155,13 +155,13 @@ export function Sidebar() {
               <span className="absolute inline-flex h-full w-full rounded-full bg-emerald-300 opacity-60" />
               <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-500" />
             </span>
-            <span className="text-[11px] font-semibold text-slate-900">Secure Local Node</span>
+            <span className="text-[11px] font-semibold text-slate-900">Runtime Environment</span>
           </div>
           <p className="mt-1 text-[10px] leading-snug text-slate-600">
-            Protected environment connected.
+            Offline inference engine available
           </p>
           <div className="mt-2.5 flex items-center justify-between border-t border-slate-200/80 pt-2.5 font-mono text-[10px] text-slate-500">
-            <span>Authorized access only.</span>
+            <span>Authorized operators only</span>
             <span className="font-semibold text-emerald-500">● online</span>
           </div>
         </div>

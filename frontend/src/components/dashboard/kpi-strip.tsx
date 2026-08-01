@@ -30,7 +30,7 @@ function buildKpis(analytics: AnalyticsPacket | null, status: StatusPacket | nul
 
   return [
     {
-      label: "Today's Queries",
+      label: "Queries Today",
       value: queries.toLocaleString(),
       icon: MessagesSquare,
       delta: analytics ? "+12.4%" : undefined,
@@ -51,7 +51,7 @@ function buildKpis(analytics: AnalyticsPacket | null, status: StatusPacket | nul
       hint: "docx · pdf · xlsx",
     },
     {
-      label: "Vector Store Entries",
+      label: "Vector Index Entries",
       value: vectors.toLocaleString(),
       icon: Boxes,
       hint: "SQLite F32 Blobs",

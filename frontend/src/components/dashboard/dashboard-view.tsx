@@ -54,7 +54,7 @@ function IntegrityGauge() {
         <span className="rounded-full bg-white/20 px-4 py-1 text-lg font-semibold tracking-tight shadow-[inset_0_1px_0_rgba(255,255,255,0.35)]">
           98%
         </span>
-        <span className="mt-2 text-sm font-medium tracking-tight text-white/95">System Integrity</span>
+        <span className="mt-2 text-sm font-medium tracking-tight text-white/95">Platform Integrity</span>
       </div>
     </div>
   )
@@ -74,9 +74,9 @@ export function DashboardView() {
             <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_16%_18%,rgba(255,255,255,0.28)_0%,transparent_28%),radial-gradient(circle_at_78%_20%,rgba(255,255,255,0.18)_0%,transparent_24%),radial-gradient(circle_at_52%_82%,rgba(255,255,255,0.10)_0%,transparent_34%)]" />
             <div className="relative flex h-full min-h-[460px] flex-col justify-between">
               <div>
-                <h1 className="text-3xl font-semibold tracking-[-0.03em] text-white sm:text-[2.15rem]">System Node: Active</h1>
+                <h1 className="text-3xl font-semibold tracking-[-0.03em] text-white sm:text-[2.15rem]">Operational Status</h1>
                 <p className="mt-2 text-sm font-medium tracking-tight text-white/94 sm:text-[1.02rem]">
-                  VaultMind · Security Integrity 98%
+                  BetaVector Runtime · Platform Integrity 98%
                 </p>
               </div>
 

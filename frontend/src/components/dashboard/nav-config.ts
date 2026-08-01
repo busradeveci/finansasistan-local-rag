@@ -29,19 +29,19 @@ export const navGroups: NavGroup[] = [
   {
     title: "Workspace",
     items: [
-      { id: "chat", label: "Chat", icon: MessagesSquare },
-      { id: "dashboard", label: "Workstation", icon: LayoutDashboard },
-      { id: "knowledge", label: "Knowledge Base", icon: FolderSearch },
-      { id: "documents", label: "Documents", icon: FileStack },
-      { id: "vector", label: "Vector Store", icon: Database },
+      { id: "chat", label: "Conversation", icon: MessagesSquare },
+      { id: "dashboard", label: "Control Room", icon: LayoutDashboard },
+      { id: "knowledge", label: "Knowledge Hub", icon: FolderSearch },
+      { id: "documents", label: "Document Inventory", icon: FileStack },
+      { id: "vector", label: "Vector Index", icon: Database },
     ],
   },
   {
     title: "Model Routing",
     items: [
-      { id: "router", label: "Model Routing", icon: Route },
-      { id: "inference", label: "Inference", icon: Brain },
-      { id: "telemetry", label: "Telemetry", icon: Activity },
+      { id: "router", label: "Inference Routing", icon: Route },
+      { id: "inference", label: "Inference Runtime", icon: Brain },
+      { id: "telemetry", label: "System Telemetry", icon: Activity },
     ],
   },
   {

@@ -59,7 +59,7 @@ function LayerCard({ layer }: { layer: Layer }) {
       </div>
       <div className="min-w-0 flex-1">
         <div className="truncate text-[11px] font-medium text-slate-900">{layer.short}</div>
-        <div className="text-[10px] text-slate-600/70">blocked today</div>
+        <div className="text-[10px] text-slate-600/70">Events Today</div>
       </div>
       <span className="shrink-0 font-mono text-sm font-semibold tabular-nums text-slate-800">
         {layer.blocked}
@@ -92,7 +92,7 @@ export function SystemTelemetry({ telemetry, security }: SystemTelemetryProps) {
   const layers: Layer[] = [
     {
       label: "Prompt Injection",
-      short: "Injection Filter",
+      short: "Prompt Injection Guard",
       icon: Ban,
       blocked: security?.prompt_injections_blocked ?? 0,
     },
@@ -118,7 +118,7 @@ export function SystemTelemetry({ telemetry, security }: SystemTelemetryProps) {
       className={`${GLASS_CARD} overflow-hidden`}
     >
       <div className="flex items-center justify-between border-b border-white/50 px-6 py-3.5">
-        <h2 className="text-sm font-semibold tracking-tight text-slate-900">Telemetry</h2>
+        <h2 className="text-sm font-semibold tracking-tight text-slate-900">System Telemetry</h2>
         <span
           className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider ${
             sanitizationActive ? "text-emerald-700" : "text-slate-500"
@@ -130,7 +130,7 @@ export function SystemTelemetry({ telemetry, security }: SystemTelemetryProps) {
             )}
             <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-500" />
           </span>
-          {sanitizationActive ? "Active" : "Offline"}
+          {sanitizationActive ? "Operational" : "Offline"}
         </span>
       </div>
       <div className="flex flex-col gap-3 p-4">
