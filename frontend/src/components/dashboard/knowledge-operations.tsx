@@ -16,10 +16,10 @@ type Operation = {
 }
 
 const GLASS_CARD =
-  "bg-white/20 backdrop-blur-2xl backdrop-saturate-[1.1] border border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.04),inset_0_1px_0_rgba(255,255,255,0.8),inset_0_-1px_0_rgba(255,255,255,0.2)] rounded-3xl"
+  "bg-white/70 backdrop-blur-[10px] backdrop-saturate-[1.02] border border-white/60 shadow-[0_10px_30px_rgba(20,40,70,0.05)] rounded-3xl"
 
 const HYPER_GLASS =
-  "bg-white/30 backdrop-blur-md border border-white/60 shadow-[0_4px_12px_rgba(0,0,0,0.05),inset_0_1px_1px_rgba(255,255,255,0.9)] rounded-full hover:bg-white/40 transition-all duration-300"
+  "bg-white/60 backdrop-blur-sm border border-white/70 shadow-[0_4px_14px_rgba(20,40,70,0.04)] rounded-full hover:bg-white/75 transition-all duration-300"
 
 const kindMeta: Record<FileKind, { icon: React.ComponentType<{ className?: string }>; color: string; label: string }> = {
   pdf: { icon: FileType2, color: "text-red-500", label: "PDF" },
@@ -29,10 +29,10 @@ const kindMeta: Record<FileKind, { icon: React.ComponentType<{ className?: strin
 }
 
 const statusMeta: Record<OpStatus, string> = {
-  Indexed: "text-orange-700",
-  Processing: "text-slate-800",
-  Queued: "text-amber-700",
-  Failed: "text-red-700",
+  Indexed: "border-orange-200/70 bg-orange-50/80 text-orange-700",
+  Processing: "border-slate-200/80 bg-slate-50/90 text-slate-700",
+  Queued: "border-amber-200/70 bg-amber-50/80 text-amber-700",
+  Failed: "border-red-200/70 bg-red-50/80 text-red-700",
 }
 
 function inferKind(filename: string, type?: string): FileKind {
@@ -108,9 +108,9 @@ export function KnowledgeOperations() {
 
   return (
     <section className={`overflow-hidden ${GLASS_CARD}`}>
-      <div className="flex items-center justify-between border-b border-white/40 px-4 py-3">
+      <div className="flex items-center justify-between border-b border-white/50 px-4 py-3">
         <div className="flex items-center gap-2">
-          <h2 className="text-xs font-semibold text-slate-900">Recent Knowledge Operations</h2>
+          <h2 className="text-xs font-semibold text-slate-900">Operations</h2>
           <span className={`${HYPER_GLASS} px-1.5 py-0.5 font-mono text-[10px] text-slate-500`}>
             {operations.length} / {total.toLocaleString()}
           </span>
@@ -140,7 +140,7 @@ export function KnowledgeOperations() {
         ) : (
           <table className="w-full text-left text-[13px]">
             <thead>
-              <tr className="border-b border-white/40 text-[10px] uppercase tracking-wider text-slate-400">
+              <tr className="border-b border-white/50 text-[10px] uppercase tracking-wider text-slate-400">
                 <th className="px-4 py-2 font-semibold">Document</th>
                 <th className="px-3 py-2 font-semibold">Chunks</th>
                 <th className="px-3 py-2 font-semibold">Status</th>
@@ -162,7 +162,7 @@ export function KnowledgeOperations() {
                   return (
                     <tr
                       key={op.name}
-                      className="border-b border-white/40 bg-transparent transition-colors hover:bg-white/30"
+                      className="border-b border-white/50 bg-transparent transition-colors hover:bg-white/35"
                     >
                       <td className="px-4 py-2">
                         <div className="flex items-center gap-2.5">
@@ -181,8 +181,8 @@ export function KnowledgeOperations() {
                       <td className="px-3 py-2">
                         <span
                           className={
-                            `inline-flex items-center px-2 py-0.5 text-[11px] font-medium ${HYPER_GLASS} ` +
-                            statusMeta[op.status]
+                            `inline-flex items-center rounded-full border px-2.5 py-0.5 text-[11px] font-medium ${statusMeta[op.status]} ` +
+                            "shadow-[0_4px_14px_rgba(20,40,70,0.04)]"
                           }
                         >
                           {op.status}

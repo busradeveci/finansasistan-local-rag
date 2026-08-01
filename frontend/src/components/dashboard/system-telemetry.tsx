@@ -21,10 +21,10 @@ type Layer = {
 }
 
 const GLASS_CARD =
-  "bg-white/20 backdrop-blur-2xl backdrop-saturate-[1.1] border border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.04),inset_0_1px_0_rgba(255,255,255,0.8),inset_0_-1px_0_rgba(255,255,255,0.2)] rounded-3xl"
+  "bg-white/70 backdrop-blur-[10px] backdrop-saturate-[1.02] border border-white/60 shadow-[0_10px_30px_rgba(20,40,70,0.05)] rounded-3xl"
 
 const HYPER_GLASS =
-  "bg-white/30 backdrop-blur-md border border-white/60 shadow-[0_4px_12px_rgba(0,0,0,0.05),inset_0_1px_1px_rgba(255,255,255,0.9)] rounded-full hover:bg-white/40 transition-all duration-300"
+  "bg-white/60 backdrop-blur-sm border border-white/70 shadow-[0_4px_14px_rgba(20,40,70,0.04)] rounded-full hover:bg-white/75 transition-all duration-300"
 
 function MeterCard({ meter }: { meter: Meter }) {
   const Icon = meter.icon
@@ -53,7 +53,7 @@ function MeterCard({ meter }: { meter: Meter }) {
 function LayerCard({ layer }: { layer: Layer }) {
   const Icon = layer.icon
   return (
-    <div className="flex items-center gap-3 px-4 py-4">
+      <div className="flex items-center gap-3 px-4 py-4">
       <div className={`flex h-8 w-8 shrink-0 items-center justify-center text-slate-600 ${HYPER_GLASS} !rounded-2xl`}>
         <Icon className="h-3.5 w-3.5 text-slate-600" />
       </div>
@@ -74,13 +74,13 @@ export function SystemTelemetry({ telemetry, security }: SystemTelemetryProps) {
 
   const meters: Meter[] = [
     {
-      label: "CPU",
+      label: "CPU Utilization",
       icon: Cpu,
       value: cpuPct,
       detail: telemetry ? `${cpuPct}% utilization` : "—",
     },
     {
-      label: "RAM",
+      label: "Memory Usage",
       icon: MemoryStick,
       value: memPct,
       detail: memTotal > 0 ? `${memUsed.toFixed(1)} / ${memTotal.toFixed(1)} GB` : "—",
@@ -116,15 +116,19 @@ export function SystemTelemetry({ telemetry, security }: SystemTelemetryProps) {
       className={`${GLASS_CARD} overflow-hidden`}
     >
       <div className="flex items-center justify-between border-b border-white/50 px-6 py-3.5">
-        <h2 className="text-sm font-semibold tracking-tight text-slate-900">System Telemetry</h2>
-        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-emerald-700 ${HYPER_GLASS}`}>
+        <h2 className="text-sm font-semibold tracking-tight text-slate-900">Telemetry</h2>
+        <span
+          className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider ${
+            sanitizationActive ? "text-emerald-700" : "text-slate-500"
+          } ${HYPER_GLASS}`}
+        >
           <span className="relative flex h-1.5 w-1.5">
             {sanitizationActive && (
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
             )}
             <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-500" />
           </span>
-          {sanitizationActive ? "Live · Sanitization Active" : "Telemetry Offline"}
+          {sanitizationActive ? "Active" : "Offline"}
         </span>
       </div>
       <div className="grid grid-cols-2 divide-x divide-y divide-white/40 sm:grid-cols-3 sm:divide-y-0 lg:grid-cols-5">
