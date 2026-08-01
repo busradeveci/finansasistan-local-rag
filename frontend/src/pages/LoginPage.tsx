@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Shield, Lock, Zap } from 'lucide-react';
+import { Briefcase, FileText, CheckCircle, WifiOff, Activity } from 'lucide-react';
 
 const LoginPage = () => {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     navigate('/workstation');
   };
@@ -19,220 +19,167 @@ const LoginPage = () => {
       alignItems: 'center',
       justifyContent: 'center',
       padding: '24px',
-      backgroundColor: '#F5F8FC',
-      backgroundImage: 'radial-gradient(circle at 15% 20%, rgba(176,224,230,0.10), transparent 32%), radial-gradient(circle at 85% 25%, rgba(135,206,250,0.10), transparent 30%), radial-gradient(circle at 50% 85%, rgba(0,127,255,0.06), transparent 28%)',
+      /* İkinci görseldeki ferah, pastel arka plan efekti */
+      backgroundColor: '#f4f7fb',
+      backgroundImage: 'radial-gradient(at 0% 0%, #e0f2fe 0px, transparent 50%), radial-gradient(at 100% 0%, #fef3c7 0px, transparent 50%), radial-gradient(at 100% 100%, #e0e7ff 0px, transparent 50%)',
       fontFamily: 'Plus Jakarta Sans, sans-serif'
     }}>
       <div style={{
         width: '100%',
         maxWidth: '1200px',
         display: 'grid',
-        gridTemplateColumns: '1.1fr 0.9fr',
-        gap: '32px',
+        gridTemplateColumns: '1.2fr 0.8fr',
+        gap: '64px',
         alignItems: 'center'
       }}>
+        
+        {/* ==========================================
+            SOL SÜTUN: ÇERÇEVESİZ, HAVADA ASILI TASARIM 
+            ========================================== */}
         <div style={{
-          minHeight: '560px',
-          borderRadius: '24px',
-          background: 'linear-gradient(180deg, rgba(255,255,255,0.34), rgba(255,255,255,0.18))',
-          border: '1px solid rgba(255,255,255,0.36)',
-          boxShadow: '0 8px 30px rgba(20,40,70,0.05)',
-          backdropFilter: 'blur(10px)',
-          WebkitBackdropFilter: 'blur(10px)',
-          position: 'relative',
-          overflow: 'hidden'
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          padding: '24px 0'
         }}>
-          <div style={{
-            position: 'absolute',
-            inset: '0',
-            backgroundImage: 'linear-gradient(rgba(255,255,255,0.14) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.14) 1px, transparent 1px)',
-            backgroundSize: '48px 48px',
-            opacity: 0.22,
-            maskImage: 'linear-gradient(180deg, rgba(0,0,0,0.55), transparent 92%)'
-          }} />
-          <div style={{
-            position: 'absolute',
-            top: '16%',
-            left: '12%',
-            width: '220px',
-            height: '220px',
-            borderRadius: '50%',
-            background: 'radial-gradient(circle, rgba(135,206,250,0.18), transparent 70%)',
-            filter: 'blur(10px)'
-          }} />
-          <div style={{
-            position: 'absolute',
-            right: '14%',
-            bottom: '18%',
-            width: '180px',
-            height: '180px',
-            borderRadius: '50%',
-            background: 'radial-gradient(circle, rgba(176,224,230,0.16), transparent 72%)',
-            filter: 'blur(12px)'
-          }} />
-          <div style={{
-            position: 'absolute',
-            inset: '0',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '48px'
-          }}>
+          
+          {/* Üst Kısım: Logo ve Başlık */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '32px' }}>
             <div style={{
-              width: '100%',
-              maxWidth: '420px',
-              display: 'grid',
-              gap: '16px'
+              width: '40px',
+              height: '40px',
+              borderRadius: '10px',
+              backgroundColor: '#1C0F45',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
             }}>
-              <div style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '10px',
-                width: 'fit-content',
-                padding: '8px 14px',
-                borderRadius: '999px',
-                backgroundColor: 'rgba(255,255,255,0.52)',
-                border: '1px solid rgba(255,255,255,0.42)',
-                boxShadow: '0 8px 30px rgba(20,40,70,0.05)'
-              }}>
-                <Shield size={16} color="#00CED1" />
-                <span style={{
-                  fontSize: '12px',
-                  fontWeight: 600,
-                  letterSpacing: '0.08em',
-                  textTransform: 'uppercase',
-                  color: '#1C0F45'
-                }}>Secure Local Node</span>
-              </div>
-              <div style={{
-                padding: '24px',
-                borderRadius: '24px',
-                backgroundColor: 'rgba(255,255,255,0.74)',
-                border: '1px solid rgba(255,255,255,0.45)',
-                boxShadow: '0 8px 32px rgba(40,60,90,0.05)'
-              }}>
-                <div style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '12px',
-                  marginBottom: '18px'
-                }}>
-                  <div style={{
-                    width: '40px',
-                    height: '40px',
-                    borderRadius: '12px',
-                    backgroundColor: 'rgba(0,127,255,0.10)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                  }}>
-                    <Lock size={18} color="#007FFF" />
-                  </div>
-                  <div>
-                    <div style={{ fontSize: '22px', fontWeight: 700, color: '#1C0F45', lineHeight: 1.2 }}>Sign in</div>
-                    <div style={{ fontSize: '13px', color: '#5F6B7A', marginTop: '4px' }}>Access your enterprise workspace using your organizational credentials.</div>
-                  </div>
-                </div>
-                <div style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '10px',
-                  color: '#00CED1',
-                  fontSize: '13px',
-                  fontWeight: 600
-                }}>
-                  <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#00CED1' }} />
-                  Protected environment connected.
-                </div>
-              </div>
+              <Briefcase size={20} color="#FFFFFF" /> 
             </div>
+            <span style={{ fontSize: '13px', fontWeight: 700, color: '#5F6B7A', letterSpacing: '0.15em', textTransform: 'uppercase' }}>
+              MICROSOFT FOUNDRY LOCAL
+            </span>
+          </div>
+          
+          <h1 style={{ fontSize: '48px', fontWeight: 800, color: '#111827', lineHeight: 1.1, marginBottom: '24px', letterSpacing: '-0.02em' }}>
+            FOUNDRY<br />SENTINEL
+          </h1>
+          
+          <p style={{ fontSize: '18px', color: '#4B5563', lineHeight: 1.6, maxWidth: '500px', fontWeight: 500, marginBottom: '64px' }}>
+            Secure local intelligence workspace for trusted document retrieval, evidence analysis, and AI-assisted decision support.
+          </p>
+
+          {/* Alt Kısım: Özellik Rozetleri */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            {[
+              { icon: <FileText size={18} color="#007FFF" />, text: "Offline Document Intelligence" },
+              { icon: <CheckCircle size={18} color="#007FFF" />, text: "Verified Retrieval Pipeline" },
+              { icon: <WifiOff size={18} color="#007FFF" />, text: "Zero External Data Transfer" }
+            ].map((feature, idx) => (
+              <div key={idx} style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '16px',
+                padding: '16px 24px',
+                backgroundColor: 'rgba(255,255,255,0.4)', // Çok hafif beyazlık
+                borderRadius: '16px',
+                width: 'fit-content'
+              }}>
+                <div style={{
+                  width: '32px',
+                  height: '32px',
+                  borderRadius: '8px',
+                  backgroundColor: 'rgba(0,127,255,0.1)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}>
+                  {feature.icon}
+                </div>
+                <span style={{ fontSize: '15px', fontWeight: 600, color: '#111827' }}>
+                  {feature.text}
+                </span>
+              </div>
+            ))}
           </div>
         </div>
 
-        <div style={{ display: 'flex', justifyContent: 'center' }}>
+        {/* ==========================================
+            SAĞ SÜTUN: GLASSMORPHISM GİRİŞ FORMU
+            ========================================== */}
+        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           <div style={{
             width: '100%',
-            maxWidth: '440px',
-            backgroundColor: 'rgba(255,255,255,0.90)',
-            backdropFilter: 'blur(10px)',
-            WebkitBackdropFilter: 'blur(10px)',
-            border: '1px solid rgba(255,255,255,0.40)',
+            maxWidth: '420px',
+            backgroundColor: 'rgba(255, 255, 255, 0.45)', /* Şeffaf Glass Etkisi */
+            backdropFilter: 'blur(16px)',
+            WebkitBackdropFilter: 'blur(16px)',
+            border: '1px solid rgba(255, 255, 255, 0.6)', /* Çok ince, zarif sınır */
             borderRadius: '24px',
-            boxShadow: '0 8px 30px rgba(20,40,70,0.05)',
-            padding: '40px'
+            boxShadow: '0 20px 40px rgba(0,0,0,0.04)',
+            padding: '48px 40px'
           }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '24px' }}>
-              <div style={{
-                width: '36px',
-                height: '36px',
-                borderRadius: '12px',
-                backgroundColor: 'rgba(0,127,255,0.10)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                flexShrink: 0
-              }}>
-                <Shield size={18} color="#007FFF" />
-              </div>
-              <div>
-                <h2 style={{ fontSize: '22px', fontWeight: 700, color: '#1C0F45', margin: 0, lineHeight: 1.2 }}>Sign in</h2>
-                <p style={{ fontSize: '13px', color: '#5F6B7A', margin: '4px 0 0 0' }}>Access your enterprise workspace using your organizational credentials.</p>
-              </div>
+            <div style={{ marginBottom: '32px' }}>
+              <h2 style={{ fontSize: '24px', fontWeight: 700, color: '#111827', margin: '0 0 8px 0', lineHeight: 1.2 }}>Sign In</h2>
+              <p style={{ fontSize: '14px', color: '#4B5563', margin: 0 }}>Access your secured workspace.</p>
             </div>
 
             <form onSubmit={handleSubmit} style={{ width: '100%' }}>
-              <div style={{ marginBottom: '20px' }}>
-                <label style={{
-                  display: 'block',
-                  fontSize: '12px',
-                  fontWeight: 600,
-                  letterSpacing: '0.06em',
-                  color: '#5F6B7A',
-                  textTransform: 'uppercase',
-                  marginBottom: '8px'
-                }}>Organization Username</label>
-                <input
-                  type="text"
-                  placeholder="name@organization.com"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  style={{
-                    width: '100%',
-                    height: '48px',
-                    padding: '0 16px',
-                    fontSize: '14px',
-                    color: '#1C0F45',
-                    backgroundColor: 'rgba(255,255,255,0.88)',
-                    border: '1px solid rgba(0,127,255,0.16)',
-                    borderRadius: '14px',
-                    outline: 'none',
-                    transition: 'all 150ms ease-out',
-                    boxSizing: 'border-box'
-                  }}
-                  onFocus={(e) => {
-                    e.target.style.borderColor = '#007FFF';
-                    e.target.style.boxShadow = '0 0 0 3px rgba(0,127,255,0.12)';
-                  }}
-                  onBlur={(e) => {
-                    e.target.style.borderColor = 'rgba(0,127,255,0.16)';
-                    e.target.style.boxShadow = 'none';
-                  }}
-                />
-              </div>
-
               <div style={{ marginBottom: '24px' }}>
                 <label style={{
                   display: 'block',
                   fontSize: '12px',
                   fontWeight: 600,
                   letterSpacing: '0.06em',
-                  color: '#5F6B7A',
+                  color: '#4B5563',
+                  textTransform: 'uppercase',
+                  marginBottom: '8px'
+                }}>Work Email</label>
+                <input
+                  type="email"
+                  placeholder="name@organization.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  style={{
+                    width: '100%',
+                    height: '48px',
+                    padding: '0 16px',
+                    fontSize: '14px',
+                    color: '#111827',
+                    backgroundColor: 'rgba(255,255,255,0.7)',
+                    border: '1px solid rgba(255,255,255,0.9)',
+                    borderRadius: '14px',
+                    outline: 'none',
+                    transition: 'all 150ms ease-out',
+                    boxSizing: 'border-box',
+                    boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.02)'
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = '#007FFF';
+                    e.target.style.backgroundColor = '#FFFFFF';
+                    e.target.style.boxShadow = '0 0 0 3px rgba(0,127,255,0.12)';
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = 'rgba(255,255,255,0.9)';
+                    e.target.style.backgroundColor = 'rgba(255,255,255,0.7)';
+                    e.target.style.boxShadow = 'inset 0 2px 4px rgba(0,0,0,0.02)';
+                  }}
+                />
+              </div>
+
+              <div style={{ marginBottom: '32px' }}>
+                <label style={{
+                  display: 'block',
+                  fontSize: '12px',
+                  fontWeight: 600,
+                  letterSpacing: '0.06em',
+                  color: '#4B5563',
                   textTransform: 'uppercase',
                   marginBottom: '8px'
                 }}>Password</label>
                 <input
                   type="password"
-                  placeholder="Password"
+                  placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   style={{
@@ -240,21 +187,24 @@ const LoginPage = () => {
                     height: '48px',
                     padding: '0 16px',
                     fontSize: '14px',
-                    color: '#1C0F45',
-                    backgroundColor: 'rgba(255,255,255,0.88)',
-                    border: '1px solid rgba(0,127,255,0.16)',
+                    color: '#111827',
+                    backgroundColor: 'rgba(255,255,255,0.7)',
+                    border: '1px solid rgba(255,255,255,0.9)',
                     borderRadius: '14px',
                     outline: 'none',
                     transition: 'all 150ms ease-out',
-                    boxSizing: 'border-box'
+                    boxSizing: 'border-box',
+                    boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.02)'
                   }}
                   onFocus={(e) => {
                     e.target.style.borderColor = '#007FFF';
+                    e.target.style.backgroundColor = '#FFFFFF';
                     e.target.style.boxShadow = '0 0 0 3px rgba(0,127,255,0.12)';
                   }}
                   onBlur={(e) => {
-                    e.target.style.borderColor = 'rgba(0,127,255,0.16)';
-                    e.target.style.boxShadow = 'none';
+                    e.target.style.borderColor = 'rgba(255,255,255,0.9)';
+                    e.target.style.backgroundColor = 'rgba(255,255,255,0.7)';
+                    e.target.style.boxShadow = 'inset 0 2px 4px rgba(0,0,0,0.02)';
                   }}
                 />
               </div>
@@ -264,92 +214,70 @@ const LoginPage = () => {
                 style={{
                   width: '100%',
                   height: '48px',
-                  backgroundColor: '#000080',
+                  backgroundColor: '#0066FF',
                   color: '#FFFFFF',
                   border: 'none',
                   borderRadius: '14px',
                   fontSize: '14px',
                   fontWeight: 600,
                   cursor: 'pointer',
-                  boxShadow: '0 8px 30px rgba(20,40,70,0.05)',
+                  boxShadow: '0 4px 12px rgba(0, 102, 255, 0.2)',
                   transition: 'all 150ms ease-out'
                 }}
                 onMouseEnter={(e) => {
-                  const button = e.currentTarget;
-                  button.style.backgroundColor = '#007FFF';
-                  button.style.transform = 'translateY(-1px)';
-                  button.style.boxShadow = '0 10px 32px rgba(20,40,70,0.08)';
+                  e.currentTarget.style.backgroundColor = '#0052CC';
+                  e.currentTarget.style.transform = 'translateY(-1px)';
+                  e.currentTarget.style.boxShadow = '0 6px 16px rgba(0, 102, 255, 0.3)';
                 }}
                 onMouseLeave={(e) => {
-                  const button = e.currentTarget;
-                  button.style.backgroundColor = '#000080';
-                  button.style.transform = 'translateY(0)';
-                  button.style.boxShadow = '0 8px 30px rgba(20,40,70,0.05)';
+                  e.currentTarget.style.backgroundColor = '#0066FF';
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 102, 255, 0.2)';
                 }}
               >
                 Sign In
               </button>
 
-              <div style={{ marginTop: '16px' }}>
-                <button
-                  type="button"
-                  style={{
-                    width: '100%',
-                    height: '48px',
-                    backgroundColor: 'rgba(255,255,255,0.72)',
-                    border: '1px solid rgba(0,127,255,0.16)',
-                    borderRadius: '14px',
-                    color: '#007FFF',
-                    fontSize: '14px',
-                    fontWeight: 600,
-                    cursor: 'pointer',
-                    transition: 'all 150ms ease-out'
-                  }}
-                  onMouseEnter={(e) => {
-                    const button = e.currentTarget;
-                    button.style.backgroundColor = 'rgba(0,127,255,0.04)';
-                    button.style.borderColor = '#007FFF';
-                    button.style.transform = 'translateY(-1px)';
-                  }}
-                  onMouseLeave={(e) => {
-                    const button = e.currentTarget;
-                    button.style.backgroundColor = 'rgba(255,255,255,0.72)';
-                    button.style.borderColor = 'rgba(0,127,255,0.16)';
-                    button.style.transform = 'translateY(0)';
-                  }}
-                >
-                  Enterprise Single-Sign-On
-                </button>
-              </div>
-
               <div style={{
                 width: '100%',
-                marginTop: '16px',
-                padding: '12px 16px',
-                backgroundColor: 'rgba(255,255,255,0.72)',
-                border: '1px solid rgba(255,255,255,0.45)',
+                marginTop: '32px',
+                padding: '16px',
+                backgroundColor: 'rgba(255,255,255,0.5)',
+                border: '1px solid rgba(255,255,255,0.8)',
                 borderRadius: '14px',
                 display: 'flex',
-                alignItems: 'center',
-                gap: '10px',
+                alignItems: 'flex-start',
+                gap: '12px',
                 boxSizing: 'border-box'
               }}>
-                <Shield size={16} color="#00CED1" />
-                <div style={{ display: 'grid', gap: '2px' }}>
-                  <span style={{ fontSize: '12px', color: '#1C0F45', fontWeight: 600 }}>Secure Local Node</span>
-                  <span style={{ fontSize: '12px', color: '#5F6B7A' }}>Protected environment connected.</span>
+                <div style={{ marginTop: '2px' }}>
+                  <Activity size={18} color="#059669" />
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  <span style={{ fontSize: '13px', color: '#111827', fontWeight: 700 }}>Runtime Status</span>
+                  <span style={{ fontSize: '12px', color: '#4B5563', lineHeight: 1.4 }}>
+                    Offline inference environment.<br/>
+                    All processing remains on the local workstation.
+                  </span>
                 </div>
               </div>
 
-              <p style={{
-                fontSize: '12px',
-                color: '#5F6B7A',
-                textAlign: 'center',
-                marginTop: '24px',
-                lineHeight: 1.5
+              <div style={{
+                marginTop: '32px',
+                paddingTop: '24px',
+                borderTop: '1px solid rgba(0,0,0,0.06)'
               }}>
-                Authorized access only. Unauthorized use may be monitored.
-              </p>
+                <p style={{
+                  fontSize: '11px',
+                  color: '#6B7280',
+                  textAlign: 'center',
+                  lineHeight: 1.6,
+                  margin: 0
+                }}>
+                  Access is restricted to authorized personnel.<br/>
+                  System activity may be logged for security and auditing purposes.
+                </p>
+              </div>
             </form>
           </div>
         </div>
