@@ -37,9 +37,9 @@ export const navGroups: NavGroup[] = [
     ],
   },
   {
-    title: "Intelligence",
+    title: "Model Routing",
     items: [
-      { id: "router", label: "Model Router", icon: Route },
+      { id: "router", label: "Model Routing", icon: Route },
       { id: "inference", label: "Inference", icon: Brain },
       { id: "telemetry", label: "Telemetry", icon: Activity },
     ],
