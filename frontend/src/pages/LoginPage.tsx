@@ -14,245 +14,344 @@ const LoginPage = () => {
 
   return (
     <div style={{
-      backgroundColor: '#F6F9FE',
       minHeight: '100vh',
-      fontFamily: 'Inter, sans-serif',
       display: 'flex',
       alignItems: 'center',
-      padding: '20px'
+      justifyContent: 'center',
+      padding: '24px',
+      backgroundColor: '#F5F8FC',
+      backgroundImage: 'radial-gradient(circle at 15% 20%, rgba(176,224,230,0.10), transparent 32%), radial-gradient(circle at 85% 25%, rgba(135,206,250,0.10), transparent 30%), radial-gradient(circle at 50% 85%, rgba(0,127,255,0.06), transparent 28%)',
+      fontFamily: 'Plus Jakarta Sans, sans-serif'
     }}>
-      {/* Left Column */}
-      <div style={{ width: '55%', paddingRight: '40px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '24px' }}>
+      <div style={{
+        width: '100%',
+        maxWidth: '1200px',
+        display: 'grid',
+        gridTemplateColumns: '1.1fr 0.9fr',
+        gap: '32px',
+        alignItems: 'center'
+      }}>
+        <div style={{
+          minHeight: '560px',
+          borderRadius: '24px',
+          background: 'linear-gradient(180deg, rgba(255,255,255,0.34), rgba(255,255,255,0.18))',
+          border: '1px solid rgba(255,255,255,0.36)',
+          boxShadow: '0 8px 30px rgba(20,40,70,0.05)',
+          backdropFilter: 'blur(10px)',
+          WebkitBackdropFilter: 'blur(10px)',
+          position: 'relative',
+          overflow: 'hidden'
+        }}>
           <div style={{
-            width: '24px',
-            height: '24px',
-            backgroundColor: '#F0F9FF',
-            borderRadius: '6px',
+            position: 'absolute',
+            inset: '0',
+            backgroundImage: 'linear-gradient(rgba(255,255,255,0.14) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.14) 1px, transparent 1px)',
+            backgroundSize: '48px 48px',
+            opacity: 0.22,
+            maskImage: 'linear-gradient(180deg, rgba(0,0,0,0.55), transparent 92%)'
+          }} />
+          <div style={{
+            position: 'absolute',
+            top: '16%',
+            left: '12%',
+            width: '220px',
+            height: '220px',
+            borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(135,206,250,0.18), transparent 70%)',
+            filter: 'blur(10px)'
+          }} />
+          <div style={{
+            position: 'absolute',
+            right: '14%',
+            bottom: '18%',
+            width: '180px',
+            height: '180px',
+            borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(176,224,230,0.16), transparent 72%)',
+            filter: 'blur(12px)'
+          }} />
+          <div style={{
+            position: 'absolute',
+            inset: '0',
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'center'
+            justifyContent: 'center',
+            padding: '48px'
           }}>
-            <Shield size={20} color="#2563EB" />
+            <div style={{
+              width: '100%',
+              maxWidth: '420px',
+              display: 'grid',
+              gap: '16px'
+            }}>
+              <div style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '10px',
+                width: 'fit-content',
+                padding: '8px 14px',
+                borderRadius: '999px',
+                backgroundColor: 'rgba(255,255,255,0.52)',
+                border: '1px solid rgba(255,255,255,0.42)',
+                boxShadow: '0 8px 30px rgba(20,40,70,0.05)'
+              }}>
+                <Shield size={16} color="#00CED1" />
+                <span style={{
+                  fontSize: '12px',
+                  fontWeight: 600,
+                  letterSpacing: '0.08em',
+                  textTransform: 'uppercase',
+                  color: '#1C0F45'
+                }}>Secure Local Node</span>
+              </div>
+              <div style={{
+                padding: '24px',
+                borderRadius: '24px',
+                backgroundColor: 'rgba(255,255,255,0.74)',
+                border: '1px solid rgba(255,255,255,0.45)',
+                boxShadow: '0 8px 32px rgba(40,60,90,0.05)'
+              }}>
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px',
+                  marginBottom: '18px'
+                }}>
+                  <div style={{
+                    width: '40px',
+                    height: '40px',
+                    borderRadius: '12px',
+                    backgroundColor: 'rgba(0,127,255,0.10)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}>
+                    <Lock size={18} color="#007FFF" />
+                  </div>
+                  <div>
+                    <div style={{ fontSize: '22px', fontWeight: 700, color: '#1C0F45', lineHeight: 1.2 }}>Sign in</div>
+                    <div style={{ fontSize: '13px', color: '#5F6B7A', marginTop: '4px' }}>Access your enterprise workspace using your organizational credentials.</div>
+                  </div>
+                </div>
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '10px',
+                  color: '#00CED1',
+                  fontSize: '13px',
+                  fontWeight: 600
+                }}>
+                  <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#00CED1' }} />
+                  Protected environment connected.
+                </div>
+              </div>
+            </div>
           </div>
-          <span style={{
-            color: '#64748B',
-            fontSize: '11px',
-            fontWeight: 600,
-            letterSpacing: '0.15em',
-            textTransform: 'uppercase'
-          }}>ENTERPRISE AI PLATFORM</span>
         </div>
 
-        <h1 style={{
-          fontSize: '32px',
-          fontWeight: 700,
-          color: '#0F172A',
-          marginBottom: '12px'
-        }}>FOUNDRY SENTINEL</h1>
-
-        <p style={{
-          fontSize: '18px',
-          color: '#64748B',
-          marginBottom: '24px'
-        }}>Sovereign AI Knowledge Node</p>
-
-        <p style={{
-          fontSize: '14px',
-          color: '#64748B',
-          lineHeight: '1.6',
-          maxWidth: '420px',
-          marginBottom: '40px'
-        }}>
-          Deploy, query, and govern LLMs entirely within your perimeter. Zero data leakage. Full compliance.
-        </p>
-
-        {/* Feature Items */}
-        <div style={{ marginBottom: '48px' }}>
-          {[
-            { icon: <Shield size={16} color="#2563EB" />, text: 'On-Premise Air-Gapped RAG' },
-            { icon: <Lock size={16} color="#2563EB" />, text: 'Real-time Prompt Injection Guard' },
-            { icon: <Zap size={16} color="#2563EB" />, text: 'Zero Outbound Telemetry' },
-          ].map((item, i) => (
-            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
+          <div style={{
+            width: '100%',
+            maxWidth: '440px',
+            backgroundColor: 'rgba(255,255,255,0.90)',
+            backdropFilter: 'blur(10px)',
+            WebkitBackdropFilter: 'blur(10px)',
+            border: '1px solid rgba(255,255,255,0.40)',
+            borderRadius: '24px',
+            boxShadow: '0 8px 30px rgba(20,40,70,0.05)',
+            padding: '40px'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '24px' }}>
               <div style={{
                 width: '36px',
                 height: '36px',
-                backgroundColor: 'rgba(37,99,235,0.08)',
-                borderRadius: '50%',
+                borderRadius: '12px',
+                backgroundColor: 'rgba(0,127,255,0.10)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 flexShrink: 0
               }}>
-                {item.icon}
+                <Shield size={18} color="#007FFF" />
               </div>
-              <span style={{ fontSize: '14px', color: '#0F172A', fontWeight: 500 }}>{item.text}</span>
+              <div>
+                <h2 style={{ fontSize: '22px', fontWeight: 700, color: '#1C0F45', margin: 0, lineHeight: 1.2 }}>Sign in</h2>
+                <p style={{ fontSize: '13px', color: '#5F6B7A', margin: '4px 0 0 0' }}>Access your enterprise workspace using your organizational credentials.</p>
+              </div>
             </div>
-          ))}
-        </div>
 
-        {/* Status Badge */}
-        <div style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: '8px',
-          backgroundColor: 'rgba(34,197,94,0.08)',
-          border: '1px solid rgba(34,197,94,0.2)',
-          borderRadius: '999px',
-          padding: '6px 14px'
-        }}>
-          <div style={{ width: '8px', height: '8px', backgroundColor: '#16A34A', borderRadius: '50%' }} />
-          <span style={{ fontSize: '12px', color: '#16A34A' }}>Local Air-Gapped Node · Status: Active</span>
-        </div>
-      </div>
+            <form onSubmit={handleSubmit} style={{ width: '100%' }}>
+              <div style={{ marginBottom: '20px' }}>
+                <label style={{
+                  display: 'block',
+                  fontSize: '12px',
+                  fontWeight: 600,
+                  letterSpacing: '0.06em',
+                  color: '#5F6B7A',
+                  textTransform: 'uppercase',
+                  marginBottom: '8px'
+                }}>Organization Username</label>
+                <input
+                  type="text"
+                  placeholder="name@organization.com"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  style={{
+                    width: '100%',
+                    height: '48px',
+                    padding: '0 16px',
+                    fontSize: '14px',
+                    color: '#1C0F45',
+                    backgroundColor: 'rgba(255,255,255,0.88)',
+                    border: '1px solid rgba(0,127,255,0.16)',
+                    borderRadius: '14px',
+                    outline: 'none',
+                    transition: 'all 150ms ease-out',
+                    boxSizing: 'border-box'
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = '#007FFF';
+                    e.target.style.boxShadow = '0 0 0 3px rgba(0,127,255,0.12)';
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = 'rgba(0,127,255,0.16)';
+                    e.target.style.boxShadow = 'none';
+                  }}
+                />
+              </div>
 
-      {/* Right Column - Glass Card */}
-      <div style={{ width: '45%', display: 'flex', justifyContent: 'center' }}>
-        <div style={{
-          backgroundColor: 'rgba(255,255,255,0.85)',
-          backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)',
-          border: '1px solid rgba(255,255,255,0.3)',
-          borderRadius: '16px',
-          boxShadow: '0 8px 32px rgba(15,23,42,0.08)',
-          padding: '40px',
-          width: '100%',
-          maxWidth: '420px'
-        }}>
-          <h2 style={{ fontSize: '24px', fontWeight: 700, color: '#0F172A', marginBottom: '4px' }}>Sign in</h2>
-          <p style={{ fontSize: '14px', color: '#64748B', marginBottom: '32px' }}>
-            Authenticate with your corporate credentials.
-          </p>
+              <div style={{ marginBottom: '24px' }}>
+                <label style={{
+                  display: 'block',
+                  fontSize: '12px',
+                  fontWeight: 600,
+                  letterSpacing: '0.06em',
+                  color: '#5F6B7A',
+                  textTransform: 'uppercase',
+                  marginBottom: '8px'
+                }}>Password</label>
+                <input
+                  type="password"
+                  placeholder="Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  style={{
+                    width: '100%',
+                    height: '48px',
+                    padding: '0 16px',
+                    fontSize: '14px',
+                    color: '#1C0F45',
+                    backgroundColor: 'rgba(255,255,255,0.88)',
+                    border: '1px solid rgba(0,127,255,0.16)',
+                    borderRadius: '14px',
+                    outline: 'none',
+                    transition: 'all 150ms ease-out',
+                    boxSizing: 'border-box'
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = '#007FFF';
+                    e.target.style.boxShadow = '0 0 0 3px rgba(0,127,255,0.12)';
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = 'rgba(0,127,255,0.16)';
+                    e.target.style.boxShadow = 'none';
+                  }}
+                />
+              </div>
 
-          <form onSubmit={handleSubmit} style={{ width: '100%' }}>
-            {/* Username */}
-            <div style={{ marginBottom: '20px' }}>
-              <label style={{
-                display: 'block', fontSize: '11px', fontWeight: 600,
-                letterSpacing: '0.08em', color: '#64748B',
-                textTransform: 'uppercase', marginBottom: '6px'
-              }}>ORGANIZATION USERNAME</label>
-              <input
-                type="text"
-                placeholder="corp\\username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+              <button
+                type="submit"
                 style={{
-                  width: '100%', height: '44px', padding: '0 14px',
-                  fontSize: '14px', color: '#0F172A',
-                  backgroundColor: 'rgba(255,255,255,0.8)',
-                  border: '1px solid #E7EDF5', borderRadius: '10px',
-                  outline: 'none', transition: 'all 150ms ease', boxSizing: 'border-box'
+                  width: '100%',
+                  height: '48px',
+                  backgroundColor: '#000080',
+                  color: '#FFFFFF',
+                  border: 'none',
+                  borderRadius: '14px',
+                  fontSize: '14px',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  boxShadow: '0 8px 30px rgba(20,40,70,0.05)',
+                  transition: 'all 150ms ease-out'
                 }}
-                onFocus={(e) => {
-                  e.target.style.borderColor = '#2563EB';
-                  e.target.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.12)';
+                onMouseEnter={(e) => {
+                  const button = e.currentTarget;
+                  button.style.backgroundColor = '#007FFF';
+                  button.style.transform = 'translateY(-1px)';
+                  button.style.boxShadow = '0 10px 32px rgba(20,40,70,0.08)';
                 }}
-                onBlur={(e) => {
-                  e.target.style.borderColor = '#E7EDF5';
-                  e.target.style.boxShadow = 'none';
+                onMouseLeave={(e) => {
+                  const button = e.currentTarget;
+                  button.style.backgroundColor = '#000080';
+                  button.style.transform = 'translateY(0)';
+                  button.style.boxShadow = '0 8px 30px rgba(20,40,70,0.05)';
                 }}
-              />
-            </div>
+              >
+                Sign In
+              </button>
 
-            {/* Password */}
-            <div style={{ marginBottom: '24px' }}>
-              <label style={{
-                display: 'block', fontSize: '11px', fontWeight: 600,
-                letterSpacing: '0.08em', color: '#64748B',
-                textTransform: 'uppercase', marginBottom: '6px'
-              }}>PASSWORD</label>
-              <input
-                type="password"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                style={{
-                  width: '100%', height: '44px', padding: '0 14px',
-                  fontSize: '14px', color: '#0F172A',
-                  backgroundColor: 'rgba(255,255,255,0.8)',
-                  border: '1px solid #E7EDF5', borderRadius: '10px',
-                  outline: 'none', transition: 'all 150ms ease', boxSizing: 'border-box'
-                }}
-                onFocus={(e) => {
-                  e.target.style.borderColor = '#2563EB';
-                  e.target.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.12)';
-                }}
-                onBlur={(e) => {
-                  e.target.style.borderColor = '#E7EDF5';
-                  e.target.style.boxShadow = 'none';
-                }}
-              />
-            </div>
+              <div style={{ marginTop: '16px' }}>
+                <button
+                  type="button"
+                  style={{
+                    width: '100%',
+                    height: '48px',
+                    backgroundColor: 'rgba(255,255,255,0.72)',
+                    border: '1px solid rgba(0,127,255,0.16)',
+                    borderRadius: '14px',
+                    color: '#007FFF',
+                    fontSize: '14px',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    transition: 'all 150ms ease-out'
+                  }}
+                  onMouseEnter={(e) => {
+                    const button = e.currentTarget;
+                    button.style.backgroundColor = 'rgba(0,127,255,0.04)';
+                    button.style.borderColor = '#007FFF';
+                    button.style.transform = 'translateY(-1px)';
+                  }}
+                  onMouseLeave={(e) => {
+                    const button = e.currentTarget;
+                    button.style.backgroundColor = 'rgba(255,255,255,0.72)';
+                    button.style.borderColor = 'rgba(0,127,255,0.16)';
+                    button.style.transform = 'translateY(0)';
+                  }}
+                >
+                  Enterprise Single-Sign-On
+                </button>
+              </div>
 
-            {/* Sign In Button */}
-            <button
-              type="submit"
-              style={{
-                width: '100%', height: '44px', backgroundColor: '#2563EB',
-                color: 'white', border: 'none', borderRadius: '10px',
-                fontSize: '14px', fontWeight: 600, cursor: 'pointer',
-                transition: 'all 150ms ease'
-              }}
-              onMouseEnter={(e) => {
-                (e.target as HTMLButtonElement).style.backgroundColor = '#1D4ED8';
-                (e.target as HTMLButtonElement).style.boxShadow = '0 4px 16px rgba(37,99,235,0.3)';
-                (e.target as HTMLButtonElement).style.transform = 'scale(1.01)';
-              }}
-              onMouseLeave={(e) => {
-                (e.target as HTMLButtonElement).style.backgroundColor = '#2563EB';
-                (e.target as HTMLButtonElement).style.boxShadow = 'none';
-                (e.target as HTMLButtonElement).style.transform = 'scale(1)';
-              }}
-            >
-              Sign In
-            </button>
+              <div style={{
+                width: '100%',
+                marginTop: '16px',
+                padding: '12px 16px',
+                backgroundColor: 'rgba(255,255,255,0.72)',
+                border: '1px solid rgba(255,255,255,0.45)',
+                borderRadius: '14px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px',
+                boxSizing: 'border-box'
+              }}>
+                <Shield size={16} color="#00CED1" />
+                <div style={{ display: 'grid', gap: '2px' }}>
+                  <span style={{ fontSize: '12px', color: '#1C0F45', fontWeight: 600 }}>Secure Local Node</span>
+                  <span style={{ fontSize: '12px', color: '#5F6B7A' }}>Protected environment connected.</span>
+                </div>
+              </div>
 
-            {/* OR Divider */}
-            <div style={{ display: 'flex', alignItems: 'center', margin: '20px 0', color: '#94A3B8', fontSize: '12px' }}>
-              <div style={{ flex: 1, height: '1px', backgroundColor: '#E7EDF5' }} />
-              <span style={{ padding: '0 12px' }}>OR</span>
-              <div style={{ flex: 1, height: '1px', backgroundColor: '#E7EDF5' }} />
-            </div>
-
-            {/* Enterprise SSO Button */}
-            <button
-              type="button"
-              style={{
-                width: '100%', height: '44px', backgroundColor: 'transparent',
-                border: '1px solid #E7EDF5', borderRadius: '10px',
-                color: '#2563EB', fontSize: '14px', fontWeight: 500,
-                cursor: 'pointer', transition: 'all 150ms ease'
-              }}
-              onMouseEnter={(e) => {
-                (e.target as HTMLButtonElement).style.backgroundColor = 'rgba(37,99,235,0.04)';
-                (e.target as HTMLButtonElement).style.borderColor = '#60A5FA';
-              }}
-              onMouseLeave={(e) => {
-                (e.target as HTMLButtonElement).style.backgroundColor = 'transparent';
-                (e.target as HTMLButtonElement).style.borderColor = '#E7EDF5';
-              }}
-            >
-              Enterprise SSO / Active Directory
-            </button>
-
-            {/* Node Status Pill */}
-            <div style={{
-              width: '100%', padding: '10px 16px', marginTop: '16px',
-              backgroundColor: '#F1F5F9', border: '1px solid #E7EDF5',
-              borderRadius: '10px', display: 'flex', alignItems: 'center', gap: '8px',
-              boxSizing: 'border-box'
-            }}>
-              <Shield size={16} color="#2563EB" />
-              <span style={{ fontSize: '12px', color: '#64748B' }}>Local Air-Gapped Node · Status: Active</span>
-            </div>
-
-            {/* Footer */}
-            <p style={{ fontSize: '11px', color: '#94A3B8', textAlign: 'center', marginTop: '24px' }}>
-              Internal banking system · Authorized access only.
-            </p>
-          </form>
+              <p style={{
+                fontSize: '12px',
+                color: '#5F6B7A',
+                textAlign: 'center',
+                marginTop: '24px',
+                lineHeight: 1.5
+              }}>
+                Authorized access only. Unauthorized use may be monitored.
+              </p>
+            </form>
+          </div>
         </div>
       </div>
     </div>
