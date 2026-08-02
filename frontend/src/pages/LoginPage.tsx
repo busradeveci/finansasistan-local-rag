@@ -2,34 +2,6 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ShieldCheck, Lock, WifiOff } from 'lucide-react';
 
-/* ─── VectorVault Brand Logo ─────────────────────────────────────────────── */
-const VectorVaultLogo = ({ size = 36 }: { size?: number }) => (
-  <div
-    style={{
-      width: size,
-      height: size,
-      borderRadius: Math.round(size * 0.278) + 'px',
-      background: '#1C0F45',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      boxShadow: '0 4px 14px rgba(28,15,69,0.35)',
-      flexShrink: 0,
-    }}
-  >
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      {/* Handle */}
-      <path d="M8 6V4C8 2.89543 8.89543 2 10 2H14C15.1046 2 16 2.89543 16 4V6" stroke="#007FFF" strokeWidth="1.8" strokeLinecap="round" />
-      {/* Duotone Body Fill + Stroke */}
-      <rect x="3" y="6" width="18" height="14" rx="3" fill="rgba(0, 127, 255, 0.35)" stroke="#007FFF" strokeWidth="1.8" />
-      {/* Accent Stitched Line */}
-      <path d="M3 11H21" stroke="#007FFF" strokeWidth="1.2" strokeOpacity="0.6" strokeDasharray="2 2" />
-      {/* Center Clasp Lock */}
-      <rect x="10.5" y="9.5" width="3" height="3" rx="0.75" fill="#FFFFFF" stroke="#007FFF" strokeWidth="1" />
-    </svg>
-  </div>
-);
-
 /* ─── Blueprint grid SVG background ─────────────────────────────────────── */
 const BlueprintGrid = () => (
   <svg
@@ -109,7 +81,9 @@ const LoginPage = () => {
         >
           {/* Logo + Brand */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '13px', marginBottom: '40px' }}>
-            <VectorVaultLogo size={38} />
+            <div className="h-14 w-14 flex items-center justify-center rounded-xl bg-[#1C0F45] p-2 shadow-md border border-white/20">
+              <img src="/briefcase-512x512.svg" alt="VectorVault" className="h-12 w-12 object-contain" />
+            </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
               <span
                 style={{
