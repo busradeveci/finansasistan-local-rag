@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ShieldCheck, Lock, WifiOff } from 'lucide-react';
-
+import { VectorVaultLogo } from '../components/VectorVaultLogo';
 /* ─── Blueprint grid SVG background ─────────────────────────────────────── */
 const BlueprintGrid = () => (
   <svg
@@ -81,9 +81,7 @@ const LoginPage = () => {
         >
           {/* Logo + Brand */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '13px', marginBottom: '40px' }}>
-            <div className="h-14 w-14 flex items-center justify-center rounded-xl bg-[#1C0F45] p-2 shadow-md border border-white/20">
-              <img src="/briefcase-512x512.svg" alt="VectorVault" className="h-12 w-12 object-contain" />
-            </div>
+            <VectorVaultLogo className="h-12 w-12 text-[#1C0F45]" />
             <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
               <span
                 style={{

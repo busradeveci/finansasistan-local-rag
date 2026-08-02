@@ -2,7 +2,7 @@ import { useState } from "react"
 import { PanelLeftClose, PanelLeftOpen, ChevronDown, Plus, Trash2 } from "lucide-react"
 import { navGroups } from "@/components/dashboard/nav-config"
 import { useWorkstation } from "@/context/WorkstationContext"
-
+import { VectorVaultLogo } from "@/components/VectorVaultLogo"
 const GLASS_SIDEBAR =
   "bg-transparent backdrop-blur-none border-none shadow-none"
 
@@ -102,19 +102,17 @@ export function Sidebar() {
           /* Collapsed: brand icon IS the toggle button, centered */
           <button
             onClick={() => setCollapsed(false)}
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#1C0F45] shadow-md border border-white/20 hover:opacity-80 transition-opacity duration-150"
+            className="flex h-9 w-9 shrink-0 items-center justify-center hover:opacity-80 transition-opacity duration-150"
             aria-label="Expand sidebar"
           >
-            <img src="/briefcase-512x512.svg" alt="VectorVault" className="h-8 w-8 object-contain" />
+            <VectorVaultLogo className="h-8 w-8 text-[#1C0F45]" />
           </button>
         ) : (
           /* Expanded: brand icon + text on left, close toggle on far right */
           <>
             <div className="flex min-w-0 items-center gap-2">
-              {/* VectorVault Duotone Briefcase logo */}
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#1C0F45] shadow-md border border-white/20">
-                <img src="/briefcase-512x512.svg" alt="VectorVault" className="h-8 w-8 object-contain" />
-              </div>
+              {/* VectorVault Logo */}
+              <VectorVaultLogo className="h-8 w-8 shrink-0 text-[#1C0F45]" />
               <div className="min-w-0 leading-tight">
                 <div className="text-[13px] font-semibold tracking-tight text-[#1C0F45]">VectorVault</div>
                 <div className="text-[10px] font-medium text-slate-500">Control Center</div>
