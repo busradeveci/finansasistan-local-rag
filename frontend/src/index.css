@@ -312,13 +312,17 @@
   }
 
   .ws-input-bar {
-    @apply bg-white/30 backdrop-blur-md border border-white/60 shadow-[0_4px_12px_rgba(0,0,0,0.05),inset_0_1px_1px_rgba(255,255,255,0.9)] rounded-full transition-all duration-300;
-    padding: calc(0.375rem) 0.875rem;
+    @apply bg-white/30 backdrop-blur-md border border-white/60 shadow-[0_4px_12px_rgba(0,0,0,0.05),inset_0_1px_1px_rgba(255,255,255,0.9)] rounded-full transition-all duration-200;
+    padding: 0.25rem 0.75rem;
   }
 
   .ws-input-bar:focus-within {
-    @apply bg-white/40;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05), inset 0 1px 1px rgba(255, 255, 255, 0.9), 0 0 0 3px rgba(37, 99, 235, 0.08);
+    @apply bg-white/55;
+    border-color: #0066FF;
+    box-shadow:
+      0 4px 12px rgba(0, 0, 0, 0.05),
+      inset 0 1px 1px rgba(255, 255, 255, 0.9),
+      0 0 0 0 transparent;
   }
 
   .ws-toolbar-btn {
@@ -547,12 +551,13 @@
   }
 
   .ws-chat-send-btn {
-    @apply inline-flex items-center font-semibold text-slate-800;
-    background: rgba(255, 255, 255, 0.7);
-    border: 1px solid rgba(255, 255, 255, 0.8);
+    @apply inline-flex items-center font-semibold;
+    background: rgba(255, 255, 255, 0.70);
+    color: var(--ws-text-secondary);
+    border: 1px solid rgba(255, 255, 255, 0.80);
     box-shadow: 0 6px 18px rgba(20, 40, 70, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.9);
     border-radius: 9999px;
-    transition: background 0.2s ease-out, border-color 0.2s ease-out;
+    transition: background 0.2s ease-out, border-color 0.2s ease-out, box-shadow 0.2s ease-out;
     padding: calc(0.4375rem) calc(0.875rem);
     font-size: calc(13px);
     gap: calc(0.375rem);
@@ -566,6 +571,20 @@
   .ws-chat-send-btn svg {
     width: calc(0.875rem);
     height: calc(0.875rem);
+  }
+
+  /* Solid Navy primary variant — used in Chat send button */
+  .ws-send-btn-primary {
+    background: #000080 !important;
+    color: #ffffff !important;
+    border-color: #000080 !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 128, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+  }
+
+  .ws-send-btn-primary:hover:not(:disabled) {
+    background: #000066 !important;
+    border-color: #000066 !important;
+    box-shadow: 0 6px 18px rgba(0, 0, 128, 0.36), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
   }
 
   .ws-evidence-panel {
@@ -635,9 +654,10 @@
   }
 
   .ws-chat-workspace .ws-chat-send-btn {
-    @apply inline-flex items-center font-semibold text-slate-800;
-    background: rgba(255, 255, 255, 0.7);
-    border: 1px solid rgba(255, 255, 255, 0.8);
+    @apply inline-flex items-center font-semibold;
+    background: rgba(255, 255, 255, 0.70);
+    color: var(--ws-text-secondary);
+    border: 1px solid rgba(255, 255, 255, 0.80);
     box-shadow: 0 6px 18px rgba(20, 40, 70, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.9);
     border-radius: 9999px;
     transition: background 0.2s ease-out, border-color 0.2s ease-out;
@@ -657,13 +677,16 @@
   }
 
   .ws-chat-workspace .ws-input-bar {
-    @apply bg-white/60 backdrop-blur-md border border-white/75 shadow-[0_6px_16px_rgba(20,40,70,0.05),inset_0_1px_0_rgba(255,255,255,0.88)] rounded-full transition-all duration-200;
-    padding: 0.375rem 0.875rem;
+    @apply bg-white/60 backdrop-blur-md border border-white/75 shadow-[0_4px_14px_rgba(20,40,70,0.05),inset_0_1px_0_rgba(255,255,255,0.88)] rounded-full transition-all duration-200;
+    padding: 0.25rem 0.75rem;
   }
 
   .ws-chat-workspace .ws-input-bar:focus-within {
-    @apply bg-white/70;
-    box-shadow: 0 6px 18px rgba(20, 40, 70, 0.07), inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 0 0 3px rgba(0, 127, 255, 0.1);
+    @apply bg-white/80;
+    border-color: #0066FF;
+    box-shadow:
+      0 4px 16px rgba(20, 40, 70, 0.07),
+      inset 0 1px 0 rgba(255, 255, 255, 0.9);
   }
 
   .ws-chat-workspace .ws-toolbar-btn {

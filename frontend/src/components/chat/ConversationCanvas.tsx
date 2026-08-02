@@ -4,8 +4,6 @@ import {
   ChevronDown,
   FileDown,
   Loader2,
-  PanelLeftClose,
-  PanelLeftOpen,
   PanelRightClose,
   Plus,
   Send,
@@ -419,7 +417,7 @@ export default function ConversationCanvas({
           {/* LEFT: title + status — grows, truncates */}
           <div className="flex min-w-0 flex-1 flex-col justify-center overflow-hidden">
             <div className="flex min-w-0 items-center gap-x-2">
-              <h2 className="truncate min-w-0 flex-1 text-card-title">Workspace Chat</h2>
+              <h2 className="truncate min-w-0 flex-1 text-card-title">Intelligence Chat</h2>
               {(activeAgentBadge || (isGenerating && !activeAgentBadge)) && (
                 <span
                   className={`shrink-0 rounded-full px-1.5 py-0.5 text-body-sm font-semibold uppercase tracking-wide text-slate-800 ${HYPER_GLASS}`}
@@ -439,38 +437,19 @@ export default function ConversationCanvas({
           {/* CENTER: session picker — fixed width, never shrinks */}
           <div className="shrink-0"><SessionDropdown /></div>
 
-          {/* RIGHT: knowledge sources + panel controls — always shrink-0 */}
-          <div className="flex shrink-0 items-center gap-1">
+          {/* RIGHT: knowledge sources + panel controls — always shrink-0, overflow-visible for dropdown */}
+          <div className="relative z-10 flex shrink-0 items-center gap-1.5 overflow-visible">
 
             <TargetSourceSelect />
 
+            {/* Compact icon-only panel toggle — no text label to prevent tooltip overflow */}
             <button
               type="button"
               onClick={onToggleEvidence}
-              className="ws-toolbar-btn"
-              title={evidenceOpen ? "Close knowledge sources panel" : "Open knowledge sources panel"}
+              className="ws-toolbar-btn !px-2"
+              aria-label={evidenceOpen ? "Close knowledge sources panel" : "Open knowledge sources panel"}
             >
-              <PanelRightClose className="h-3.5 w-3.5" />
-              <span className="hidden lg:inline">
-                {evidenceOpen ? "Close" : "Knowledge Sources"}
-              </span>
-            </button>
-
-            <button
-              type="button"
-              onClick={onToggleEvidenceExpand}
-              disabled={!evidenceOpen}
-              className={`ws-toolbar-btn ${evidenceExpanded ? "text-[var(--ws-primary)]" : ""} disabled:cursor-not-allowed disabled:opacity-40`}
-              title={evidenceExpanded ? "Collapse evidence panel" : "Expand evidence panel"}
-            >
-              {evidenceExpanded ? (
-                <PanelLeftClose className="h-3.5 w-3.5" />
-              ) : (
-                <PanelLeftOpen className="h-3.5 w-3.5" />
-              )}
-              <span className="hidden xl:inline">
-                {evidenceExpanded ? "Collapse" : "Expand"}
-              </span>
+              <PanelRightClose className={`h-3.5 w-3.5 transition-transform ${evidenceOpen ? "" : "rotate-180"}`} />
             </button>
 
           </div>
@@ -708,7 +687,7 @@ export default function ConversationCanvas({
 
               onKeyDown={handleKeyDown}
 
-              placeholder="Prompt"
+              placeholder="Search enterprise knowledge, analyze evidence, or query documents..."
 
               className="ws-chat-textarea flex-1 resize-none overflow-y-hidden bg-transparent text-[var(--ws-text)] placeholder:text-[var(--ws-text-muted)] scrollbar-none focus:outline-none"
 
@@ -746,7 +725,9 @@ export default function ConversationCanvas({
 
                 disabled={!chatInput.trim()}
 
-                className="ws-chat-send-btn disabled:cursor-not-allowed disabled:opacity-40"
+                className="ws-chat-send-btn ws-send-btn-primary disabled:cursor-not-allowed disabled:opacity-40"
+
+                aria-label="Send message"
 
               >
 

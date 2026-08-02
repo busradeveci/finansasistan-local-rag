@@ -96,25 +96,46 @@ export function Sidebar() {
 
   return (
     <aside className={`flex hidden shrink-0 flex-col lg:flex transition-all duration-300 ${collapsed ? "w-16" : "w-52"} ${GLASS_SIDEBAR}`}>
-      {/* Sidebar header — toggle button always visible, branding hidden when collapsed */}
-      <div className={`flex h-14 items-center border-b border-transparent ${collapsed ? "justify-center px-2" : "px-4 gap-2.5"}`}>
-        <button
-          onClick={() => setCollapsed(!collapsed)}
-          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-white/80 text-slate-800 shadow-[0_4px_16px_rgba(70,92,122,0.10)] transition-transform hover:bg-white"
-          title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-          aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-        >
-          {collapsed ? (
-            <PanelLeftOpen className="h-4 w-4" />
-          ) : (
-            <PanelLeftClose className="h-4 w-4" />
-          )}
-        </button>
-        {!collapsed && (
-          <div className="leading-tight truncate">
-            <div className="text-[13px] font-semibold tracking-tight text-[#1C0F45]">VectorVault</div>
-            <div className="text-[10px] font-medium text-slate-500">Control Center</div>
-          </div>
+      {/* Sidebar header — brand left, toggle right; in collapsed state icon is clickable expand */}
+      <div className={`flex h-14 items-center border-b border-transparent px-3 ${collapsed ? "justify-center" : "justify-between gap-2"}`}>
+        {collapsed ? (
+          /* Collapsed: brand icon IS the toggle button, centered */
+          <button
+            onClick={() => setCollapsed(false)}
+            className="flex h-8 w-8 items-center justify-center rounded-[10px] bg-[#1C0F45] shadow-[0_3px_10px_rgba(28,15,69,0.30)] hover:opacity-80 transition-opacity duration-150"
+            aria-label="Expand sidebar"
+          >
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="2" y="6" width="14" height="10" rx="1.5" stroke="white" strokeWidth="1.4" fill="none"/>
+              <path d="M6 6V4.5C6 3.67 6.67 3 7.5 3h3C11.33 3 12 3.67 12 4.5V6" stroke="white" strokeWidth="1.4" strokeLinecap="round" fill="none"/>
+              <path d="M2 10h14" stroke="white" strokeWidth="1.4" strokeLinecap="round"/>
+            </svg>
+          </button>
+        ) : (
+          /* Expanded: brand icon + text on left, close toggle on far right */
+          <>
+            <div className="flex min-w-0 items-center gap-2">
+              {/* VectorVault Briefcase icon */}
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[10px] bg-[#1C0F45] shadow-[0_3px_10px_rgba(28,15,69,0.30)]">
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <rect x="2" y="6" width="14" height="10" rx="1.5" stroke="white" strokeWidth="1.4" fill="none"/>
+                  <path d="M6 6V4.5C6 3.67 6.67 3 7.5 3h3C11.33 3 12 3.67 12 4.5V6" stroke="white" strokeWidth="1.4" strokeLinecap="round" fill="none"/>
+                  <path d="M2 10h14" stroke="white" strokeWidth="1.4" strokeLinecap="round"/>
+                </svg>
+              </div>
+              <div className="min-w-0 leading-tight">
+                <div className="text-[13px] font-semibold tracking-tight text-[#1C0F45]">VectorVault</div>
+                <div className="text-[10px] font-medium text-slate-500">Control Center</div>
+              </div>
+            </div>
+            <button
+              onClick={() => setCollapsed(true)}
+              className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-slate-400 hover:bg-white/70 hover:text-slate-700 transition-all duration-150"
+              aria-label="Collapse sidebar"
+            >
+              <PanelLeftClose className="h-4 w-4" />
+            </button>
+          </>
         )}
       </div>
 
