@@ -30,9 +30,9 @@ export const navGroups: NavGroup[] = [
     title: "Workspace",
     items: [
       { id: "chat", label: "Conversation", icon: MessagesSquare },
-      { id: "dashboard", label: "Control Room", icon: LayoutDashboard },
+      { id: "dashboard", label: "Workstation", icon: LayoutDashboard },
       { id: "knowledge", label: "Knowledge Hub", icon: FolderSearch },
-      { id: "documents", label: "Document Inventory", icon: FileStack },
+      { id: "documents", label: "Documents", icon: FileStack },
       { id: "vector", label: "Vector Index", icon: Database },
     ],
   },

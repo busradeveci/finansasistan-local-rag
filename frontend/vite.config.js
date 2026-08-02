@@ -21,10 +21,10 @@ export default defineConfig(({ mode }) => {
       proxy: apiBase
         ? undefined
         : {
-            "/api": { target: BACKEND, changeOrigin: true },
-            "/documents": { target: BACKEND, changeOrigin: true },
-            "/query": { target: BACKEND, changeOrigin: true },
-          },
+          "/api": { target: BACKEND, changeOrigin: true },
+          "/documents": { target: BACKEND, changeOrigin: true },
+          "/query": { target: BACKEND, changeOrigin: true },
+        },
     },
   }
 })

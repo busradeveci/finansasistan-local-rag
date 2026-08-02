@@ -27,7 +27,7 @@
     --radius: 1rem;
 
     /* Workstation design tokens — glassmorphism / Mica */
-    --ws-canvas: #f8fafc;
+    --ws-canvas: #F5F8FC;
     --ws-canvas-alt: rgba(255, 255, 255, 0.5);
     --ws-card-bg: rgba(255, 255, 255, 0.5);
     --ws-card-bg-elevated: rgba(255, 255, 255, 0.65);
@@ -39,26 +39,26 @@
     --ws-glass-elevated: rgba(255, 255, 255, 0.6);
     --ws-glass-elevated-hover: rgba(255, 255, 255, 0.75);
     --ws-glass-border: rgba(255, 255, 255, 0.6);
-    --ws-surface: rgba(255, 255, 255, 0.45);
-    --ws-primary: #2563eb;
-    --ws-primary-hover: #1d4ed8;
+    --ws-surface: rgba(255, 255, 255, 0.82);
+    --ws-primary: #000080;
+    --ws-primary-hover: #000066;
     --ws-teal: #0d9488;
     --ws-teal-light: #14b8a6;
     --ws-success: #059669;
     --ws-warning: #d97706;
     --ws-danger: #dc2626;
-    --ws-border: rgba(255, 255, 255, 0.6);
-    --ws-text: #0f172a;
+    --ws-border: #9FB6CD;
+    --ws-text: #1C0F45;
     --ws-text-secondary: rgba(71, 85, 105, 0.9);
     --ws-text-muted: rgba(100, 116, 139, 0.8);
-    --ws-sidebar: rgba(37, 99, 235, 0.05);
-    --ws-sidebar-hover: rgba(255, 255, 255, 0.45);
-    --ws-sidebar-active: rgba(255, 255, 255, 0.65);
-    --ws-sidebar-text: rgba(100, 116, 139, 0.9);
-    --ws-sidebar-text-hover: #334155;
-    --ws-sidebar-text-active: #0f172a;
-    --ws-sidebar-width: 248px;
-    --ws-sidebar-collapsed: 60px;
+    --ws-sidebar: transparent;
+    --ws-sidebar-hover: rgba(255, 255, 255, 0.55);
+    --ws-sidebar-active: rgba(255, 255, 255, 0.82);
+    --ws-sidebar-text: #4B5563;
+    --ws-sidebar-text-hover: #1C0F45;
+    --ws-sidebar-text-active: #000080;
+    --ws-sidebar-width: 208px;
+    --ws-sidebar-collapsed: 64px;
     --ws-evidence-width: 20rem;
     --ws-evidence-width-expanded: 60vw;
     --ws-card-radius: 1rem;
@@ -74,6 +74,14 @@
     --ws-chart-blue: #2563eb;
     --ws-chart-purple: #7c3aed;
     --ws-chart-orange: #f97316;
+
+    /* VectorVault locked design tokens */
+    --vv-app-bg: #F5F8FC;
+    --vv-hero-card: #87CEFA;
+    --vv-surface: rgba(255, 255, 255, 0.82);
+    --vv-primary: #000080;
+    --vv-heading: #1C0F45;
+    --vv-border: #9FB6CD;
   }
 
   html {
@@ -94,10 +102,10 @@
     line-height: 1.5;
     color: var(--ws-text);
     background:
-      radial-gradient(circle at 14% 18%, rgba(191, 219, 254, 0.78) 0%, transparent 34%),
-      radial-gradient(circle at 84% 16%, rgba(167, 243, 208, 0.52) 0%, transparent 30%),
-      radial-gradient(circle at 50% 84%, rgba(219, 234, 254, 0.72) 0%, transparent 36%),
-      linear-gradient(180deg, #f8fbff 0%, #eef5ff 52%, #f8fbff 100%);
+      radial-gradient(ellipse at 20% 20%, rgba(176, 224, 230, 0.45) 0%, transparent 40%),
+      radial-gradient(ellipse at 80% 10%, rgba(176, 224, 230, 0.30) 0%, transparent 35%),
+      radial-gradient(ellipse at 50% 90%, rgba(176, 224, 230, 0.35) 0%, transparent 40%),
+      #F5F8FC;
     background-attachment: fixed;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -141,36 +149,39 @@
   }
 
   .ws-glass-panel {
-    @apply bg-white/40 backdrop-blur-2xl backdrop-saturate-[1.12] border border-white/70 shadow-[0_14px_38px_rgba(20,40,70,0.06),inset_0_1px_0_rgba(255,255,255,0.86),inset_0_-1px_0_rgba(255,255,255,0.28)] rounded-3xl p-6;
+    @apply bg-white/70 backdrop-blur-md border border-white/40 shadow-[0_8px_32px_rgba(31,38,135,0.04)] rounded-3xl p-6;
   }
 
   .ws-glass-panel-compact {
-    @apply bg-white/40 backdrop-blur-2xl backdrop-saturate-[1.12] border border-white/70 shadow-[0_14px_38px_rgba(20,40,70,0.06),inset_0_1px_0_rgba(255,255,255,0.86),inset_0_-1px_0_rgba(255,255,255,0.28)] rounded-3xl;
+    @apply bg-white/70 backdrop-blur-md border border-white/40 shadow-[0_8px_32px_rgba(31,38,135,0.04)] rounded-3xl;
   }
 
   .ws-glass-card {
-    @apply bg-white/40 backdrop-blur-2xl backdrop-saturate-[1.12] border border-white/70 shadow-[0_14px_38px_rgba(20,40,70,0.06),inset_0_1px_0_rgba(255,255,255,0.86),inset_0_-1px_0_rgba(255,255,255,0.28)] rounded-3xl;
+    @apply bg-white/70 backdrop-blur-md border border-white/40 shadow-[0_8px_32px_rgba(31,38,135,0.04)] rounded-3xl;
   }
 
   .ws-glass-sidebar {
-    @apply bg-white/40 backdrop-blur-2xl backdrop-saturate-[1.12] border-r border-white/70 shadow-[0_14px_38px_rgba(20,40,70,0.06),inset_0_1px_0_rgba(255,255,255,0.86),inset_0_-1px_0_rgba(255,255,255,0.28)];
+    background: transparent;
+    backdrop-filter: none;
+    border: none;
+    box-shadow: none;
   }
 
   .ws-card,
   .ws-panel,
   .ws-strong-panel,
   .ws-stat-card {
-    @apply bg-white/40 backdrop-blur-2xl backdrop-saturate-[1.12] border border-white/70 shadow-[0_14px_38px_rgba(20,40,70,0.06),inset_0_1px_0_rgba(255,255,255,0.86),inset_0_-1px_0_rgba(255,255,255,0.28)] rounded-3xl;
+    @apply bg-white/70 backdrop-blur-md border border-white/40 shadow-[0_8px_32px_rgba(31,38,135,0.04)] rounded-3xl;
   }
 
   .ws-glass,
   .ws-glass-inner,
   .ws-glass-elevated {
-    @apply bg-white/40 backdrop-blur-2xl backdrop-saturate-[1.12] border border-white/70 shadow-[0_14px_38px_rgba(20,40,70,0.06),inset_0_1px_0_rgba(255,255,255,0.86),inset_0_-1px_0_rgba(255,255,255,0.28)] rounded-3xl;
+    @apply bg-white/70 backdrop-blur-md border border-white/40 shadow-[0_8px_32px_rgba(31,38,135,0.04)] rounded-3xl;
   }
 
   .ws-header {
-    @apply bg-white/40 backdrop-blur-2xl backdrop-saturate-[1.12] border-b border-white/70 shadow-[inset_0_1px_0_rgba(255,255,255,0.86)] rounded-none;
+    @apply bg-transparent backdrop-blur-none border-none shadow-none rounded-none;
   }
 
   .ws-surface {
@@ -427,10 +438,10 @@
     width: 100%;
     max-width: 100%;
     background:
-      radial-gradient(circle at 12% 12%, rgba(191, 219, 254, 0.55) 0%, transparent 36%),
-      radial-gradient(circle at 86% 12%, rgba(167, 243, 208, 0.35) 0%, transparent 32%),
-      radial-gradient(circle at 50% 88%, rgba(219, 234, 254, 0.5) 0%, transparent 34%),
-      linear-gradient(180deg, rgba(248, 251, 255, 0.95) 0%, rgba(239, 246, 255, 0.9) 100%);
+      radial-gradient(ellipse at 20% 20%, rgba(176, 224, 230, 0.40) 0%, transparent 40%),
+      radial-gradient(ellipse at 80% 10%, rgba(176, 224, 230, 0.25) 0%, transparent 35%),
+      radial-gradient(ellipse at 50% 90%, rgba(176, 224, 230, 0.30) 0%, transparent 40%),
+      #F5F8FC;
     background-attachment: fixed;
   }
 
@@ -438,10 +449,7 @@
     width: 100%;
     max-width: 100%;
     padding: 1rem 1.25rem;
-    background:
-      radial-gradient(circle at 16% 0%, rgba(191, 219, 254, 0.18) 0%, transparent 28%),
-      radial-gradient(circle at 100% 0%, rgba(167, 243, 208, 0.12) 0%, transparent 24%),
-      linear-gradient(180deg, rgba(255, 255, 255, 0.24) 0%, rgba(248, 251, 255, 0.12) 100%);
+    background: transparent;
   }
 
   .ws-workstation .ws-main-canvas--full-bleed {

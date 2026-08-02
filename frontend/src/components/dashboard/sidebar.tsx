@@ -4,13 +4,13 @@ import { navGroups } from "@/components/dashboard/nav-config"
 import { useWorkstation } from "@/context/WorkstationContext"
 
 const GLASS_SIDEBAR =
-  "bg-[#EEF4FA]/95 backdrop-blur-xl border-r border-white/70 shadow-[0_14px_36px_rgba(54,79,108,0.08)]"
+  "bg-transparent backdrop-blur-none border-none shadow-none"
 
 const HYPER_GLASS =
   "bg-white/55 backdrop-blur-md border border-white/70 shadow-[0_4px_16px_rgba(70,92,122,0.08)] rounded-full hover:bg-white/75 transition-all duration-200"
 
 const GLASS_CARD =
-  "bg-white/70 backdrop-blur-xl border border-white/70 shadow-[0_12px_28px_rgba(70,92,122,0.08)] rounded-3xl"
+  "bg-white/82 backdrop-blur-md border border-[#9FB6CD]/60 shadow-[0_12px_28px_rgba(70,92,122,0.08)] rounded-3xl"
 
 function ChatSessionsPanel() {
   const [open, setOpen] = useState(true)
@@ -18,7 +18,7 @@ function ChatSessionsPanel() {
   const activeSession = sessions.find((s) => s.id === activeSessionId)
 
   return (
-    <div className="mt-3 border-t border-slate-200/80 px-2 pt-4">
+    <div className="mt-3 border-t border-transparent px-2 pt-4">
       <div className="flex items-center gap-1">
         <button
           type="button"
@@ -92,26 +92,35 @@ function ChatSessionsPanel() {
 export function Sidebar() {
   const { module, setModule, documentInventory } = useWorkstation()
   const docBadge = documentInventory.length > 0 ? documentInventory.length.toLocaleString() : undefined
+  const [collapsed, setCollapsed] = useState(false)
 
   return (
-    <aside className={`flex hidden w-56 shrink-0 flex-col lg:flex ${GLASS_SIDEBAR}`}>
-      <div className="flex h-14 items-center gap-2.5 border-b border-slate-200/80 px-4">
-        <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-white/80 text-slate-800 shadow-[0_4px_16px_rgba(70,92,122,0.10)]">
+    <aside className={`flex hidden shrink-0 flex-col lg:flex transition-all duration-300 ${collapsed ? "w-16" : "w-52"} ${GLASS_SIDEBAR}`}>
+      <div className={`flex h-14 items-center border-b border-transparent ${collapsed ? "justify-center px-2" : "px-4 gap-2.5"}`}>
+        <button 
+          onClick={() => setCollapsed(!collapsed)}
+          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-white/80 text-slate-800 shadow-[0_4px_16px_rgba(70,92,122,0.10)] transition-transform hover:bg-white"
+          title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+        >
           <ChevronsLeftRight className="h-4 w-4" />
-        </div>
-        <div className="leading-tight">
-          <div className="text-[13px] font-semibold tracking-tight text-slate-900">BetaVector</div>
-          <div className="text-[10px] font-medium text-slate-600">Control Center</div>
-        </div>
+        </button>
+        {!collapsed && (
+          <div className="leading-tight truncate">
+            <div className="text-[13px] font-semibold tracking-tight text-[#1C0F45]">VectorVault</div>
+            <div className="text-[10px] font-medium text-slate-500">Control Center</div>
+          </div>
+        )}
       </div>
 
-      <nav className="flex-1 overflow-y-auto px-3 py-4 fluent-scrollbar">
+      <nav className="flex-1 overflow-y-auto px-3 py-4 scrollbar-none">
         {navGroups.map((group) => (
           <div key={group.title} className="mb-4">
-            <div className="px-2 pb-1.5 text-[10px] font-semibold uppercase tracking-wider text-slate-500">
-              {group.title}
-            </div>
-            <ul className="flex flex-col gap-1">
+            {!collapsed && (
+              <div className="px-2 pb-1.5 text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+                {group.title}
+              </div>
+            )}
+            <ul className="flex flex-col gap-0.5">
               {group.items.map((item) => {
                 const Icon = item.icon
                 const active = item.id === module
@@ -122,21 +131,27 @@ export function Sidebar() {
                       type="button"
                       onClick={() => setModule(item.id)}
                       aria-current={active ? "page" : undefined}
+                      title={collapsed ? item.label : undefined}
                       className={
-                        "group flex w-full items-center gap-2.5 px-2.5 py-2 text-left text-[13px] font-medium transition-all duration-200 " +
+                        "group flex w-full items-center py-2 text-left text-[13px] font-medium transition-all duration-200 " +
+                        (collapsed ? "justify-center px-0 rounded-xl " : "gap-2.5 px-2.5 rounded-xl ") +
                         (active
-                          ? "rounded-2xl border border-white/80 bg-white/80 text-slate-900 shadow-[0_8px_24px_rgba(70,92,122,0.12)]"
-                          : `${HYPER_GLASS} !rounded-2xl border-transparent text-slate-600 hover:text-slate-900`)
+                          ? "bg-white/82 border border-[#9FB6CD]/50 text-[#000080] shadow-[0_4px_16px_rgba(70,92,122,0.09)]"
+                          : "bg-transparent border border-transparent text-[#4B5563] hover:bg-white/55 hover:border-white/60 hover:text-[#1C0F45]")
                       }
                     >
                       <Icon
-                        className={"h-4 w-4 " + (active ? "text-slate-900" : "text-slate-500 group-hover:text-slate-900")}
+                        className={"h-4 w-4 shrink-0 " + (active ? "text-[#000080]" : "text-slate-400 group-hover:text-[#1C0F45]")}
                       />
-                      <span className="flex-1">{item.label}</span>
-                      {badge && (
-                        <span className={`px-1.5 py-0.5 font-mono text-[10px] text-slate-700 ${HYPER_GLASS}`}>
-                          {badge}
-                        </span>
+                      {!collapsed && (
+                        <>
+                          <span className="flex-1 truncate">{item.label}</span>
+                          {badge && (
+                            <span className={`px-1.5 py-0.5 font-mono text-[10px] text-slate-500 bg-white/60 rounded-lg border border-white/70`}>
+                              {badge}
+                            </span>
+                          )}
+                        </>
                       )}
                     </button>
                   </li>
@@ -146,26 +161,28 @@ export function Sidebar() {
           </div>
         ))}
 
-        {module === "chat" && <ChatSessionsPanel />}
+        {!collapsed && module === "chat" && <ChatSessionsPanel />}
       </nav>
-      <div className="border-t border-slate-200/80 p-3">
-        <div className={`p-3 ${GLASS_CARD}`}>
-          <div className="flex items-center gap-2">
-            <span className="relative flex h-1.5 w-1.5">
-              <span className="absolute inline-flex h-full w-full rounded-full bg-emerald-300 opacity-60" />
-              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-500" />
-            </span>
-            <span className="text-[11px] font-semibold text-slate-900">Runtime Environment</span>
-          </div>
-          <p className="mt-1 text-[10px] leading-snug text-slate-600">
-            Offline inference engine available
-          </p>
-          <div className="mt-2.5 flex items-center justify-between border-t border-slate-200/80 pt-2.5 font-mono text-[10px] text-slate-500">
-            <span>Authorized operators only</span>
-            <span className="font-semibold text-emerald-500">● online</span>
+      {!collapsed && (
+        <div className="border-t border-transparent p-3">
+          <div className={`p-3 ${GLASS_CARD}`}>
+            <div className="flex items-center gap-2">
+              <span className="relative flex h-1.5 w-1.5">
+                <span className="absolute inline-flex h-full w-full rounded-full bg-emerald-300 opacity-60" />
+                <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-500" />
+              </span>
+              <span className="text-[11px] font-semibold text-slate-900">Runtime Environment</span>
+            </div>
+            <p className="mt-1 text-[10px] leading-snug text-slate-600">
+              Offline inference engine available
+            </p>
+            <div className="mt-2.5 flex items-center justify-between border-t border-slate-200/80 pt-2.5 font-mono text-[10px] text-slate-500">
+              <span>Authorized operators only</span>
+              <span className="font-semibold text-emerald-500">● online</span>
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </aside>
   )
 }

@@ -1,9 +1,12 @@
 # PROJECT_VISION.md
 
-# Foundry Sentinel
+# VectorVault
 
 **Version:** 1.0  
-**Project Type:** Enterprise AI Knowledge Platform  
+**Product Name:** VectorVault  
+**Product Descriptor:** Enterprise Retrieval Platform / Secure Knowledge Platform  
+**Header Breadcrumb Standard:** `VectorVault > Workspace > Control Center`  
+**Sidebar Title:** `VectorVault Control Center`  
 **Deployment Model:** Fully Offline / Air-Gapped  
 **Status:** Active Development
 
@@ -11,7 +14,7 @@
 
 # Vision
 
-Foundry Sentinel is a professional enterprise AI knowledge platform designed for organizations that require complete data sovereignty, offline AI capabilities, and secure retrieval-augmented generation (RAG).
+VectorVault is a professional enterprise AI knowledge platform designed for organizations that require complete data sovereignty, offline AI capabilities, and secure retrieval-augmented generation (RAG).
 
 The platform enables internal teams to search, retrieve, analyze, and interact with organizational knowledge entirely within their own infrastructure. No external APIs, cloud services, or third-party AI providers are required during runtime.
 
@@ -25,13 +28,13 @@ Every component is designed around one core principle:
 
 Our mission is to provide a modern, secure, and highly reliable AI workstation that allows enterprises to safely use large language models with confidential internal documents.
 
-Foundry Sentinel combines Retrieval-Augmented Generation (RAG), local language models, vector search, and enterprise-grade security into a unified platform that is intuitive, efficient, and trustworthy.
+VectorVault combines Retrieval-Augmented Generation (RAG), local language models, vector search, and enterprise-grade security into a unified platform that is intuitive, efficient, and trustworthy.
 
 ---
 
 # Core Philosophy
 
-Foundry Sentinel is **not** a consumer AI chatbot.
+VectorVault is **not** a consumer AI chatbot.
 
 It is **not** a personal productivity application.
 
@@ -54,7 +57,7 @@ Every interaction should feel deliberate and reliable.
 
 # Product Identity
 
-Foundry Sentinel should feel like software built by a large enterprise software company.
+VectorVault should feel like software built by a large enterprise software company.
 
 The product should resemble modern enterprise platforms rather than consumer applications.
 
@@ -71,6 +74,9 @@ Desired qualities include:
 - Timeless
 
 The interface should avoid unnecessary decoration and visual noise.
+
+Standard Header Breadcrumb: `VectorVault > Workspace > Control Center`  
+Standard Sidebar Title: `VectorVault Control Center`
 
 ---
 
@@ -96,7 +102,7 @@ These users prioritize security, reliability, and efficiency over visual effects
 
 # Primary Objectives
 
-Foundry Sentinel exists to solve the following challenges:
+VectorVault exists to solve the following challenges:
 
 - Secure enterprise knowledge retrieval
 - Local AI inference
@@ -165,16 +171,16 @@ Performance optimizations should always be preferred over unnecessary visual eff
 
 # Functional Scope
 
-Foundry Sentinel provides a complete enterprise knowledge environment including:
+VectorVault provides a complete enterprise knowledge environment including:
 
-- AI Chat
-- Knowledge Base
-- Document Management
-- Vector Store
-- Local Model Routing
-- Inference Management
-- Security Center
-- Telemetry
+- AI Workspace / Workspace Chat
+- Control Center
+- Knowledge Hub
+- Document Inventory
+- Vector Index
+- Inference Pipeline
+- Secure Runtime
+- Knowledge Operations
 - System Monitoring
 - Analytics
 - Workspace Administration
@@ -263,7 +269,7 @@ The project is considered successful when users can:
 
 # Long-Term Vision
 
-Foundry Sentinel aims to become a complete enterprise AI operating environment capable of supporting secure knowledge workflows across highly regulated industries.
+VectorVault aims to become a complete enterprise AI operating environment capable of supporting secure knowledge workflows across highly regulated industries.
 
 Future capabilities may include:
 

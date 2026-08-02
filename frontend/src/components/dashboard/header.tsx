@@ -17,7 +17,7 @@ export function Header({ breadcrumb }: HeaderProps) {
       <header className="ws-header sticky top-0 z-20 flex h-12 shrink-0 items-center gap-3 px-3 md:px-4">
         <nav aria-label="Breadcrumb" className="hidden md:block">
           <ol className="flex items-center gap-1.5 text-sm">
-            <li className="text-slate-400">BetaVector</li>
+            <li className="text-slate-400">VectorVault</li>
             {breadcrumb.map((crumb, i) => {
               const last = i === breadcrumb.length - 1
               return (
@@ -87,7 +87,7 @@ export function Header({ breadcrumb }: HeaderProps) {
       </header>
 
       {alerts.length > 0 && (
-        <div className="shrink-0 space-y-1 border-b border-white/40 px-3 py-1.5">
+        <div className="shrink-0 space-y-1 border-b border-transparent px-3 py-1.5">
           {alerts.map((alert) => (
             <div
               key={alert.id}
