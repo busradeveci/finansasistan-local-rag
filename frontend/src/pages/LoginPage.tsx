@@ -1,6 +1,60 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Shield, FileSearch, Lock, WifiOff, Activity } from 'lucide-react';
+import { ShieldCheck, Lock, WifiOff } from 'lucide-react';
+
+/* ─── VectorVault Brand Logo ─────────────────────────────────────────────── */
+const VectorVaultLogo = ({ size = 36 }: { size?: number }) => (
+  <div
+    style={{
+      width: size,
+      height: size,
+      borderRadius: Math.round(size * 0.278) + 'px',
+      background: '#1C0F45',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      boxShadow: '0 4px 14px rgba(28,15,69,0.35)',
+      flexShrink: 0,
+    }}
+  >
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      {/* Handle */}
+      <path d="M8 6V4C8 2.89543 8.89543 2 10 2H14C15.1046 2 16 2.89543 16 4V6" stroke="#007FFF" strokeWidth="1.8" strokeLinecap="round" />
+      {/* Duotone Body Fill + Stroke */}
+      <rect x="3" y="6" width="18" height="14" rx="3" fill="rgba(0, 127, 255, 0.35)" stroke="#007FFF" strokeWidth="1.8" />
+      {/* Accent Stitched Line */}
+      <path d="M3 11H21" stroke="#007FFF" strokeWidth="1.2" strokeOpacity="0.6" strokeDasharray="2 2" />
+      {/* Center Clasp Lock */}
+      <rect x="10.5" y="9.5" width="3" height="3" rx="0.75" fill="#FFFFFF" stroke="#007FFF" strokeWidth="1" />
+    </svg>
+  </div>
+);
+
+/* ─── Blueprint grid SVG background ─────────────────────────────────────── */
+const BlueprintGrid = () => (
+  <svg
+    style={{
+      position: 'absolute',
+      inset: 0,
+      width: '100%',
+      height: '100%',
+      pointerEvents: 'none',
+      opacity: 0.032,
+    }}
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <defs>
+      <pattern id="grid-sm" width="32" height="32" patternUnits="userSpaceOnUse">
+        <path d="M 32 0 L 0 0 0 32" fill="none" stroke="#1C0F45" strokeWidth="0.6" />
+      </pattern>
+      <pattern id="grid-lg" width="160" height="160" patternUnits="userSpaceOnUse">
+        <rect width="160" height="160" fill="url(#grid-sm)" />
+        <path d="M 160 0 L 0 0 0 160" fill="none" stroke="#1C0F45" strokeWidth="1.2" />
+      </pattern>
+    </defs>
+    <rect width="100%" height="100%" fill="url(#grid-lg)" />
+  </svg>
+);
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -13,140 +67,171 @@ const LoginPage = () => {
   };
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: '24px',
-      backgroundColor: '#f4f7fb',
-      backgroundImage:
-        'radial-gradient(at 0% 0%, #e0f2fe 0px, transparent 50%), ' +
-        'radial-gradient(at 100% 0%, #e0e7ff 0px, transparent 50%), ' +
-        'radial-gradient(at 100% 100%, #f0fdf4 0px, transparent 50%)',
-      fontFamily: '"Segoe UI Variable", "Segoe UI", system-ui, sans-serif',
-    }}>
-      <div style={{
-        width: '100%',
-        maxWidth: '1200px',
-        display: 'grid',
-        gridTemplateColumns: '1.2fr 0.8fr',
-        gap: '64px',
+    <div
+      style={{
+        minHeight: '100vh',
+        display: 'flex',
         alignItems: 'center',
-      }}>
+        justifyContent: 'center',
+        padding: '24px',
+        backgroundColor: '#F5F8FC',
+        backgroundImage:
+          'radial-gradient(ellipse 60% 50% at 15% 20%, rgba(176,224,230,0.38) 0px, transparent 70%), ' +
+          'radial-gradient(ellipse 55% 45% at 85% 80%, rgba(195,222,250,0.42) 0px, transparent 70%), ' +
+          'radial-gradient(ellipse 40% 35% at 80% 15%, rgba(200,210,255,0.22) 0px, transparent 60%)',
+        fontFamily: '"Inter", "Segoe UI Variable", "Segoe UI", system-ui, sans-serif',
+        position: 'relative',
+        overflow: 'hidden',
+      }}
+    >
+      <BlueprintGrid />
 
-        {/* ── LEFT COLUMN: Frameless floating design ── */}
-        <div style={{
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          padding: '24px 0',
-        }}>
-
-          {/* Logo + Brand badge */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '36px' }}>
-            <div style={{
-              width: '36px',
-              height: '36px',
-              borderRadius: '10px',
-              background: 'linear-gradient(135deg, #000080 0%, #1a1aff 100%)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              boxShadow: '0 4px 12px rgba(0,0,128,0.3)',
-            }}>
-              <Shield size={18} color="#FFFFFF" />
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
-              <span style={{
-                fontSize: '11px',
-                fontWeight: 700,
-                color: '#000080',
-                letterSpacing: '0.18em',
-                textTransform: 'uppercase',
-              }}>
+      <div
+        style={{
+          position: 'relative',
+          zIndex: 1,
+          width: '100%',
+          maxWidth: '1140px',
+          display: 'grid',
+          gridTemplateColumns: '1.25fr 0.75fr',
+          gap: '72px',
+          alignItems: 'center',
+        }}
+      >
+        {/* ── LEFT COLUMN ── */}
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            padding: '24px 0',
+          }}
+        >
+          {/* Logo + Brand */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '13px', marginBottom: '40px' }}>
+            <VectorVaultLogo size={38} />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+              <span
+                style={{
+                  fontSize: '13px',
+                  fontWeight: 700,
+                  color: '#1C0F45',
+                  letterSpacing: '0.015em',
+                }}
+              >
                 VectorVault
               </span>
-              <span style={{
-                fontSize: '10px',
-                fontWeight: 500,
-                color: '#6B7280',
-                letterSpacing: '0.12em',
-                textTransform: 'uppercase',
-              }}>
+              <span
+                style={{
+                  fontSize: '9.5px',
+                  fontWeight: 600,
+                  color: '#6B7280',
+                  letterSpacing: '0.14em',
+                  textTransform: 'uppercase',
+                }}
+              >
                 Enterprise Retrieval Platform
               </span>
             </div>
           </div>
 
-          {/* Hero heading */}
-          <h1 style={{
-            fontSize: '52px',
-            fontWeight: 800,
-            color: '#0F172A',
-            lineHeight: 1.05,
-            marginBottom: '20px',
-            letterSpacing: '-0.03em',
-          }}>
-            VECTOR<br />
-            <span style={{ color: '#000080' }}>VAULT</span>
-          </h1>
+          {/* Hero heading — single-line, refined */}
+          <div style={{ marginBottom: '18px' }}>
+            <h1
+              style={{
+                fontSize: '42px',
+                fontWeight: 800,
+                color: '#1C0F45',
+                lineHeight: 1.08,
+                margin: '0 0 10px 0',
+                letterSpacing: '-0.025em',
+              }}
+            >
+              VectorVault
+            </h1>
+            <span
+              style={{
+                display: 'inline-block',
+                fontSize: '10.5px',
+                fontWeight: 700,
+                color: '#007FFF',
+                letterSpacing: '0.2em',
+                textTransform: 'uppercase',
+                lineHeight: 1,
+              }}
+            >
+              Control Center
+            </span>
+          </div>
 
-          <p style={{
-            fontSize: '13px',
-            fontWeight: 600,
-            color: '#000080',
-            letterSpacing: '0.12em',
-            textTransform: 'uppercase',
-            marginBottom: '16px',
-          }}>
-            Control Center
+          <p
+            style={{
+              fontSize: '16px',
+              color: '#4B5563',
+              lineHeight: 1.7,
+              maxWidth: '460px',
+              fontWeight: 400,
+              marginBottom: '52px',
+              margin: '0 0 52px 0',
+            }}
+          >
+            Secure enterprise knowledge retrieval, evidence analysis, and AI-assisted decision
+            support — fully air-gapped.
           </p>
 
-          <p style={{
-            fontSize: '17px',
-            color: '#4B5563',
-            lineHeight: 1.65,
-            maxWidth: '480px',
-            fontWeight: 400,
-            marginBottom: '56px',
-          }}>
-            Secure enterprise knowledge retrieval, evidence analysis, and AI-assisted decision support — fully air-gapped.
-          </p>
-
-          {/* Feature badges */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+          {/* Feature badges — flat, borderless, floating */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
             {[
-              { icon: <Lock size={16} color="#000080" />, text: 'Prompt Injection Guard' },
-              { icon: <FileSearch size={16} color="#000080" />, text: 'Global PII Redaction Active' },
-              { icon: <WifiOff size={16} color="#000080" />, text: 'Zero Outbound Data Transfer' },
+              {
+                icon: <ShieldCheck size={17} strokeWidth={2} />,
+                text: 'Prompt Injection Guard',
+                color: '#1C0F45',
+              },
+              {
+                icon: <Lock size={17} strokeWidth={2} />,
+                text: 'Global PII Redaction Active',
+                color: '#007FFF',
+              },
+              {
+                icon: <WifiOff size={17} strokeWidth={2} />,
+                text: 'Zero Outbound Data Transfer',
+                color: '#1C0F45',
+              },
             ].map((feature, idx) => (
-              <div key={idx} style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '14px',
-                padding: '14px 20px',
-                backgroundColor: 'rgba(255,255,255,0.55)',
-                backdropFilter: 'blur(8px)',
-                WebkitBackdropFilter: 'blur(8px)',
-                border: '1px solid rgba(255,255,255,0.75)',
-                borderRadius: '14px',
-                width: 'fit-content',
-                boxShadow: '0 4px 12px rgba(0,0,128,0.04)',
-              }}>
-                <div style={{
-                  width: '30px',
-                  height: '30px',
-                  borderRadius: '8px',
-                  backgroundColor: 'rgba(0,0,128,0.07)',
+              <div
+                key={idx}
+                style={{
                   display: 'flex',
                   alignItems: 'center',
-                  justifyContent: 'center',
-                  flexShrink: 0,
-                }}>
+                  gap: '13px',
+                }}
+              >
+                <div
+                  style={{
+                    width: '32px',
+                    height: '32px',
+                    borderRadius: '9px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flexShrink: 0,
+                    color: feature.color,
+                    backgroundColor:
+                      idx === 1
+                        ? 'rgba(0,127,255,0.08)'
+                        : 'rgba(28,15,69,0.07)',
+                  }}
+                >
                   {feature.icon}
                 </div>
-                <span style={{ fontSize: '14px', fontWeight: 600, color: '#111827', whiteSpace: 'nowrap' }}>
+                <span
+                  style={{
+                    fontSize: '14px',
+                    fontWeight: 600,
+                    color: '#1C0F45',
+                    letterSpacing: '-0.005em',
+                  }}
+                >
                   {feature.text}
                 </span>
               </div>
@@ -154,29 +239,34 @@ const LoginPage = () => {
           </div>
         </div>
 
-        {/* ── RIGHT COLUMN: Glass login form ── */}
+        {/* ── RIGHT COLUMN: Glass login card ── */}
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-          <div style={{
-            width: '100%',
-            maxWidth: '420px',
-            backgroundColor: 'rgba(255,255,255,0.50)',
-            backdropFilter: 'blur(20px)',
-            WebkitBackdropFilter: 'blur(20px)',
-            border: '1px solid rgba(255,255,255,0.65)',
-            borderRadius: '24px',
-            boxShadow: '0 24px 48px rgba(0,0,128,0.06), 0 8px 16px rgba(0,0,0,0.03)',
-            padding: '48px 40px',
-          }}>
-
+          <div
+            style={{
+              width: '100%',
+              maxWidth: '410px',
+              backgroundColor: 'rgba(255,255,255,0.62)',
+              backdropFilter: 'blur(24px)',
+              WebkitBackdropFilter: 'blur(24px)',
+              border: '1px solid rgba(255,255,255,0.72)',
+              borderRadius: '24px',
+              boxShadow:
+                '0 24px 48px rgba(28,15,69,0.07), 0 8px 16px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.9)',
+              padding: '44px 38px',
+            }}
+          >
             {/* Form header */}
-            <div style={{ marginBottom: '32px' }}>
-              <h2 style={{
-                fontSize: '22px',
-                fontWeight: 700,
-                color: '#111827',
-                margin: '0 0 6px 0',
-                lineHeight: 1.2,
-              }}>
+            <div style={{ marginBottom: '28px' }}>
+              <h2
+                style={{
+                  fontSize: '21px',
+                  fontWeight: 700,
+                  color: '#111827',
+                  margin: '0 0 5px 0',
+                  lineHeight: 1.2,
+                  letterSpacing: '-0.01em',
+                }}
+              >
                 Sign In
               </h2>
               <p style={{ fontSize: '13px', color: '#6B7280', margin: 0 }}>
@@ -185,18 +275,19 @@ const LoginPage = () => {
             </div>
 
             <form onSubmit={handleSubmit} style={{ width: '100%' }}>
-
-              {/* Work Email field */}
-              <div style={{ marginBottom: '20px' }}>
-                <label style={{
-                  display: 'block',
-                  fontSize: '11px',
-                  fontWeight: 700,
-                  letterSpacing: '0.08em',
-                  color: '#374151',
-                  textTransform: 'uppercase',
-                  marginBottom: '8px',
-                }}>
+              {/* Work Email */}
+              <div style={{ marginBottom: '18px' }}>
+                <label
+                  style={{
+                    display: 'block',
+                    fontSize: '10.5px',
+                    fontWeight: 700,
+                    letterSpacing: '0.09em',
+                    color: '#374151',
+                    textTransform: 'uppercase',
+                    marginBottom: '7px',
+                  }}
+                >
                   Work Email
                 </label>
                 <input
@@ -210,8 +301,8 @@ const LoginPage = () => {
                     padding: '0 16px',
                     fontSize: '14px',
                     color: '#111827',
-                    backgroundColor: 'rgba(255,255,255,0.75)',
-                    border: '1.5px solid rgba(220,228,240,0.9)',
+                    backgroundColor: 'rgba(255,255,255,0.78)',
+                    border: '1.5px solid rgba(215,225,240,0.9)',
                     borderRadius: '12px',
                     outline: 'none',
                     transition: 'all 150ms ease-out',
@@ -219,29 +310,31 @@ const LoginPage = () => {
                     boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.02)',
                   }}
                   onFocus={(e) => {
-                    e.target.style.borderColor = '#000080';
+                    e.target.style.borderColor = '#007FFF';
                     e.target.style.backgroundColor = '#FFFFFF';
-                    e.target.style.boxShadow = '0 0 0 3px rgba(0,0,128,0.10)';
+                    e.target.style.boxShadow = '0 0 0 3px rgba(0,127,255,0.10)';
                   }}
                   onBlur={(e) => {
-                    e.target.style.borderColor = 'rgba(220,228,240,0.9)';
-                    e.target.style.backgroundColor = 'rgba(255,255,255,0.75)';
+                    e.target.style.borderColor = 'rgba(215,225,240,0.9)';
+                    e.target.style.backgroundColor = 'rgba(255,255,255,0.78)';
                     e.target.style.boxShadow = 'inset 0 2px 4px rgba(0,0,0,0.02)';
                   }}
                 />
               </div>
 
-              {/* Password field */}
-              <div style={{ marginBottom: '28px' }}>
-                <label style={{
-                  display: 'block',
-                  fontSize: '11px',
-                  fontWeight: 700,
-                  letterSpacing: '0.08em',
-                  color: '#374151',
-                  textTransform: 'uppercase',
-                  marginBottom: '8px',
-                }}>
+              {/* Password */}
+              <div style={{ marginBottom: '26px' }}>
+                <label
+                  style={{
+                    display: 'block',
+                    fontSize: '10.5px',
+                    fontWeight: 700,
+                    letterSpacing: '0.09em',
+                    color: '#374151',
+                    textTransform: 'uppercase',
+                    marginBottom: '7px',
+                  }}
+                >
                   Password
                 </label>
                 <input
@@ -255,8 +348,8 @@ const LoginPage = () => {
                     padding: '0 16px',
                     fontSize: '14px',
                     color: '#111827',
-                    backgroundColor: 'rgba(255,255,255,0.75)',
-                    border: '1.5px solid rgba(220,228,240,0.9)',
+                    backgroundColor: 'rgba(255,255,255,0.78)',
+                    border: '1.5px solid rgba(215,225,240,0.9)',
                     borderRadius: '12px',
                     outline: 'none',
                     transition: 'all 150ms ease-out',
@@ -264,98 +357,138 @@ const LoginPage = () => {
                     boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.02)',
                   }}
                   onFocus={(e) => {
-                    e.target.style.borderColor = '#000080';
+                    e.target.style.borderColor = '#007FFF';
                     e.target.style.backgroundColor = '#FFFFFF';
-                    e.target.style.boxShadow = '0 0 0 3px rgba(0,0,128,0.10)';
+                    e.target.style.boxShadow = '0 0 0 3px rgba(0,127,255,0.10)';
                   }}
                   onBlur={(e) => {
-                    e.target.style.borderColor = 'rgba(220,228,240,0.9)';
-                    e.target.style.backgroundColor = 'rgba(255,255,255,0.75)';
+                    e.target.style.borderColor = 'rgba(215,225,240,0.9)';
+                    e.target.style.backgroundColor = 'rgba(255,255,255,0.78)';
                     e.target.style.boxShadow = 'inset 0 2px 4px rgba(0,0,0,0.02)';
                   }}
                 />
               </div>
 
-              {/* Primary CTA */}
+              {/* Primary CTA — Navy #245eb5 → #000080 on hover */}
               <button
                 type="submit"
                 style={{
                   width: '100%',
                   height: '46px',
-                  backgroundColor: '#000080',
+                  backgroundColor: '#245eb5',
                   color: '#FFFFFF',
                   border: 'none',
                   borderRadius: '12px',
                   fontSize: '14px',
                   fontWeight: 700,
                   cursor: 'pointer',
-                  letterSpacing: '0.04em',
-                  boxShadow: '0 4px 16px rgba(0,0,128,0.25)',
-                  transition: 'all 150ms ease-out',
+                  letterSpacing: '0.03em',
+                  boxShadow: '0 4px 16px rgba(36,94,181,0.28), 0 1px 3px rgba(0,0,0,0.08)',
+                  transition: 'all 180ms ease-out',
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = '#000066';
+                  e.currentTarget.style.backgroundColor = '#000080';
                   e.currentTarget.style.transform = 'translateY(-1px)';
-                  e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,0,128,0.32)';
+                  e.currentTarget.style.boxShadow =
+                    '0 8px 24px rgba(0,0,128,0.30), 0 2px 6px rgba(0,0,0,0.1)';
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = '#000080';
+                  e.currentTarget.style.backgroundColor = '#245eb5';
                   e.currentTarget.style.transform = 'translateY(0)';
-                  e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,128,0.25)';
+                  e.currentTarget.style.boxShadow =
+                    '0 4px 16px rgba(36,94,181,0.28), 0 1px 3px rgba(0,0,0,0.08)';
                 }}
               >
                 Sign In to VectorVault
               </button>
 
-              {/* Runtime status badge */}
-              <div style={{
-                width: '100%',
-                marginTop: '24px',
-                padding: '14px 16px',
-                backgroundColor: 'rgba(240,253,244,0.7)',
-                border: '1px solid rgba(134,239,172,0.5)',
-                borderRadius: '12px',
-                display: 'flex',
-                alignItems: 'flex-start',
-                gap: '12px',
-                boxSizing: 'border-box',
-              }}>
-                <div style={{ marginTop: '1px', flexShrink: 0 }}>
-                  <Activity size={16} color="#059669" />
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
-                  <span style={{ fontSize: '12px', color: '#065f46', fontWeight: 700 }}>
+              {/* Soft status pill — replaces harsh green box */}
+              <div
+                style={{
+                  width: '100%',
+                  marginTop: '20px',
+                  padding: '11px 14px',
+                  backgroundColor: 'rgba(248,250,252,0.82)',
+                  border: '1px solid rgba(203,213,225,0.55)',
+                  borderRadius: '12px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '10px',
+                  boxSizing: 'border-box',
+                  backdropFilter: 'blur(6px)',
+                  WebkitBackdropFilter: 'blur(6px)',
+                }}
+              >
+                {/* Pulsing green dot */}
+                <span style={{ position: 'relative', display: 'flex', flexShrink: 0, width: '8px', height: '8px' }}>
+                  <span
+                    style={{
+                      position: 'absolute',
+                      inset: 0,
+                      borderRadius: '50%',
+                      backgroundColor: '#10b981',
+                      opacity: 0.4,
+                      animation: 'pulse-ring 2s ease-out infinite',
+                    }}
+                  />
+                  <span
+                    style={{
+                      position: 'relative',
+                      display: 'block',
+                      width: '8px',
+                      height: '8px',
+                      borderRadius: '50%',
+                      backgroundColor: '#10b981',
+                    }}
+                  />
+                </span>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                  <span style={{ fontSize: '11.5px', color: '#1e293b', fontWeight: 700, lineHeight: 1 }}>
                     VectorVault Local Node · Status: Active
                   </span>
-                  <span style={{ fontSize: '11px', color: '#374151', lineHeight: 1.45 }}>
-                    Offline inference environment. All processing remains on the local workstation.
+                  <span style={{ fontSize: '10.5px', color: '#64748b', lineHeight: 1.4 }}>
+                    Offline inference environment. All processing remains on-device.
                   </span>
                 </div>
               </div>
 
-              {/* Footer disclaimer */}
-              <div style={{
-                marginTop: '24px',
-                paddingTop: '20px',
-                borderTop: '1px solid rgba(0,0,0,0.06)',
-              }}>
-                <p style={{
-                  fontSize: '11px',
-                  color: '#9CA3AF',
-                  textAlign: 'center',
-                  lineHeight: 1.6,
-                  margin: 0,
-                }}>
-                  VectorVault Control Center · Authorized access only.<br />
+              {/* Footer legal copy */}
+              <div
+                style={{
+                  marginTop: '22px',
+                  paddingTop: '18px',
+                  borderTop: '1px solid rgba(0,0,0,0.05)',
+                }}
+              >
+                <p
+                  style={{
+                    fontSize: '11px',
+                    color: '#94a3b8',
+                    textAlign: 'center',
+                    lineHeight: 1.65,
+                    margin: 0,
+                    fontWeight: 500,
+                    letterSpacing: '0.005em',
+                  }}
+                >
+                  VectorVault Control Center · Authorized access only.
+                  <br />
                   System activity may be logged for security and auditing purposes.
                 </p>
               </div>
-
             </form>
           </div>
         </div>
-
       </div>
+
+      {/* Pulse animation keyframes injected inline */}
+      <style>{`
+        @keyframes pulse-ring {
+          0%   { transform: scale(1);   opacity: 0.45; }
+          70%  { transform: scale(2.2); opacity: 0; }
+          100% { transform: scale(2.2); opacity: 0; }
+        }
+      `}</style>
     </div>
   );
 };

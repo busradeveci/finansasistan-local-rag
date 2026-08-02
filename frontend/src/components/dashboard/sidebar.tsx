@@ -102,25 +102,35 @@ export function Sidebar() {
           /* Collapsed: brand icon IS the toggle button, centered */
           <button
             onClick={() => setCollapsed(false)}
-            className="flex h-8 w-8 items-center justify-center rounded-[10px] bg-[#1C0F45] shadow-[0_3px_10px_rgba(28,15,69,0.30)] hover:opacity-80 transition-opacity duration-150"
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#1C0F45] shadow-md border border-white/20 hover:opacity-80 transition-opacity duration-150"
             aria-label="Expand sidebar"
           >
-            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect x="2" y="6" width="14" height="10" rx="1.5" stroke="white" strokeWidth="1.4" fill="none"/>
-              <path d="M6 6V4.5C6 3.67 6.67 3 7.5 3h3C11.33 3 12 3.67 12 4.5V6" stroke="white" strokeWidth="1.4" strokeLinecap="round" fill="none"/>
-              <path d="M2 10h14" stroke="white" strokeWidth="1.4" strokeLinecap="round"/>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              {/* Handle */}
+              <path d="M8 6V4C8 2.89543 8.89543 2 10 2H14C15.1046 2 16 2.89543 16 4V6" stroke="#007FFF" strokeWidth="1.8" strokeLinecap="round" />
+              {/* Duotone Body Fill + Stroke */}
+              <rect x="3" y="6" width="18" height="14" rx="3" fill="rgba(0, 127, 255, 0.35)" stroke="#007FFF" strokeWidth="1.8" />
+              {/* Accent Stitched Line */}
+              <path d="M3 11H21" stroke="#007FFF" strokeWidth="1.2" strokeOpacity="0.6" strokeDasharray="2 2" />
+              {/* Center Clasp Lock */}
+              <rect x="10.5" y="9.5" width="3" height="3" rx="0.75" fill="#FFFFFF" stroke="#007FFF" strokeWidth="1" />
             </svg>
           </button>
         ) : (
           /* Expanded: brand icon + text on left, close toggle on far right */
           <>
             <div className="flex min-w-0 items-center gap-2">
-              {/* VectorVault Briefcase icon */}
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[10px] bg-[#1C0F45] shadow-[0_3px_10px_rgba(28,15,69,0.30)]">
-                <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <rect x="2" y="6" width="14" height="10" rx="1.5" stroke="white" strokeWidth="1.4" fill="none"/>
-                  <path d="M6 6V4.5C6 3.67 6.67 3 7.5 3h3C11.33 3 12 3.67 12 4.5V6" stroke="white" strokeWidth="1.4" strokeLinecap="round" fill="none"/>
-                  <path d="M2 10h14" stroke="white" strokeWidth="1.4" strokeLinecap="round"/>
+              {/* VectorVault Duotone Briefcase logo */}
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#1C0F45] shadow-md border border-white/20">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  {/* Handle */}
+                  <path d="M8 6V4C8 2.89543 8.89543 2 10 2H14C15.1046 2 16 2.89543 16 4V6" stroke="#007FFF" strokeWidth="1.8" strokeLinecap="round" />
+                  {/* Duotone Body Fill + Stroke */}
+                  <rect x="3" y="6" width="18" height="14" rx="3" fill="rgba(0, 127, 255, 0.35)" stroke="#007FFF" strokeWidth="1.8" />
+                  {/* Accent Stitched Line */}
+                  <path d="M3 11H21" stroke="#007FFF" strokeWidth="1.2" strokeOpacity="0.6" strokeDasharray="2 2" />
+                  {/* Center Clasp Lock */}
+                  <rect x="10.5" y="9.5" width="3" height="3" rx="0.75" fill="#FFFFFF" stroke="#007FFF" strokeWidth="1" />
                 </svg>
               </div>
               <div className="min-w-0 leading-tight">
