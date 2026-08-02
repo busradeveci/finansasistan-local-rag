@@ -2,7 +2,6 @@ import {
   LayoutDashboard,
   FolderSearch,
   FileStack,
-  Database,
   Brain,
   Route,
   ShieldCheck,
@@ -33,7 +32,6 @@ export const navGroups: NavGroup[] = [
       { id: "dashboard", label: "Workstation", icon: LayoutDashboard },
       { id: "knowledge", label: "Knowledge Hub", icon: FolderSearch },
       { id: "documents", label: "Documents", icon: FileStack },
-      { id: "vector", label: "Vector Index", icon: Database },
     ],
   },
   {

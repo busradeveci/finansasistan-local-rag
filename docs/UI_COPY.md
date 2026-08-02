@@ -56,10 +56,9 @@ The sidebar and navigation system must use these exact module names:
 2. **Workstation**
 3. **Knowledge Hub**
 4. **Documents**
-5. **Vector Index**
-6. **Inference Pipeline**
-7. **Secure Runtime**
-8. **Knowledge Operations**
+5. **Inference Pipeline**
+6. **Secure Runtime**
+7. **Knowledge Operations**
 
 ---
 
@@ -87,11 +86,6 @@ The sidebar and navigation system must use these exact module names:
 - **Title:** Documents
 - **Subtitle:** Ingestion, parsing, and chunk management for enterprise files.
 - **Actions:** Upload Documents, Import Files, Reindex, Preview, Remove.
-
-## Vector Index
-- **Title:** Vector Index
-- **Subtitle:** Local SQLite vector embeddings, index statistics, and similarity search parameters.
-- **Actions:** Optimize Index, Verify Embeddings, Maintenance.
 
 ## Inference Pipeline
 - **Title:** Inference Pipeline

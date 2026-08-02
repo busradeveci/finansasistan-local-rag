@@ -413,98 +413,64 @@ export default function ConversationCanvas({
 
       <header className="ws-chat-header shrink-0 border-b border-white/40">
 
-        <div className="flex flex-wrap items-center justify-between gap-2">
+        {/* Three-zone header: title | session | controls */}
+        <div className="flex items-center gap-2 overflow-hidden">
 
-          <div className="flex min-w-0 flex-1 items-center gap-2">
-
-            <div className="min-w-0">
-
-              <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-0.5">
-
-                <h2 className="truncate text-card-title">Workspace Chat</h2>
-
-                {(activeAgentBadge || (isGenerating && !activeAgentBadge)) && (
-
-                  <span
-
-                    className={`rounded-full px-1.5 py-0.5 text-body-sm font-semibold uppercase tracking-wide text-slate-800 ${HYPER_GLASS}`}
-
-                  >
-
-                    [Active Model: {activeAgentBadge ?? "Inference"}]
-
-                  </span>
-
-                )}
-
-              </div>
-
-              <span className="flex min-w-0 items-center gap-1.5 truncate text-caption text-[var(--ws-text-muted)]">
-
-                {isGenerating && (
-
-                  <Loader2 className="h-3.5 w-3.5 shrink-0 animate-spin text-[var(--ws-primary)]" />
-
-                )}
-
-                {isGenerating ? (streamStatusText ?? "Loading...") : "Ready"}
-
-              </span>
-
+          {/* LEFT: title + status — grows, truncates */}
+          <div className="flex min-w-0 flex-1 flex-col justify-center overflow-hidden">
+            <div className="flex min-w-0 items-center gap-x-2">
+              <h2 className="truncate min-w-0 flex-1 text-card-title">Workspace Chat</h2>
+              {(activeAgentBadge || (isGenerating && !activeAgentBadge)) && (
+                <span
+                  className={`shrink-0 rounded-full px-1.5 py-0.5 text-body-sm font-semibold uppercase tracking-wide text-slate-800 ${HYPER_GLASS}`}
+                >
+                  [Active Model: {activeAgentBadge ?? "Inference"}]
+                </span>
+              )}
             </div>
+            <span className="flex min-w-0 items-center gap-1.5 truncate text-caption text-[var(--ws-text-muted)]">
+              {isGenerating && (
+                <Loader2 className="h-3.5 w-3.5 shrink-0 animate-spin text-[var(--ws-primary)]" />
+              )}
+              {isGenerating ? (streamStatusText ?? "Loading...") : "Ready"}
+            </span>
+          </div>
 
-            <SessionDropdown />
+          {/* CENTER: session picker — fixed width, never shrinks */}
+          <div className="shrink-0"><SessionDropdown /></div>
+
+          {/* RIGHT: knowledge sources + panel controls — always shrink-0 */}
+          <div className="flex shrink-0 items-center gap-1">
 
             <TargetSourceSelect />
 
-          </div>
-
-
-
-          <div className="flex shrink-0 flex-wrap items-center justify-end gap-1">
-
-            <button type="button" onClick={onToggleEvidence} className="ws-toolbar-btn">
-
+            <button
+              type="button"
+              onClick={onToggleEvidence}
+              className="ws-toolbar-btn"
+              title={evidenceOpen ? "Close knowledge sources panel" : "Open knowledge sources panel"}
+            >
               <PanelRightClose className="h-3.5 w-3.5" />
-
-              <span className="hidden sm:inline">
-
-                {evidenceOpen ? "Close" : "References"}
-
+              <span className="hidden lg:inline">
+                {evidenceOpen ? "Close" : "Knowledge Sources"}
               </span>
-
             </button>
 
             <button
-
               type="button"
-
               onClick={onToggleEvidenceExpand}
-
               disabled={!evidenceOpen}
-
               className={`ws-toolbar-btn ${evidenceExpanded ? "text-[var(--ws-primary)]" : ""} disabled:cursor-not-allowed disabled:opacity-40`}
-
-              title={evidenceExpanded ? "Collapse evidence panel to sidebar width" : "Expand evidence panel to 60% width"}
-
+              title={evidenceExpanded ? "Collapse evidence panel" : "Expand evidence panel"}
             >
-
               {evidenceExpanded ? (
-
                 <PanelLeftClose className="h-3.5 w-3.5" />
-
               ) : (
-
                 <PanelLeftOpen className="h-3.5 w-3.5" />
-
               )}
-
-              <span className="hidden sm:inline">
-
-                {evidenceExpanded ? "Close" : "View Details"}
-
+              <span className="hidden xl:inline">
+                {evidenceExpanded ? "Collapse" : "Expand"}
               </span>
-
             </button>
 
           </div>

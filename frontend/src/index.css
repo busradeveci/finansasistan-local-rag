@@ -112,25 +112,33 @@
     overflow: hidden;
   }
 
+  /* ─── Global invisible scrollbars (Chrome / Safari / Edge / Firefox) ─── */
   *,
   *::before,
   *::after {
-    scrollbar-width: thin;
-    scrollbar-color: rgba(148, 163, 184, 0.45) transparent;
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
   }
 
   *::-webkit-scrollbar {
-    width: calc(8px);
-    height: calc(8px);
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
   }
 
-  *::-webkit-scrollbar-track {
-    background: transparent;
+  body,
+  nav,
+  div {
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
   }
 
-  *::-webkit-scrollbar-thumb {
-    background: rgba(148, 163, 184, 0.45);
-    border-radius: 9999px;
+  body::-webkit-scrollbar,
+  nav::-webkit-scrollbar,
+  div::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
   }
 }
 
@@ -705,23 +713,18 @@
     font-variant-numeric: tabular-nums;
   }
 
-  .fluent-scrollbar::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+  /* .fluent-scrollbar — kept for markup compat but rendered invisible */
+  .fluent-scrollbar,
+  .fluent-scrollbar * {
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
   }
 
-  .fluent-scrollbar::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  .fluent-scrollbar::-webkit-scrollbar-thumb {
-    background: rgba(148, 163, 184, 0.45);
-    border-radius: 9999px;
-  }
-
-  .fluent-scrollbar {
-    scrollbar-width: thin;
-    scrollbar-color: rgba(148, 163, 184, 0.45) transparent;
+  .fluent-scrollbar::-webkit-scrollbar,
+  .fluent-scrollbar *::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
   }
 
   .scrollbar-none {

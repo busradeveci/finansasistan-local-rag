@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { ChevronsLeftRight, ChevronDown, Plus, Trash2 } from "lucide-react"
+import { PanelLeftClose, PanelLeftOpen, ChevronDown, Plus, Trash2 } from "lucide-react"
 import { navGroups } from "@/components/dashboard/nav-config"
 import { useWorkstation } from "@/context/WorkstationContext"
 
@@ -96,13 +96,19 @@ export function Sidebar() {
 
   return (
     <aside className={`flex hidden shrink-0 flex-col lg:flex transition-all duration-300 ${collapsed ? "w-16" : "w-52"} ${GLASS_SIDEBAR}`}>
+      {/* Sidebar header — toggle button always visible, branding hidden when collapsed */}
       <div className={`flex h-14 items-center border-b border-transparent ${collapsed ? "justify-center px-2" : "px-4 gap-2.5"}`}>
-        <button 
+        <button
           onClick={() => setCollapsed(!collapsed)}
           className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-white/80 text-slate-800 shadow-[0_4px_16px_rgba(70,92,122,0.10)] transition-transform hover:bg-white"
           title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+          aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
         >
-          <ChevronsLeftRight className="h-4 w-4" />
+          {collapsed ? (
+            <PanelLeftOpen className="h-4 w-4" />
+          ) : (
+            <PanelLeftClose className="h-4 w-4" />
+          )}
         </button>
         {!collapsed && (
           <div className="leading-tight truncate">

@@ -14,7 +14,7 @@ const HYPER_GLASS =
   "bg-white/70 backdrop-blur-md border border-white/55 shadow-[0_8px_30px_rgba(40,60,90,0.05)] rounded-full transition-all duration-200"
 
 const GLASS_INNER =
-  "bg-white/76 backdrop-blur-xl border border-white/45 shadow-[0_8px_32px_rgba(40,60,90,0.05)] rounded-3xl"
+  "bg-white/80 backdrop-blur-md border border-white/80 shadow-[0_8px_30px_rgba(40,60,90,0.05)] rounded-3xl"
 
 function documentTypeIcon(filename: string, type?: string) {
   const ext = (type || filename.split(".").pop() || "").toLowerCase()
