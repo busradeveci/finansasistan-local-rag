@@ -33,8 +33,52 @@ const LoginPage = () => {
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
 
+  const [error, setError] = useState<string | null>(null);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
+
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@(vectorvault\.local|bank\.com|organization\.com|enterprise\.com)$/i;
+    if (!emailRegex.test(email) || password.length < 6) {
+      setError("Unauthorized Operator Credentials. Access denied by Air-Gap Security Manager.");
+      
+      const auditLogs = JSON.parse(localStorage.getItem('vectorvault_audit_logs') || '[]');
+      auditLogs.push({ timestamp: new Date().toISOString(), email, nodeStatus: 'Active', outcome: 'DENIED', event: '[AUTH] Unauthorized Operator Credentials' });
+      localStorage.setItem('vectorvault_audit_logs', JSON.stringify(auditLogs));
+      
+      return;
+    }
+
+    const prefix = email.split('@')[0];
+    const nameParts = prefix.split('.');
+    
+    let displayName = prefix;
+    let initials = prefix.substring(0, 2).toUpperCase();
+    
+    if (nameParts.length >= 2) {
+      displayName = nameParts.map(part => part.charAt(0).toUpperCase() + part.slice(1)).join(' ');
+      if (displayName.toLowerCase() === 'busra deveci') {
+        displayName = 'Büşra Deveci';
+      }
+      initials = nameParts[0].charAt(0).toUpperCase() + nameParts[1].charAt(0).toUpperCase();
+    } else {
+      displayName = prefix.charAt(0).toUpperCase() + prefix.slice(1);
+      initials = prefix.substring(0, 2).toUpperCase();
+    }
+    
+    let role = "Senior Security Operator";
+    if (email.toLowerCase() === "busra.deveci@vectorvault.local") {
+        role = "Lead Systems Architect / Enterprise Security Operator";
+    }
+
+    const user = { email, displayName, initials, role };
+    localStorage.setItem('vectorvault_user', JSON.stringify(user));
+
+    const auditLogs = JSON.parse(localStorage.getItem('vectorvault_audit_logs') || '[]');
+    auditLogs.push({ timestamp: new Date().toISOString(), email, nodeStatus: 'Active', outcome: 'SUCCESS', event: '[AUTH] Operator session initialized' });
+    localStorage.setItem('vectorvault_audit_logs', JSON.stringify(auditLogs));
+
     navigate('/workstation');
   };
 
@@ -247,6 +291,24 @@ const LoginPage = () => {
             </div>
 
             <form onSubmit={handleSubmit} style={{ width: '100%' }}>
+              {error && (
+                <div style={{
+                  marginBottom: '20px',
+                  padding: '12px 16px',
+                  backgroundColor: 'rgba(239, 68, 68, 0.08)',
+                  border: '1px solid rgba(239, 68, 68, 0.3)',
+                  borderRadius: '12px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px'
+                }}>
+                  <ShieldCheck style={{ color: '#ef4444', flexShrink: 0 }} size={18} />
+                  <span style={{ fontSize: '12.5px', fontWeight: 600, color: '#b91c1c', lineHeight: 1.4, letterSpacing: '-0.01em' }}>
+                    {error}
+                  </span>
+                </div>
+              )}
+
               {/* Work Email */}
               <div style={{ marginBottom: '18px' }}>
                 <label

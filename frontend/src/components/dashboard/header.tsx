@@ -23,9 +23,31 @@ export function Header({ breadcrumb }: HeaderProps) {
   const { hasBackgroundActivity, uploadQueue, isGenerating, alerts, dismissAlert } = useWorkstation()
   const indexingCount = uploadQueue.filter((q) => q.status === "indexing").length
 
-  const [activeModal, setActiveModal] = useState<"command" | "notifications" | "help" | "profile" | null>(null)
+  const [activeModal, setActiveModal] = useState<"command" | "notifications" | "help" | "profile" | "profile_details" | "security_audit" | "workspace_prefs" | null>(null)
   const [notifications, setNotifications] = useState(MOCK_NOTIFICATIONS)
+  const [user, setUser] = useState<{email: string, displayName: string, initials: string, role: string} | null>(null)
   const headerRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem('vectorvault_user');
+    if (storedUser) {
+      try {
+        setUser(JSON.parse(storedUser));
+      } catch (e) {}
+    }
+    
+    const auditLogs = JSON.parse(localStorage.getItem('vectorvault_audit_logs') || '[]');
+    if (auditLogs.length > 0) {
+      const authLogs = auditLogs.filter((log: any) => log.event.includes('[AUTH]'));
+      if (authLogs.length > 0) {
+        const lastAuth = authLogs[authLogs.length - 1];
+        setNotifications(prev => [
+            { id: Date.now(), type: "info", title: "Authentication", message: lastAuth.event, iconNode: "🔑" },
+            ...prev
+        ]);
+      }
+    }
+  }, [])
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -236,30 +258,30 @@ export function Header({ breadcrumb }: HeaderProps) {
               onClick={() => setActiveModal(activeModal === "profile" ? null : "profile")}
               className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-slate-800 to-slate-900 text-[11px] font-semibold text-white shadow-[0_4px_16px_0_rgba(15,23,42,0.15)] ring-1 ring-white/20 transition-transform hover:scale-105 active:scale-95"
             >
-              BD
+              {user?.initials || "BD"}
             </button>
             {activeModal === "profile" && (
               <div className="absolute right-0 top-full mt-2 w-72 rounded-2xl border border-white/80 bg-white/90 p-2 shadow-2xl backdrop-blur-xl z-50">
                 <div className="p-2 border-b border-slate-200/50 mb-1">
-                  <p className="text-sm font-semibold text-slate-800">Büşra Deveci</p>
-                  <p className="text-[11px] text-slate-500 font-medium mt-0.5">Lead Systems Architect / Enterprise Security Operator</p>
-                  <p className="text-[11px] text-slate-400 mt-1 truncate">busra.deveci@vectorvault.local</p>
+                  <p className="text-sm font-semibold text-slate-800">{user?.displayName || "Büşra Deveci"}</p>
+                  <p className="text-[11px] text-slate-500 font-medium mt-0.5">{user?.role || "Lead Systems Architect / Enterprise Security Operator"}</p>
+                  <p className="text-[11px] text-slate-400 mt-1 truncate">{user?.email || "busra.deveci@vectorvault.local"}</p>
                 </div>
                 <div className="space-y-0.5">
-                  <button className="w-full flex items-center gap-2.5 rounded-xl px-2.5 py-2 text-[13px] font-medium text-slate-700 hover:bg-white/60 hover:text-slate-900 transition-colors">
+                  <button onClick={() => setActiveModal("profile_details")} className="w-full flex items-center gap-2.5 rounded-xl px-2.5 py-2 text-[13px] font-medium text-slate-700 hover:bg-white/60 hover:text-slate-900 transition-colors">
                     <User className="h-4 w-4 text-slate-400" /> Profile & Credentials
                   </button>
-                  <button className="w-full flex items-center gap-2.5 rounded-xl px-2.5 py-2 text-[13px] font-medium text-slate-700 hover:bg-white/60 hover:text-slate-900 transition-colors">
+                  <button onClick={() => setActiveModal("workspace_prefs")} className="w-full flex items-center gap-2.5 rounded-xl px-2.5 py-2 text-[13px] font-medium text-slate-700 hover:bg-white/60 hover:text-slate-900 transition-colors">
                     <Settings className="h-4 w-4 text-slate-400" /> Workspace Preferences
                   </button>
-                  <button className="w-full flex items-center gap-2.5 rounded-xl px-2.5 py-2 text-[13px] font-medium text-slate-700 hover:bg-white/60 hover:text-slate-900 transition-colors">
+                  <button onClick={() => setActiveModal("security_audit")} className="w-full flex items-center gap-2.5 rounded-xl px-2.5 py-2 text-[13px] font-medium text-slate-700 hover:bg-white/60 hover:text-slate-900 transition-colors">
                     <Shield className="h-4 w-4 text-slate-400" /> Security Audit & Access Keys
                   </button>
                   <div className="h-px bg-slate-200/50 my-1 mx-2" />
                   <button className="w-full flex items-center gap-2.5 rounded-xl px-2.5 py-2 text-[13px] font-medium text-slate-700 hover:bg-white/60 hover:text-slate-900 transition-colors">
                     <Monitor className="h-4 w-4 text-slate-400" /> Appearance
                   </button>
-                  <button className="w-full flex items-center gap-2.5 rounded-xl px-2.5 py-2 text-[13px] font-medium text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors" onClick={() => window.location.href = "/"}>
+                  <button className="w-full flex items-center gap-2.5 rounded-xl px-2.5 py-2 text-[13px] font-medium text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors" onClick={() => { localStorage.removeItem('vectorvault_user'); window.location.href = "/"; }}>
                     <LogOut className="h-4 w-4 text-red-500" /> Sign Out
                   </button>
                 </div>
@@ -374,6 +396,117 @@ export function Header({ breadcrumb }: HeaderProps) {
               </button>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Profile Details Modal */}
+      {activeModal === "profile_details" && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-slate-900/20 backdrop-blur-sm transition-opacity" onClick={() => setActiveModal(null)} />
+          <div className="relative w-full max-w-lg overflow-hidden rounded-2xl border border-white/80 bg-white/80 p-6 shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in-95 duration-200">
+             <div className="flex justify-between items-center mb-4">
+                <h3 className="text-sm font-semibold text-slate-800 flex items-center gap-2"><User className="h-4 w-4 text-blue-500" /> Profile & Credentials</h3>
+                <button onClick={() => setActiveModal(null)} className="text-slate-400 hover:text-slate-700"><X className="h-4 w-4" /></button>
+             </div>
+             <div className="space-y-3 text-xs text-slate-700">
+                <div className="flex justify-between border-b border-slate-200/50 pb-2">
+                    <span className="font-semibold text-slate-500">Operator Name</span>
+                    <span>{user?.displayName || "Büşra Deveci"}</span>
+                </div>
+                <div className="flex justify-between border-b border-slate-200/50 pb-2">
+                    <span className="font-semibold text-slate-500">Corporate Email</span>
+                    <span>{user?.email || "busra.deveci@vectorvault.local"}</span>
+                </div>
+                <div className="flex justify-between border-b border-slate-200/50 pb-2">
+                    <span className="font-semibold text-slate-500">Active Role</span>
+                    <span>{user?.role || "Lead Systems Architect"}</span>
+                </div>
+                <div className="flex justify-between border-b border-slate-200/50 pb-2">
+                    <span className="font-semibold text-slate-500">Security Tier</span>
+                    <span className="text-emerald-600 font-semibold">Air-Gap Level 4</span>
+                </div>
+                <div className="flex justify-between pt-1">
+                    <span className="font-semibold text-slate-500">Cryptographic Keys</span>
+                    <span className="font-mono bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200">RSA-4096 (Active)</span>
+                </div>
+             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Security Audit Modal */}
+      {activeModal === "security_audit" && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-slate-900/20 backdrop-blur-sm transition-opacity" onClick={() => setActiveModal(null)} />
+          <div className="relative w-full max-w-lg overflow-hidden rounded-2xl border border-white/80 bg-white/80 p-6 shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in-95 duration-200">
+             <div className="flex justify-between items-center mb-4">
+                <h3 className="text-sm font-semibold text-slate-800 flex items-center gap-2"><Shield className="h-4 w-4 text-emerald-500" /> Security Audit & Access Keys</h3>
+                <button onClick={() => setActiveModal(null)} className="text-slate-400 hover:text-slate-700"><X className="h-4 w-4" /></button>
+             </div>
+             <div className="space-y-4">
+                <div>
+                   <h4 className="text-xs font-semibold text-slate-500 mb-2 uppercase tracking-wider">Active API Tokens</h4>
+                   <div className="bg-slate-50 border border-slate-200/60 rounded-xl p-3 flex justify-between items-center text-xs">
+                       <span className="font-mono text-slate-600">vv_local_9f8a...3b21</span>
+                       <span className="text-emerald-600 font-semibold flex items-center gap-1"><div className="h-1.5 w-1.5 rounded-full bg-emerald-500"></div> Valid</span>
+                   </div>
+                </div>
+                <div>
+                   <h4 className="text-xs font-semibold text-slate-500 mb-2 uppercase tracking-wider">Recent Security Events</h4>
+                   <div className="space-y-2 max-h-[200px] overflow-y-auto pr-2">
+                       {JSON.parse(localStorage.getItem('vectorvault_audit_logs') || '[]').reverse().slice(0, 5).map((log: any, idx: number) => (
+                           <div key={idx} className="text-[11px] flex justify-between items-center border-b border-slate-200/50 pb-2 gap-4">
+                               <span className="text-slate-500 shrink-0">{new Date(log.timestamp).toLocaleTimeString()}</span>
+                               <span className="font-medium text-slate-700 truncate flex-1">{log.event}</span>
+                               <span className={log.outcome === 'SUCCESS' ? 'text-emerald-600 font-medium' : 'text-red-500 font-medium'}>{log.outcome}</span>
+                           </div>
+                       ))}
+                   </div>
+                </div>
+                <div className="flex justify-between items-center text-[11px] text-slate-500 pt-2 border-t border-slate-200/50">
+                   <span>Session Expiration: 12h 00m</span>
+                   <button className="text-red-600 hover:underline">Revoke All Tokens</button>
+                </div>
+             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Workspace Preferences Modal */}
+      {activeModal === "workspace_prefs" && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-slate-900/20 backdrop-blur-sm transition-opacity" onClick={() => setActiveModal(null)} />
+          <div className="relative w-full max-w-lg overflow-hidden rounded-2xl border border-white/80 bg-white/80 p-6 shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in-95 duration-200">
+             <div className="flex justify-between items-center mb-4">
+                <h3 className="text-sm font-semibold text-slate-800 flex items-center gap-2"><Settings className="h-4 w-4 text-slate-500" /> Workspace Preferences</h3>
+                <button onClick={() => setActiveModal(null)} className="text-slate-400 hover:text-slate-700"><X className="h-4 w-4" /></button>
+             </div>
+             <div className="space-y-4 text-xs text-slate-700">
+                <div className="flex justify-between items-center">
+                    <span className="font-semibold text-slate-500">Enterprise Density</span>
+                    <select className="bg-white border border-slate-200 rounded px-2 py-1 outline-none text-slate-700">
+                        <option>High (Compact)</option>
+                        <option>Standard</option>
+                        <option>Spacious</option>
+                    </select>
+                </div>
+                <div className="flex justify-between items-center">
+                    <span className="font-semibold text-slate-500">Theme</span>
+                    <select className="bg-white border border-slate-200 rounded px-2 py-1 outline-none text-slate-700">
+                        <option>VectorVault Glass (Default)</option>
+                        <option>Dark Mode</option>
+                        <option>High Contrast</option>
+                    </select>
+                </div>
+                <div className="flex justify-between items-center">
+                    <span className="font-semibold text-slate-500">Telemetry Data</span>
+                    <label className="flex items-center gap-2 cursor-pointer">
+                       <input type="checkbox" defaultChecked className="accent-blue-600" />
+                       <span>Enable Local Analytics</span>
+                    </label>
+                </div>
+             </div>
+          </div>
         </div>
       )}
     </>
