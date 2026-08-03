@@ -26,6 +26,7 @@ export function Header({ breadcrumb }: HeaderProps) {
   const [activeModal, setActiveModal] = useState<"command" | "notifications" | "help" | "profile" | "profile_details" | "security_audit" | "workspace_prefs" | null>(null)
   const [notifications, setNotifications] = useState(MOCK_NOTIFICATIONS)
   const [user, setUser] = useState<{email: string, displayName: string, initials: string, role: string} | null>(null)
+  const [auditLogs, setAuditLogs] = useState<any[]>([])
   const headerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -72,6 +73,15 @@ export function Header({ breadcrumb }: HeaderProps) {
     }
     if (activeModal) {
       window.addEventListener("mousedown", handleClickOutside)
+    }
+    if (activeModal === "security_audit") {
+      fetch('http://127.0.0.1:8000/api/v1/security/logs')
+        .then(res => res.json())
+        .then(data => setAuditLogs(data))
+        .catch(err => {
+           console.warn("Failed to fetch security logs, falling back to local storage");
+           setAuditLogs(JSON.parse(localStorage.getItem('vectorvault_audit_logs') || '[]').reverse());
+        });
     }
     return () => window.removeEventListener("mousedown", handleClickOutside)
   }, [activeModal])
@@ -454,11 +464,11 @@ export function Header({ breadcrumb }: HeaderProps) {
                 <div>
                    <h4 className="text-xs font-semibold text-slate-500 mb-2 uppercase tracking-wider">Recent Security Events</h4>
                    <div className="space-y-2 max-h-[200px] overflow-y-auto pr-2">
-                       {JSON.parse(localStorage.getItem('vectorvault_audit_logs') || '[]').reverse().slice(0, 5).map((log: any, idx: number) => (
+                       {auditLogs.slice(0, 5).map((log: any, idx: number) => (
                            <div key={idx} className="text-[11px] flex justify-between items-center border-b border-slate-200/50 pb-2 gap-4">
                                <span className="text-slate-500 shrink-0">{new Date(log.timestamp).toLocaleTimeString()}</span>
-                               <span className="font-medium text-slate-700 truncate flex-1">{log.event}</span>
-                               <span className={log.outcome === 'SUCCESS' ? 'text-emerald-600 font-medium' : 'text-red-500 font-medium'}>{log.outcome}</span>
+                               <span className="font-medium text-slate-700 truncate flex-1">{log.event || log.event_type + ' ' + log.message_details}</span>
+                               <span className={log.status === 'SUCCESS' || log.outcome === 'SUCCESS' ? 'text-emerald-600 font-medium' : 'text-red-500 font-medium'}>{log.status || log.outcome}</span>
                            </div>
                        ))}
                    </div>

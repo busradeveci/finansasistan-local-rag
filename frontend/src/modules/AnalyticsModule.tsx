@@ -139,10 +139,16 @@ export default function AnalyticsModule() {
   useEffect(() => {
     const fetchTelemetry = async () => {
       try {
-        const res = await fetch('/api/telemetry');
+        const res = await fetch('http://127.0.0.1:8000/api/v1/telemetry/system');
         if (res.ok) {
           const data = await res.json();
-          setMetrics(prev => ({ ...prev, ...data }));
+          setMetrics(prev => ({ 
+            ...prev,
+            cpuPercent: data.cpu?.percent ?? prev.cpuPercent,
+            ramPercent: data.memory?.percent ?? prev.ramPercent,
+            storageRead: data.storage?.read_mbps ?? prev.storageRead,
+            storageWrite: data.storage?.write_mbps ?? prev.storageWrite
+          }));
         } else {
           simulateFluctuations();
         }

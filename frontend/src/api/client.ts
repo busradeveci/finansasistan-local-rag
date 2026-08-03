@@ -41,21 +41,21 @@ api.interceptors.request.use((config) => {
 })
 
 export const getDocumentInventory = () =>
-  api.get("/documents/inventory", { timeout: 15_000 }).then((r) => ({
+  api.get("/api/v1/documents", { timeout: 15_000 }).then((r) => ({
     documents: r.data.documents as DocumentInventoryRow[],
     index: r.data.index as { vectors: number; dimensions: number },
   }))
 
 export const getDocumentChunks = (filename: string) =>
   api
-    .get("/documents/chunks", { params: { filename } })
+    .get("/api/v1/documents/chunks", { params: { filename } })
     .then((r) => r.data.chunks as { chunk_index: number; chars: number; preview: string }[])
 
 export const uploadDocument = (file: File, signal?: AbortSignal) => {
   const form = new FormData()
   form.append("file", file)
   return api
-    .post("/documents/upload", form, { timeout: 600_000, signal })
+    .post("/api/v1/documents/upload", form, { timeout: 600_000, signal })
     .then((r) => r.data)
 }
 
@@ -77,7 +77,7 @@ export function uploadErrorMessage(error: unknown): string {
 }
 
 export const deleteDocument = (filename: string) =>
-  api.delete(`/documents/${encodeURIComponent(filename)}`).then((r) => r.data)
+  api.delete(`/api/v1/documents/${encodeURIComponent(filename)}`).then((r) => r.data)
 
 export const getTelemetry = () =>
   api.get<TelemetryPacket>("/api/telemetry", { timeout: 5_000 }).then((r) => r.data)
@@ -112,7 +112,7 @@ export interface ExportPdfPayload {
 }
 
 export const exportExecutivePdf = async (payload: ExportPdfPayload): Promise<void> => {
-  const response = await api.post("/documents/export-pdf", payload, {
+  const response = await api.post("/api/v1/documents/export-pdf", payload, {
     responseType: "blob",
     timeout: 120_000,
   })

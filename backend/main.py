@@ -10,7 +10,10 @@ from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from backend.config import CHAT_MODEL, DATA_DIR, DB_PATH, DOCS_DIR, EMBED_MODEL, ROUTER_MODEL
-from backend.db.vector_store import init_db, list_documents, vector_index_stats
+from backend.db.schema import init_db
+from backend.db.vector_store import list_documents, vector_index_stats
+import backend.db.vector_store
+backend.db.vector_store.init_db = init_db
 from backend.logging_config import configure_logging
 from backend.routers import documents, query
 from backend.services import metrics
@@ -66,8 +69,9 @@ async def unhandled_exception_handler(request: Request, exc: Exception):
 @app.on_event("startup")
 async def startup() -> None:
     DATA_DIR.mkdir(parents=True, exist_ok=True)
-    init_db(DB_PATH)
     DOCS_DIR.mkdir(parents=True, exist_ok=True)
+    from backend.db.schema import init_db as init_schema_db
+    init_schema_db(DB_PATH)
     doc_count = len(await asyncio.to_thread(list_documents, DB_PATH))
     logger.info(
         "Foundry Local RAG API ready. Vector store: %d document(s) indexed. "
@@ -98,6 +102,8 @@ async def _warm_models() -> None:
 
 app.include_router(documents.router)
 app.include_router(query.router)
+from backend.routers import api_v1
+app.include_router(api_v1.router)
 
 
 # ---------------------------------------------------------------------------

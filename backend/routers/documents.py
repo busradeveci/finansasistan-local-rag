@@ -22,7 +22,7 @@ from backend.services import metrics
 from backend.services.ingestion import ingest_file
 from backend.services.pdf_export import generate_executive_pdf
 
-router = APIRouter(prefix="/documents", tags=["documents"])
+router = APIRouter(prefix="/api/v1/documents", tags=["documents"])
 logger = logging.getLogger(__name__)
 
 _ALLOWED_EXTENSIONS = {".txt", ".md", ".pdf", ".docx", ".xlsx", ".csv"}
@@ -75,7 +75,7 @@ def _build_inventory() -> dict:
                 "chunks": doc["chunks"],
                 "embedding_dimensions": index["dimensions"],
                 "embedding_model": EMBED_MODEL,
-                "indexation_state": "Indexed" if doc["chunks"] > 0 else "Empty",
+                "indexation_state": doc.get("status", "Indexed" if doc["chunks"] > 0 else "Empty"),
                 "last_updated": (
                     datetime.fromtimestamp(mtime, tz=timezone.utc).isoformat()
                     if mtime
@@ -92,13 +92,6 @@ def _build_inventory() -> dict:
 
 @router.get("")
 async def get_documents():
-    """Return all ingested documents with their chunk counts."""
-    docs = await asyncio.to_thread(list_documents, DB_PATH)
-    return {"documents": docs}
-
-
-@router.get("/inventory")
-async def get_document_inventory():
     """Extended metadata for the Documents workstation table."""
     return await asyncio.to_thread(_build_inventory)
 

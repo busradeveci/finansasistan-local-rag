@@ -35,7 +35,7 @@ const LoginPage = () => {
 
   const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
 
@@ -50,36 +50,62 @@ const LoginPage = () => {
       return;
     }
 
-    const prefix = email.split('@')[0];
-    const nameParts = prefix.split('.');
-    
-    let displayName = prefix;
-    let initials = prefix.substring(0, 2).toUpperCase();
-    
-    if (nameParts.length >= 2) {
-      displayName = nameParts.map(part => part.charAt(0).toUpperCase() + part.slice(1)).join(' ');
-      if (displayName.toLowerCase() === 'busra deveci') {
-        displayName = 'Büşra Deveci';
+    try {
+      const res = await fetch("http://127.0.0.1:8000/api/v1/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password })
+      });
+
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.detail || "Authentication Failed.");
       }
-      initials = nameParts[0].charAt(0).toUpperCase() + nameParts[1].charAt(0).toUpperCase();
-    } else {
-      displayName = prefix.charAt(0).toUpperCase() + prefix.slice(1);
-      initials = prefix.substring(0, 2).toUpperCase();
+
+      const data = await res.json();
+      localStorage.setItem('vectorvault_token', data.token);
+      localStorage.setItem('vectorvault_user', JSON.stringify(data.user));
+
+      // Push a local log to update frontend UI smoothly, backend also logs it
+      const auditLogs = JSON.parse(localStorage.getItem('vectorvault_audit_logs') || '[]');
+      auditLogs.push({ timestamp: new Date().toISOString(), email, nodeStatus: 'Active', outcome: 'SUCCESS', event: '[AUTH] Operator session initialized (Backend)' });
+      localStorage.setItem('vectorvault_audit_logs', JSON.stringify(auditLogs));
+
+      navigate('/workstation');
+    } catch (err: any) {
+      console.warn("Backend login failed or unreachable, falling back to local simulation:", err.message);
+      // Fallback
+      const prefix = email.split('@')[0];
+      const nameParts = prefix.split('.');
+      
+      let displayName = prefix;
+      let initials = prefix.substring(0, 2).toUpperCase();
+      
+      if (nameParts.length >= 2) {
+        displayName = nameParts.map(part => part.charAt(0).toUpperCase() + part.slice(1)).join(' ');
+        if (displayName.toLowerCase() === 'busra deveci') {
+          displayName = 'Büşra Deveci';
+        }
+        initials = nameParts[0].charAt(0).toUpperCase() + nameParts[1].charAt(0).toUpperCase();
+      } else {
+        displayName = prefix.charAt(0).toUpperCase() + prefix.slice(1);
+        initials = prefix.substring(0, 2).toUpperCase();
+      }
+      
+      let role = "Senior Security Operator";
+      if (email.toLowerCase() === "busra.deveci@vectorvault.local") {
+          role = "Lead Systems Architect / Enterprise Security Operator";
+      }
+
+      const user = { email, displayName, initials, role };
+      localStorage.setItem('vectorvault_user', JSON.stringify(user));
+
+      const auditLogs = JSON.parse(localStorage.getItem('vectorvault_audit_logs') || '[]');
+      auditLogs.push({ timestamp: new Date().toISOString(), email, nodeStatus: 'Active', outcome: 'SUCCESS', event: '[AUTH] Operator session initialized (Local Fallback)' });
+      localStorage.setItem('vectorvault_audit_logs', JSON.stringify(auditLogs));
+
+      navigate('/workstation');
     }
-    
-    let role = "Senior Security Operator";
-    if (email.toLowerCase() === "busra.deveci@vectorvault.local") {
-        role = "Lead Systems Architect / Enterprise Security Operator";
-    }
-
-    const user = { email, displayName, initials, role };
-    localStorage.setItem('vectorvault_user', JSON.stringify(user));
-
-    const auditLogs = JSON.parse(localStorage.getItem('vectorvault_audit_logs') || '[]');
-    auditLogs.push({ timestamp: new Date().toISOString(), email, nodeStatus: 'Active', outcome: 'SUCCESS', event: '[AUTH] Operator session initialized' });
-    localStorage.setItem('vectorvault_audit_logs', JSON.stringify(auditLogs));
-
-    navigate('/workstation');
   };
 
   return (

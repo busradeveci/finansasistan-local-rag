@@ -2,8 +2,8 @@ from pathlib import Path
 
 ROOT_DIR = Path(__file__).resolve().parents[1]
 DATA_DIR = ROOT_DIR / "data"
-DOCS_DIR = DATA_DIR / "docs"
-DB_PATH = DATA_DIR / "vector_store.db"
+DOCS_DIR = DATA_DIR / "vault"
+DB_PATH = DATA_DIR / "vectorvault.db"
 
 EMBED_MODEL = "qwen3-embedding-0.6b"
 CHAT_MODEL = "phi-3.5-mini"
