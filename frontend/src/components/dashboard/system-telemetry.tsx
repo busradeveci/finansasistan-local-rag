@@ -22,7 +22,7 @@ type Layer = {
 }
 
 const GLASS_CARD =
-  "bg-white/82 backdrop-blur-[14px] backdrop-saturate-[1.08] border border-white/78 shadow-[0_14px_36px_rgba(20,40,70,0.06)] rounded-3xl"
+  "bg-white/50 backdrop-blur-md border border-white/70 shadow-sm rounded-2xl p-5"
 
 const HYPER_GLASS =
   "bg-white/72 backdrop-blur-sm border border-white/80 shadow-[0_4px_14px_rgba(20,40,70,0.05)] rounded-full hover:bg-white/86 transition-all duration-300"
@@ -32,21 +32,21 @@ function MeterCard({ meter }: { meter: Meter }) {
   const color =
     meter.value >= 80 ? "bg-red-500" : meter.value >= 60 ? "bg-amber-400" : "bg-blue-600"
   return (
-    <div className="flex min-w-0 flex-col gap-2 rounded-2xl border border-white/70 bg-white/55 px-4 py-4 shadow-[0_6px_16px_rgba(20,40,70,0.05)]">
-      <div className="flex min-w-0 items-center justify-between gap-3">
-        <span className="flex min-w-0 items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-slate-600/80">
-          <Icon className="h-3.5 w-3.5 text-slate-500" />
-          <span className="truncate">{meter.label}</span>
+    <div className="flex flex-col gap-1 bg-white/60 hover:bg-white/80 transition-all border border-white/80 shadow-xs rounded-xl p-3.5">
+      <div className="flex items-center justify-between">
+        <span className="flex items-center gap-1.5 text-[10px] font-bold tracking-wider text-slate-400 uppercase">
+          <Icon className="h-4 w-4 text-slate-400" />
+          {meter.label}
         </span>
-        <span className="font-mono text-xs font-semibold tabular-nums text-slate-800">{meter.value}%</span>
+        <span className="text-base font-bold text-slate-800">{meter.value}%</span>
       </div>
-      <div className="h-2 overflow-hidden rounded-full bg-white/50">
+      <div className="h-2 rounded-full bg-slate-100 overflow-hidden mt-0.5">
         <div
           className={"h-full rounded-full transition-all duration-500 " + color}
           style={{ width: `${meter.value}%` }}
         />
       </div>
-      <div className="font-mono text-[10px] text-slate-600/70">{meter.detail}</div>
+      <div className="text-[11px] text-slate-500 font-normal mt-1">{meter.detail}</div>
     </div>
   )
 }
@@ -54,28 +54,19 @@ function MeterCard({ meter }: { meter: Meter }) {
 function LayerCard({ layer }: { layer: Layer }) {
   const Icon = layer.icon
   return (
-    <div className="flex min-w-0 items-center gap-3 rounded-2xl border border-white/70 bg-white/55 px-4 py-3.5 shadow-[0_6px_16px_rgba(20,40,70,0.05)]">
-      <div
-        className={`flex h-8 w-8 shrink-0 items-center justify-center ${HYPER_GLASS} !rounded-2xl ${
-          layer.active ? "!bg-[#000080]/8 !border-[#000080]/20" : ""
-        }`}
-      >
-        <Icon
-          className={`h-3.5 w-3.5 ${layer.active ? "text-[#000080]" : "text-slate-400"}`}
-        />
+    <div className="bg-white/50 hover:bg-white/80 transition-all border border-white/70 shadow-xs rounded-xl p-2.5 flex flex-col items-center text-center">
+      <div className="w-6 h-6 rounded-lg bg-blue-50/80 text-blue-600 flex items-center justify-center mb-1.5">
+        <Icon className="h-3.5 w-3.5" />
       </div>
-      <div className="min-w-0 flex-1">
-        <div className="truncate text-[11px] font-semibold text-slate-900">{layer.short}</div>
-        <div className="flex items-center gap-1 text-[10px] text-slate-500/80">
-          <span
-            className={`inline-block h-1.5 w-1.5 rounded-full ${layer.active ? "bg-emerald-500" : "bg-slate-300"}`}
-          />
-          {layer.active ? "Active" : "Offline"} · Events Today
-        </div>
+      <div className="text-[11px] font-semibold text-slate-600 leading-tight mb-1 max-w-[110px] min-h-[26px] flex items-center justify-center text-center">
+        {layer.short}
       </div>
-      <span className="shrink-0 font-mono text-sm font-semibold tabular-nums text-slate-800">
-        {layer.blocked}
-      </span>
+      <div className={layer.active ? "text-[9px] font-bold tracking-widest text-emerald-600 uppercase bg-emerald-50/80 px-2 py-0.5 rounded-full border border-emerald-200/50 mb-1" : "text-[9px] font-bold tracking-widest text-slate-400 uppercase bg-slate-50/80 px-2 py-0.5 rounded-full border border-slate-200/50 mb-1"}>
+        {layer.active ? "Active" : "Offline"}
+      </div>
+      <div className="text-[10px] font-medium text-slate-400">
+        {layer.blocked} {layer.blocked === 1 ? 'Event' : 'Events'}
+      </div>
     </div>
   )
 }
@@ -147,9 +138,9 @@ export function SystemTelemetry({ telemetry, security }: SystemTelemetryProps) {
   return (
     <section
       aria-label="VectorVault security pipeline and system telemetry"
-      className={`${GLASS_CARD} overflow-hidden`}
+      className={`${GLASS_CARD} overflow-hidden mt-3 xl:-mt-16 relative z-10`}
     >
-      <div className="flex items-center justify-between border-b border-white/50 px-6 py-3.5">
+      <div className="flex items-center justify-between border-b border-white/50 pb-3.5 mb-3.5">
         <div className="flex flex-col gap-0.5">
           <h2 className="text-sm font-semibold tracking-tight text-slate-900">VectorVault Security Pipeline</h2>
           <p className="text-[10px] text-slate-500 font-medium uppercase tracking-wider">
@@ -170,7 +161,7 @@ export function SystemTelemetry({ telemetry, security }: SystemTelemetryProps) {
           {sanitizationActive ? "Sanitization Active" : "Sanitization Offline"}
         </span>
       </div>
-      <div className="flex flex-col gap-3 p-4">
+      <div className="flex flex-col gap-3">
         {/* System meters */}
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           {meters.map((m) => (
@@ -178,7 +169,7 @@ export function SystemTelemetry({ telemetry, security }: SystemTelemetryProps) {
           ))}
         </div>
         {/* Security layer cards */}
-        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2.5 mt-3">
           {layers.map((l) => (
             <LayerCard key={l.label} layer={l} />
           ))}
