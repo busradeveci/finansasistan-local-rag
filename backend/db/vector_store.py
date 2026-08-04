@@ -8,7 +8,6 @@ import numpy as np
 
 from backend.config import DB_PATH, TOP_K
 from backend.db.database import get_connection
-from backend.services.document_metadata import extract_document_metadata
 
 logger = logging.getLogger(__name__)
 _FLOAT_SIZE = struct.calcsize("f")
@@ -21,52 +20,76 @@ def _embedding_to_blob(embedding: list[float]) -> bytes:
     return struct.pack(f"{len(embedding)}f", *embedding)
 
 def insert_chunks(chunks: list[dict], db_path: Path = DB_PATH) -> int:
+    """Insert *chunks* into the vector store in a single atomic transaction.
+
+    Uses BEGIN IMMEDIATE to acquire a write lock upfront, preventing
+    lock-upgrade contention mid-transaction.  A single COMMIT flushes the
+    WAL file once, eliminating per-operation fsync overhead.
+    """
     if not chunks:
         return 0
 
     filename = chunks[0]["filename"]
-    
+    t0 = time.perf_counter()
+
     conn = get_connection(db_path)
     try:
+        # Reduce fsync frequency during the bulk write (safe under WAL mode).
+        conn.execute("PRAGMA synchronous = NORMAL")
+
+        # Single write-lock transaction — one WAL flush at COMMIT.
+        conn.execute("BEGIN IMMEDIATE")
+
         # Get or create document record
         cursor = conn.execute("SELECT id FROM documents WHERE filename = ?", (filename,))
         doc_row = cursor.fetchone()
-        
+
         if not doc_row:
-            meta = extract_document_metadata(filename)
             ext = Path(filename).suffix.lower()
             conn.execute(
-                "INSERT INTO documents (filename, file_size, mime_type, status, chunk_count) VALUES (?, ?, ?, ?, ?)",
-                (filename, 0, ext, "INDEXED", len(chunks))
+                "INSERT INTO documents (filename, file_size, mime_type, status, chunk_count)"
+                " VALUES (?, ?, ?, ?, ?)",
+                (filename, 0, ext, "INDEXED", len(chunks)),
             )
             doc_id = conn.execute("SELECT last_insert_rowid()").fetchone()[0]
         else:
             doc_id = doc_row["id"]
             # Clear existing chunks for re-index
             conn.execute("DELETE FROM vector_chunks WHERE document_id = ?", (doc_id,))
-            conn.execute("UPDATE documents SET chunk_count = ?, status = 'INDEXED' WHERE id = ?", (len(chunks), doc_id))
-            
-        rows: list[tuple] = []
-        for chunk in chunks:
-            content = chunk["content"]
-            rows.append(
-                (
-                    doc_id,
-                    chunk["chunk_index"],
-                    content,
-                    0,  # token count
-                    _embedding_to_blob(chunk["embedding"])
-                )
+            conn.execute(
+                "UPDATE documents SET chunk_count = ?, status = 'INDEXED' WHERE id = ?",
+                (len(chunks), doc_id),
             )
 
+        rows: list[tuple] = [
+            (
+                doc_id,
+                chunk["chunk_index"],
+                chunk["content"],
+                0,  # token count — reserved for future use
+                _embedding_to_blob(chunk["embedding"]),
+            )
+            for chunk in chunks
+        ]
+
         conn.executemany(
-            "INSERT INTO vector_chunks (document_id, chunk_index, content_text, token_count, vector_blob) VALUES (?, ?, ?, ?, ?)",
+            "INSERT INTO vector_chunks"
+            " (document_id, chunk_index, content_text, token_count, vector_blob)"
+            " VALUES (?, ?, ?, ?, ?)",
             rows,
         )
         conn.commit()
+    except Exception:
+        conn.rollback()
+        raise
     finally:
         conn.close()
 
+    elapsed_ms = (time.perf_counter() - t0) * 1000
+    logger.debug(
+        "insert_chunks: %d rows for '%s' written in %.1f ms (single WAL transaction).",
+        len(rows), filename, elapsed_ms,
+    )
     return len(rows)
 
 def delete_document(filename: str, db_path: Path = DB_PATH) -> None:

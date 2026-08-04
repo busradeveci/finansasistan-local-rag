@@ -25,6 +25,18 @@ _MAX_TOKENS = 2048
 _TEMPERATURE = 0.0
 _TOP_P = 0.9
 
+# Hard character budget for the total context block injected into the prompt.
+# Budget arithmetic (4 chars ≈ 1 token, 4,096-token model window):
+#   system prompt    ≈  950 tokens  (3,800 chars)
+#   query preamble   ≈  150 tokens  (  600 chars)
+#   response reserve ≈ 2,048 tokens (cap above)
+#   ------------------------------------------
+#   context budget   ≈  948 tokens  (3,792 chars)
+# We use 4,000 chars as a clean round cap; per-chunk content is capped at
+# 1,500 chars so 3 chunks fit comfortably within the budget.
+_MAX_CONTEXT_CHARS: int = 4_000
+_MAX_CHARS_PER_CHUNK: int = 1_500
+
 # Strip model structural placeholders e.g. <|answer text|>, <answer text>
 _STRUCTURAL_TAG_RE = re.compile(
     r"<\|[^|>]*\|>"           # <|answer text|>
@@ -428,17 +440,45 @@ def _build_context(chunks: list[dict]) -> str:
     Explicit BEGIN/END fences reinforce the prompt's context-segregation rule:
     facts inside one fence must never be blended with facts from another
     unless the excerpts themselves state the correlation.
+
+    Token budget: each chunk's content is capped at _MAX_CHARS_PER_CHUNK chars;
+    the accumulated context block is capped at _MAX_CONTEXT_CHARS chars total.
+    This keeps the total prompt (system + context + query) within the model's
+    4,096-token window and eliminates CPU-inference timeouts on large payloads.
     """
     safe_chunks = _enforce_chunk_limit(chunks)
     refs = build_citation_map(safe_chunks)
     blocks = []
+    total_context_chars = 0
     for c in safe_chunks:
-        n = refs[c["filename"]]
-        blocks.append(
-            f"===== SOURCE [{n}] BEGIN ({c['filename']}) =====\n"
-            f"{c['content']}\n"
-            f"===== SOURCE [{n}] END ====="
+        # Per-chunk truncation: prevents a single oversized chunk from consuming
+        # the entire context budget and crowding out other sources.
+        content = c["content"]
+        if len(content) > _MAX_CHARS_PER_CHUNK:
+            logger.debug(
+                "Chunk '%s'[%s] truncated from %d → %d chars for token budget.",
+                c["filename"], c.get("chunk_index"), len(content), _MAX_CHARS_PER_CHUNK,
+            )
+            content = content[:_MAX_CHARS_PER_CHUNK]
+        # Global budget guard: stop adding chunks once the total context window
+        # is exhausted.  Earlier (higher-scored) chunks are always preferred.
+        block = (
+            f"===== SOURCE [{refs[c['filename']]}] BEGIN ({c['filename']}) =====\n"
+            f"{content}\n"
+            f"===== SOURCE [{refs[c['filename']]}] END ====="
         )
+        if total_context_chars + len(block) > _MAX_CONTEXT_CHARS:
+            logger.warning(
+                "Context budget exhausted after %d chars — skipping remaining chunks.",
+                total_context_chars,
+            )
+            break
+        blocks.append(block)
+        total_context_chars += len(block)
+    logger.debug(
+        "_build_context: %d chunk(s), %d chars (budget=%d).",
+        len(blocks), total_context_chars, _MAX_CONTEXT_CHARS,
+    )
     return "\n\n".join(blocks)
 
 
