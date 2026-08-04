@@ -1,5 +1,6 @@
 import hashlib
 import logging
+import re
 import struct
 import time
 from pathlib import Path
@@ -152,6 +153,7 @@ def list_metadata_facets(db_path: Path = DB_PATH) -> dict[str, list[str]]:
 
 def search(
     query_embedding: list[float],
+    query_text: str = "",
     top_k: int = TOP_K,
     db_path: Path = DB_PATH,
     score_threshold: float = 0.0,
@@ -212,6 +214,22 @@ def search(
     norms = np.linalg.norm(matrix, axis=1)
     norms = np.where(norms == 0, 1e-9, norms)
     scores = matrix.dot(query_vec) / (norms * query_norm)
+
+    if query_text:
+        keywords = []
+        for m in re.finditer(r"\b[A-Z0-9][A-Z0-9\-]{2,}\b", query_text):
+            if re.search(r"[A-Z]", m.group(0)):
+                keywords.append(m.group(0))
+        for m in re.finditer(r"\b(?:section|phase)\s+\d+(?:\.\d+)*\b", query_text, flags=re.IGNORECASE):
+            keywords.append(m.group(0))
+            
+        if keywords:
+            for i in range(len(valid_rows)):
+                content_lower = valid_rows[i]["content"].lower()
+                for kw in keywords:
+                    if kw.lower() in content_lower:
+                        scores[i] += 0.3
+                        break
 
     order = np.argsort(scores)[::-1]
 

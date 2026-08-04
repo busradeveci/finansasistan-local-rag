@@ -89,8 +89,9 @@ async def retrieve(
     # Over-fetch slightly so dedupe/relative filtering still fills the cap.
     results = search(
         query_embedding,
-        effective_top_k * 2,
-        db_path,
+        query_text=query,
+        top_k=effective_top_k * 2,
+        db_path=db_path,
         score_threshold=0.0,
         metadata_filters=metadata_filters,
     )

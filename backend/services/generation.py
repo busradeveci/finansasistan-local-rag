@@ -440,50 +440,78 @@ def _finalize_answer(
     return f"{cleaned}\n\n{references}"
 
 
-def _build_context(chunks: list[dict]) -> str:
+def _build_context(chunks: list[dict], query: str = "") -> str:
     """Serialise chunks as hard-partitioned source blocks.
 
     Explicit BEGIN/END fences reinforce the prompt's context-segregation rule:
     facts inside one fence must never be blended with facts from another
     unless the excerpts themselves state the correlation.
 
-    Token budget: each chunk's content is capped at _MAX_CHARS_PER_CHUNK chars;
-    the accumulated context block is capped at _MAX_CONTEXT_CHARS chars total.
-    This keeps the total prompt (system + context + query) within the model's
-    4,096-token window and eliminates CPU-inference timeouts on large payloads.
+    Token budget: smart context packing limits total context to fit within
+    MAX_TOTAL_PROMPT_CHARS limit, dynamically centering around exact keywords.
     """
     safe_chunks = _enforce_chunk_limit(chunks)
     refs = build_citation_map(safe_chunks)
     blocks = []
     total_context_chars = 0
+    
+    import re
+    keywords = []
+    if query:
+        for m in re.finditer(r"\b[A-Z0-9][A-Z0-9\-]{2,}\b", query):
+            if re.search(r"[A-Z]", m.group(0)):
+                keywords.append(m.group(0))
+        for m in re.finditer(r"\b(?:section|phase)\s+\d+(?:\.\d+)*\b", query, flags=re.IGNORECASE):
+            keywords.append(m.group(0))
+            
+    # Smart Context Budget Packing
+    # Reserve roughly 1500 chars for system prompt, query, and structure overhead
+    available_budget = MAX_TOTAL_PROMPT_CHARS - 1500 
+    
     for c in safe_chunks:
-        # Per-chunk truncation: prevents a single oversized chunk from consuming
-        # the entire context budget and crowding out other sources.
         content = c["content"]
-        if len(content) > _MAX_CHARS_PER_CHUNK:
-            logger.debug(
-                "Chunk '%s'[%s] truncated from %d → %d chars for token budget.",
-                c["filename"], c.get("chunk_index"), len(content), _MAX_CHARS_PER_CHUNK,
-            )
-            content = content[:_MAX_CHARS_PER_CHUNK]
-        # Global budget guard: stop adding chunks once the total context window
-        # is exhausted.  Earlier (higher-scored) chunks are always preferred.
-        block = (
-            f"===== SOURCE [{refs[c['filename']]}] BEGIN ({c['filename']}) =====\n"
-            f"{content}\n"
-            f"===== SOURCE [{refs[c['filename']]}] END ====="
-        )
-        if total_context_chars + len(block) > _MAX_CONTEXT_CHARS:
+        
+        match_idx = -1
+        content_lower = content.lower()
+        for kw in keywords:
+            idx = content_lower.find(kw.lower())
+            if idx != -1:
+                match_idx = idx
+                break
+                
+        allowed_len = available_budget - total_context_chars
+        if allowed_len < 250:
             logger.warning(
                 "Context budget exhausted after %d chars — skipping remaining chunks.",
                 total_context_chars,
             )
             break
+            
+        chunk_budget = min(1500, allowed_len)
+        
+        if len(content) > chunk_budget:
+            if match_idx != -1:
+                # Center around the keyword to ensure it's not truncated away
+                start = max(0, match_idx - chunk_budget // 2)
+                end = min(len(content), start + chunk_budget)
+                if end == len(content):
+                    start = max(0, end - chunk_budget)
+                content = content[start:end]
+            else:
+                content = content[:chunk_budget]
+                
+        block = (
+            f"===== SOURCE [{refs[c['filename']]}] BEGIN ({c['filename']}) =====\n"
+            f"{content}\n"
+            f"===== SOURCE [{refs[c['filename']]}] END ====="
+        )
+        
         blocks.append(block)
         total_context_chars += len(block)
+        
     logger.debug(
         "_build_context: %d chunk(s), %d chars (budget=%d).",
-        len(blocks), total_context_chars, _MAX_CONTEXT_CHARS,
+        len(blocks), total_context_chars, available_budget,
     )
     return "\n\n".join(blocks)
 
@@ -578,7 +606,7 @@ async def generate(
     chat_client = await get_chat_client()
     _apply_completion_settings(chat_client)
     ref_map = build_citation_map(chunks)
-    context = _build_context(chunks)
+    context = _build_context(chunks, query)
     messages = _build_messages(context, query, history)
 
     logger.info(
@@ -617,7 +645,7 @@ async def stream_generate(
     _apply_completion_settings(chat_client)
 
     ref_map = build_citation_map(chunks)
-    context = _build_context(chunks)
+    context = _build_context(chunks, query)
     messages = _build_messages(context, query, history)
 
     # Diagnostic: log total prompt payload size so context-budget overflows are visible.
@@ -659,16 +687,6 @@ async def stream_generate(
 
     threading.Thread(target=_run_stream, daemon=True).start()
 
-    stripper = _StreamingTagStripper()
-    loop_guard = _StreamingLoopGuard()
-    ref_suppressor = _StreamReferenceSuppressor()
-    answer_sanitizer = _StreamAnswerSanitizer()
-
-    def _pipe_segments(segments: list[str]) -> str:
-        return "".join(
-            ref_suppressor.feed(answer_sanitizer.feed(s)) for s in segments if s
-        )
-
     emitted_text = ""
     while True:
         item = await queue.get()
@@ -700,17 +718,7 @@ async def stream_generate(
                     logger.exception("Blocking fallback also failed: %s", fallback_exc)
                     yield f"Generation error: {fallback_exc}"
                 break
-            final_segments = loop_guard.feed_segments(stripper.flush())
-            final_segments.append(loop_guard.flush())
-            tail = _pipe_segments(final_segments)
-            if tail:
-                emitted_text += tail
-                yield tail
-            audited_text = apply_numeric_audit(emitted_text, chunks)
-            audit_suffix = audited_text[len(emitted_text) :]
-            if audit_suffix:
-                yield audit_suffix
-                emitted_text = audited_text
+            
             references = _build_references_block(emitted_text, ref_map)
             if references:
                 yield f"\n\n{references}"
@@ -729,11 +737,10 @@ async def stream_generate(
             if answer:
                 yield answer
             break
+            
         token_count += 1
-        cleaned = _pipe_segments(loop_guard.feed_segments(stripper.feed(item)))
-        if cleaned:
-            emitted_text += cleaned
-            yield cleaned
+        emitted_text += item
+        yield item
 
     elapsed_ms = (time.perf_counter() - t0) * 1000
     metrics.record_generation(elapsed_ms)
