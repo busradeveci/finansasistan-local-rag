@@ -37,6 +37,12 @@ _TOP_P = 0.9
 _MAX_CONTEXT_CHARS: int = 4_000
 _MAX_CHARS_PER_CHUNK: int = 1_500
 
+# Absolute ceiling on the total assembled prompt (system + context + query +
+# instructions). Anything beyond this guarantees >5 s CPU prefill on local
+# inference hardware.  If the assembled payload exceeds this cap, the context
+# block is trimmed from the tail until the total fits.
+MAX_TOTAL_PROMPT_CHARS: int = 3_500
+
 # Strip model structural placeholders e.g. <|answer text|>, <answer text>
 _STRUCTURAL_TAG_RE = re.compile(
     r"<\|[^|>]*\|>"           # <|answer text|>
@@ -484,17 +490,26 @@ def _build_context(chunks: list[dict]) -> str:
 
 def _build_messages(context: str, query: str, history: list[dict] | None) -> list[dict]:
     """Assemble the prompt. Kept lean — behavioural rules live in SYSTEM_PROMPT
-    only, so they are not paid for twice per request."""
+    only, so they are not paid for twice per request.
+
+    Enforces MAX_TOTAL_PROMPT_CHARS as an absolute hard ceiling on the final
+    assembled payload.  If the total character count (all message contents
+    combined) exceeds the cap, the context block is trimmed from the tail
+    (removing whole SOURCE blocks first, then raw chars) until the payload fits.
+    This guarantees CPU prefill completes in < 5 s on local hardware regardless
+    of how many documents are indexed.
+    """
     clean_query = sanitize_query(query)
-    messages: list[dict] = [{"role": "system", "content": SYSTEM_PROMPT}]
-    if history:
-        messages.extend(history[-6:])
-    user_content = (
+
+    # Build the static instruction wrapper WITHOUT the context inserted yet so
+    # we can measure how many chars remain for the context block.
+    _PREAMBLE = (
         "NUMBERED SOURCES (your only source of truth — cite with the bracketed numbers; "
         "each BEGIN/END fence is an isolated partition, never blend facts across fences "
         "unless the excerpts explicitly correlate them):\n\n"
-        f"{context}\n\n"
-        f"QUESTION: {clean_query}\n\n"
+    )
+    _POSTAMBLE = (
+        f"\n\nQUESTION: {clean_query}\n\n"
         "Decide first: do the sources explicitly contain the answer? "
         f'If not, reply with exactly this single sentence and nothing else: "{NO_CONTEXT_ANSWER}" '
         "If they do, write an exhaustive, professionally structured answer in crisp corporate "
@@ -507,6 +522,49 @@ def _build_messages(context: str, query: str, history: list[dict] | None) -> lis
         "factual sentence, e.g. \"The collateral ratio was raised to 155% [1].\" "
         "Do not write a References or Sources section — it is appended automatically."
     )
+
+    messages: list[dict] = [{"role": "system", "content": SYSTEM_PROMPT}]
+    if history:
+        messages.extend(history[-6:])
+
+    # Measure fixed overhead: system prompt + history + preamble + postamble
+    fixed_chars = sum(len(m.get("content", "")) for m in messages)
+    fixed_chars += len(_PREAMBLE) + len(_POSTAMBLE)
+
+    # Budget: how many chars remain for the context block?
+    context_budget = MAX_TOTAL_PROMPT_CHARS - fixed_chars
+    effective_context = context
+
+    if len(effective_context) > context_budget:
+        if context_budget <= 0:
+            # Edge case: fixed overhead alone exceeds budget — use empty context.
+            effective_context = ""
+            logger.warning(
+                "_build_messages: fixed prompt overhead (%d chars) exceeds MAX_TOTAL_PROMPT_CHARS=%d "
+                "— context cleared entirely.",
+                fixed_chars, MAX_TOTAL_PROMPT_CHARS,
+            )
+        else:
+            # Truncate context to fit within budget.  Prefer removing whole
+            # SOURCE blocks from the tail before falling back to raw truncation.
+            truncated = effective_context[:context_budget]
+            # Try to cut at the last complete SOURCE block boundary.
+            last_end = truncated.rfind("===== SOURCE [")
+            if last_end > 0:
+                # Keep everything up to (but not including) the incomplete block.
+                block_end = truncated.rfind("===== SOURCE", 0, last_end)
+                if block_end > 0:
+                    # Find the END fence of the last complete block.
+                    end_fence_pos = truncated.find("===== SOURCE", last_end)
+                    truncated = truncated[:last_end].rstrip()
+            effective_context = truncated
+            logger.warning(
+                "_build_messages: context truncated from %d → %d chars to fit "
+                "MAX_TOTAL_PROMPT_CHARS=%d (fixed_overhead=%d chars).",
+                len(context), len(effective_context), MAX_TOTAL_PROMPT_CHARS, fixed_chars,
+            )
+
+    user_content = _PREAMBLE + effective_context + _POSTAMBLE
     messages.append({"role": "user", "content": user_content})
     return messages
 
@@ -562,28 +620,41 @@ async def stream_generate(
     context = _build_context(chunks)
     messages = _build_messages(context, query, history)
 
+    # Diagnostic: log total prompt payload size so context-budget overflows are visible.
+    total_prompt_chars = sum(len(m.get("content", "")) for m in messages)
+    logger.info(
+        "Starting streaming generation (model=%s, chunks=%d, max_tokens=%d, temperature=%.1f, "
+        "prompt_chars=%d).",
+        CHAT_MODEL, len(chunks), _MAX_TOKENS, 0.0, total_prompt_chars,
+    )
+
     token_count = 0
     t0 = time.perf_counter()
-    logger.info(
-        "Starting streaming generation (model=%s, chunks=%d, max_tokens=%d, temperature=%.1f).",
-        CHAT_MODEL, len(chunks), _MAX_TOKENS, 0.0,
-    )
 
     loop = asyncio.get_running_loop()
     queue: asyncio.Queue = asyncio.Queue()
     _DONE = object()
 
     def _run_stream() -> None:
+        raw_token_count = 0
         try:
             for chunk in chat_client.complete_streaming_chat(messages):
                 if not chunk.choices:
+                    logger.debug("_run_stream: received chunk with no choices, skipping.")
                     continue
                 token = getattr(chunk.choices[0].delta, "content", None)
-                if token:
-                    loop.call_soon_threadsafe(queue.put_nowait, token)
+                # Only skip genuinely None tokens; empty strings are valid SSE whitespace.
+                if token is None:
+                    logger.debug("_run_stream: delta.content is None, skipping chunk.")
+                    continue
+                raw_token_count += 1
+                logger.debug("_run_stream: token #%d = %r", raw_token_count, token[:80] if len(token) > 80 else token)
+                loop.call_soon_threadsafe(queue.put_nowait, token)
         except Exception as exc:
+            logger.warning("_run_stream: streaming exception after %d token(s): %s", raw_token_count, exc)
             loop.call_soon_threadsafe(queue.put_nowait, exc)
         finally:
+            logger.info("_run_stream: finished — %d raw token(s) enqueued.", raw_token_count)
             loop.call_soon_threadsafe(queue.put_nowait, _DONE)
 
     threading.Thread(target=_run_stream, daemon=True).start()
@@ -602,6 +673,33 @@ async def stream_generate(
     while True:
         item = await queue.get()
         if item is _DONE:
+            if token_count == 0:
+                logger.warning(
+                    "stream_generate: SDK stream produced ZERO tokens. "
+                    "complete_streaming_chat() may be unsupported for model '%s'. "
+                    "Falling back to blocking complete_chat().",
+                    CHAT_MODEL,
+                )
+                # The streaming thread put _DONE without ever queuing a token.
+                # Treat this exactly like a streaming exception and use the
+                # blocking fallback so the client receives an actual response.
+                try:
+                    response = await asyncio.to_thread(chat_client.complete_chat, messages)
+                    raw_content = response.choices[0].message.content or ""
+                    logger.info(
+                        "Blocking fallback complete_chat: received %d chars.", len(raw_content)
+                    )
+                    answer = _finalize_answer(
+                        _clean_response_text(raw_content),
+                        ref_map,
+                        chunks,
+                    )
+                    if answer:
+                        yield answer
+                except Exception as fallback_exc:
+                    logger.exception("Blocking fallback also failed: %s", fallback_exc)
+                    yield f"Generation error: {fallback_exc}"
+                break
             final_segments = loop_guard.feed_segments(stripper.flush())
             final_segments.append(loop_guard.flush())
             tail = _pipe_segments(final_segments)

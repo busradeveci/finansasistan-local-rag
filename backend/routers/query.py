@@ -272,15 +272,23 @@ async def query_stream(
         yield _format_sse_data(
             f"{_STATUS_PREFIX}Step 5: Generating long-form cited response…"
         )
+        logger.info(
+            "SSE generation start — model ready, passing %d chunk(s) to stream_generate.",
+            len(chunks),
+        )
 
         try:
+            sse_token_count = 0
             async for token in stream_generate(
                 chunks, question, history=None, chat_client=chat_client
             ):
                 if await request.is_disconnected():
                     logger.info("SSE client disconnected during generation")
                     return
+                sse_token_count += 1
+                logger.debug("SSE yield token #%d (%d chars): %r", sse_token_count, len(token), token[:60])
                 yield _format_sse_data(token)
+            logger.info("SSE generation complete — %d token(s) emitted to client.", sse_token_count)
         except Exception as exc:
             logger.exception("Stream generation failed")
             yield _format_sse_data(f"Response generation failed: {exc}")
