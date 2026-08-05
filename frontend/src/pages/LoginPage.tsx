@@ -1,31 +1,46 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ShieldCheck, Lock, WifiOff } from 'lucide-react';
-import { VectorVaultLogo } from '../components/VectorVaultLogo';
-/* ─── Blueprint grid SVG background ─────────────────────────────────────── */
-const BlueprintGrid = () => (
-  <svg
-    style={{
-      position: 'absolute',
-      inset: 0,
-      width: '100%',
-      height: '100%',
-      pointerEvents: 'none',
-      opacity: 0.032,
-    }}
-    xmlns="http://www.w3.org/2000/svg"
-  >
+import { ShieldCheck, Lock, WifiOff, Fingerprint, ScanEye, Activity, ChevronRight } from 'lucide-react';
+
+/* ─── VectorVault Shield Logo (inline SVG, white for dark BG) ──────────── */
+const VaultShield = ({ className = '' }: { className?: string }) => (
+  <svg viewBox="0 0 48 48" fill="none" className={className} xmlns="http://www.w3.org/2000/svg">
+    <path
+      d="M24 4L6 12v12c0 11.1 7.7 21.5 18 24 10.3-2.5 18-12.9 18-24V12L24 4z"
+      fill="url(#shield-fill)"
+      stroke="rgba(255,255,255,0.3)"
+      strokeWidth="1"
+    />
+    <path
+      d="M18 24l4 4 8-8"
+      stroke="white"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
     <defs>
-      <pattern id="grid-sm" width="32" height="32" patternUnits="userSpaceOnUse">
-        <path d="M 32 0 L 0 0 0 32" fill="none" stroke="#1C0F45" strokeWidth="0.6" />
-      </pattern>
-      <pattern id="grid-lg" width="160" height="160" patternUnits="userSpaceOnUse">
-        <rect width="160" height="160" fill="url(#grid-sm)" />
-        <path d="M 160 0 L 0 0 0 160" fill="none" stroke="#1C0F45" strokeWidth="1.2" />
-      </pattern>
+      <linearGradient id="shield-fill" x1="6" y1="4" x2="42" y2="40" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stopColor="rgba(59,130,246,0.5)" />
+        <stop offset="100%" stopColor="rgba(37,99,235,0.3)" />
+      </linearGradient>
     </defs>
-    <rect width="100%" height="100%" fill="url(#grid-lg)" />
   </svg>
+);
+
+/* ─── Pulsing green dot ────────────────────────────────────────────────── */
+const PulsingDot = () => (
+  <span className="vv-pulse-wrapper">
+    <span className="vv-pulse-ring" />
+    <span className="vv-pulse-core" />
+  </span>
+);
+
+/* ─── Security feature item ────────────────────────────────────────────── */
+const SecurityItem = ({ icon, text }: { icon: React.ReactNode; text: string }) => (
+  <div className="vv-security-item">
+    <div className="vv-security-icon">{icon}</div>
+    <span className="vv-security-text">{text}</span>
+  </div>
 );
 
 const LoginPage = () => {
@@ -34,10 +49,12 @@ const LoginPage = () => {
   const navigate = useNavigate();
 
   const [error, setError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    setIsSubmitting(true);
 
     const emailRegex = /^[a-zA-Z0-9._%+-]+@(vectorvault\.local|bank\.com|organization\.com|enterprise\.com)$/i;
     if (!emailRegex.test(email) || password.length < 6) {
@@ -47,6 +64,7 @@ const LoginPage = () => {
       auditLogs.push({ timestamp: new Date().toISOString(), email, nodeStatus: 'Active', outcome: 'DENIED', event: '[AUTH] Unauthorized Operator Credentials' });
       localStorage.setItem('vectorvault_audit_logs', JSON.stringify(auditLogs));
       
+      setIsSubmitting(false);
       return;
     }
 
@@ -105,448 +123,618 @@ const LoginPage = () => {
       localStorage.setItem('vectorvault_audit_logs', JSON.stringify(auditLogs));
 
       navigate('/workstation');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
-    <div
-      style={{
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '24px',
-        backgroundColor: '#F5F8FC',
-        backgroundImage:
-          'radial-gradient(ellipse 60% 50% at 15% 20%, rgba(176,224,230,0.38) 0px, transparent 70%), ' +
-          'radial-gradient(ellipse 55% 45% at 85% 80%, rgba(195,222,250,0.42) 0px, transparent 70%), ' +
-          'radial-gradient(ellipse 40% 35% at 80% 15%, rgba(200,210,255,0.22) 0px, transparent 60%)',
-        fontFamily: '"Inter", "Segoe UI Variable", "Segoe UI", system-ui, sans-serif',
-        position: 'relative',
-        overflow: 'hidden',
-      }}
-    >
-      <BlueprintGrid />
+    <div className="vv-login-root">
+      {/* Full-page background image */}
+      <div className="vv-login-bg" />
 
-      <div
-        style={{
-          position: 'relative',
-          zIndex: 1,
-          width: '100%',
-          maxWidth: '1140px',
-          display: 'grid',
-          gridTemplateColumns: '1.25fr 0.75fr',
-          gap: '72px',
-          alignItems: 'center',
-        }}
-      >
-        {/* ── LEFT COLUMN ── */}
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            padding: '24px 0',
-          }}
-        >
-          {/* Logo + Brand */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '13px', marginBottom: '40px' }}>
-            <VectorVaultLogo className="h-12 w-12 text-[#1C0F45]" />
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-              <span
-                style={{
-                  fontSize: '13px',
-                  fontWeight: 700,
-                  color: '#1C0F45',
-                  letterSpacing: '0.015em',
-                }}
-              >
-                VectorVault
-              </span>
-              <span
-                style={{
-                  fontSize: '9.5px',
-                  fontWeight: 600,
-                  color: '#6B7280',
-                  letterSpacing: '0.14em',
-                  textTransform: 'uppercase',
-                }}
-              >
-                Enterprise Retrieval Platform
-              </span>
+      {/* Subtle overlay for depth */}
+      <div className="vv-login-overlay" />
+
+      {/* Centered content */}
+      <div className="vv-login-container">
+
+        {/* ── GLASS CARD ── */}
+        <div className="vv-glass-card vv-fade-in">
+
+          {/* Brand header */}
+          <div className="vv-brand-header">
+            <VaultShield className="vv-brand-shield" />
+            <div className="vv-brand-text">
+              <span className="vv-brand-name">VectorVault</span>
+              <span className="vv-brand-subtitle">Enterprise AI Knowledge Platform</span>
             </div>
           </div>
 
-          {/* Hero heading — single-line, refined */}
-          <div style={{ marginBottom: '18px' }}>
-            <h1
-              style={{
-                fontSize: '42px',
-                fontWeight: 800,
-                color: '#1C0F45',
-                lineHeight: 1.08,
-                margin: '0 0 10px 0',
-                letterSpacing: '-0.025em',
-              }}
-            >
-              VectorVault
-            </h1>
-            <span
-              style={{
-                display: 'inline-block',
-                fontSize: '10.5px',
-                fontWeight: 700,
-                color: '#007FFF',
-                letterSpacing: '0.2em',
-                textTransform: 'uppercase',
-                lineHeight: 1,
-              }}
-            >
-              Control Center
-            </span>
+          {/* Main title */}
+          <div className="vv-card-title-block">
+            <h1 className="vv-card-title">Secure Enterprise AI Workspace</h1>
+            <p className="vv-card-desc">
+              Access your secure offline AI workspace for enterprise document intelligence and knowledge retrieval.
+            </p>
           </div>
 
-          <p
-            style={{
-              fontSize: '16px',
-              color: '#4B5563',
-              lineHeight: 1.7,
-              maxWidth: '460px',
-              fontWeight: 400,
-              marginBottom: '52px',
-              margin: '0 0 52px 0',
-            }}
-          >
-            Secure enterprise knowledge retrieval, evidence analysis, and AI-assisted decision
-            support — fully air-gapped.
-          </p>
-
-          {/* Feature badges — flat, borderless, floating */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
-            {[
-              {
-                icon: <ShieldCheck size={17} strokeWidth={2} />,
-                text: 'Prompt Injection Guard',
-                color: '#1C0F45',
-              },
-              {
-                icon: <Lock size={17} strokeWidth={2} />,
-                text: 'Global PII Redaction Active',
-                color: '#007FFF',
-              },
-              {
-                icon: <WifiOff size={17} strokeWidth={2} />,
-                text: 'Zero Outbound Data Transfer',
-                color: '#1C0F45',
-              },
-            ].map((feature, idx) => (
-              <div
-                key={idx}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '13px',
-                }}
-              >
-                <div
-                  style={{
-                    width: '32px',
-                    height: '32px',
-                    borderRadius: '9px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    flexShrink: 0,
-                    color: feature.color,
-                    backgroundColor:
-                      idx === 1
-                        ? 'rgba(0,127,255,0.08)'
-                        : 'rgba(28,15,69,0.07)',
-                  }}
-                >
-                  {feature.icon}
-                </div>
-                <span
-                  style={{
-                    fontSize: '14px',
-                    fontWeight: 600,
-                    color: '#1C0F45',
-                    letterSpacing: '-0.005em',
-                  }}
-                >
-                  {feature.text}
-                </span>
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="vv-form" autoComplete="off">
+            {error && (
+              <div className="vv-error-banner">
+                <ShieldCheck size={16} strokeWidth={2.2} />
+                <span>{error}</span>
               </div>
-            ))}
-          </div>
-        </div>
+            )}
 
-        {/* ── RIGHT COLUMN: Glass login card ── */}
-        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-          <div
-            style={{
-              width: '100%',
-              maxWidth: '410px',
-              backgroundColor: 'rgba(255,255,255,0.62)',
-              backdropFilter: 'blur(24px)',
-              WebkitBackdropFilter: 'blur(24px)',
-              border: '1px solid rgba(255,255,255,0.72)',
-              borderRadius: '24px',
-              boxShadow:
-                '0 24px 48px rgba(28,15,69,0.07), 0 8px 16px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.9)',
-              padding: '44px 38px',
-            }}
-          >
-            {/* Form header */}
-            <div style={{ marginBottom: '28px' }}>
-              <h2
-                style={{
-                  fontSize: '21px',
-                  fontWeight: 700,
-                  color: '#111827',
-                  margin: '0 0 5px 0',
-                  lineHeight: 1.2,
-                  letterSpacing: '-0.01em',
-                }}
-              >
-                Sign In
-              </h2>
-              <p style={{ fontSize: '13px', color: '#6B7280', margin: 0 }}>
-                Access your secured VectorVault workspace.
-              </p>
+            {/* Email field */}
+            <div className="vv-field">
+              <label className="vv-label" htmlFor="vv-email">Corporate Email</label>
+              <input
+                id="vv-email"
+                type="email"
+                placeholder="name@company.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="vv-input"
+                autoComplete="off"
+              />
             </div>
 
-            <form onSubmit={handleSubmit} style={{ width: '100%' }}>
-              {error && (
-                <div style={{
-                  marginBottom: '20px',
-                  padding: '12px 16px',
-                  backgroundColor: 'rgba(239, 68, 68, 0.08)',
-                  border: '1px solid rgba(239, 68, 68, 0.3)',
-                  borderRadius: '12px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '12px'
-                }}>
-                  <ShieldCheck style={{ color: '#ef4444', flexShrink: 0 }} size={18} />
-                  <span style={{ fontSize: '12.5px', fontWeight: 600, color: '#b91c1c', lineHeight: 1.4, letterSpacing: '-0.01em' }}>
-                    {error}
-                  </span>
-                </div>
+            {/* Password field */}
+            <div className="vv-field">
+              <label className="vv-label" htmlFor="vv-password">Password</label>
+              <input
+                id="vv-password"
+                type="password"
+                placeholder="••••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="vv-input"
+                autoComplete="off"
+              />
+            </div>
+
+            {/* Submit button */}
+            <button
+              type="submit"
+              className="vv-submit-btn"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? (
+                <span className="vv-spinner" />
+              ) : (
+                <>
+                  Access Workspace
+                  <ChevronRight size={18} strokeWidth={2.5} />
+                </>
               )}
+            </button>
+          </form>
 
-              {/* Work Email */}
-              <div style={{ marginBottom: '18px' }}>
-                <label
-                  style={{
-                    display: 'block',
-                    fontSize: '10.5px',
-                    fontWeight: 700,
-                    letterSpacing: '0.09em',
-                    color: '#374151',
-                    textTransform: 'uppercase',
-                    marginBottom: '7px',
-                  }}
-                >
-                  Work Email
-                </label>
-                <input
-                  type="email"
-                  placeholder="name@organization.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  style={{
-                    width: '100%',
-                    height: '46px',
-                    padding: '0 16px',
-                    fontSize: '14px',
-                    color: '#111827',
-                    backgroundColor: 'rgba(255,255,255,0.78)',
-                    border: '1.5px solid rgba(215,225,240,0.9)',
-                    borderRadius: '12px',
-                    outline: 'none',
-                    transition: 'all 150ms ease-out',
-                    boxSizing: 'border-box',
-                    boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.02)',
-                  }}
-                  onFocus={(e) => {
-                    e.target.style.borderColor = '#007FFF';
-                    e.target.style.backgroundColor = '#FFFFFF';
-                    e.target.style.boxShadow = '0 0 0 3px rgba(0,127,255,0.10)';
-                  }}
-                  onBlur={(e) => {
-                    e.target.style.borderColor = 'rgba(215,225,240,0.9)';
-                    e.target.style.backgroundColor = 'rgba(255,255,255,0.78)';
-                    e.target.style.boxShadow = 'inset 0 2px 4px rgba(0,0,0,0.02)';
-                  }}
-                />
+          {/* Status card */}
+          <div className="vv-status-card">
+            <div className="vv-status-header">
+              <PulsingDot />
+              <div className="vv-status-info">
+                <span className="vv-status-title">Local AI Runtime</span>
+                <span className="vv-status-badge">Operational</span>
               </div>
+            </div>
+            <p className="vv-status-desc">
+              All inference runs locally. No cloud connectivity. No outbound data transfer.
+            </p>
+          </div>
 
-              {/* Password */}
-              <div style={{ marginBottom: '26px' }}>
-                <label
-                  style={{
-                    display: 'block',
-                    fontSize: '10.5px',
-                    fontWeight: 700,
-                    letterSpacing: '0.09em',
-                    color: '#374151',
-                    textTransform: 'uppercase',
-                    marginBottom: '7px',
-                  }}
-                >
-                  Password
-                </label>
-                <input
-                  type="password"
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  style={{
-                    width: '100%',
-                    height: '46px',
-                    padding: '0 16px',
-                    fontSize: '14px',
-                    color: '#111827',
-                    backgroundColor: 'rgba(255,255,255,0.78)',
-                    border: '1.5px solid rgba(215,225,240,0.9)',
-                    borderRadius: '12px',
-                    outline: 'none',
-                    transition: 'all 150ms ease-out',
-                    boxSizing: 'border-box',
-                    boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.02)',
-                  }}
-                  onFocus={(e) => {
-                    e.target.style.borderColor = '#007FFF';
-                    e.target.style.backgroundColor = '#FFFFFF';
-                    e.target.style.boxShadow = '0 0 0 3px rgba(0,127,255,0.10)';
-                  }}
-                  onBlur={(e) => {
-                    e.target.style.borderColor = 'rgba(215,225,240,0.9)';
-                    e.target.style.backgroundColor = 'rgba(255,255,255,0.78)';
-                    e.target.style.boxShadow = 'inset 0 2px 4px rgba(0,0,0,0.02)';
-                  }}
-                />
-              </div>
+          {/* Security features */}
+          <div className="vv-security-grid">
+            <SecurityItem
+              icon={<ShieldCheck size={14} strokeWidth={2.2} />}
+              text="Prompt Injection Protection"
+            />
+            <SecurityItem
+              icon={<ScanEye size={14} strokeWidth={2.2} />}
+              text="Enterprise PII Redaction"
+            />
+            <SecurityItem
+              icon={<Fingerprint size={14} strokeWidth={2.2} />}
+              text="Offline Document Intelligence"
+            />
+            <SecurityItem
+              icon={<Activity size={14} strokeWidth={2.2} />}
+              text="Air-Gapped AI Processing"
+            />
+            <SecurityItem
+              icon={<WifiOff size={14} strokeWidth={2.2} />}
+              text="Zero External Network Access"
+            />
+            <SecurityItem
+              icon={<Lock size={14} strokeWidth={2.2} />}
+              text="End-to-End Encryption"
+            />
+          </div>
 
-              {/* Primary CTA — Navy #245eb5 → #000080 on hover */}
-              <button
-                type="submit"
-                style={{
-                  width: '100%',
-                  height: '46px',
-                  backgroundColor: '#245eb5',
-                  color: '#FFFFFF',
-                  border: 'none',
-                  borderRadius: '12px',
-                  fontSize: '14px',
-                  fontWeight: 700,
-                  cursor: 'pointer',
-                  letterSpacing: '0.03em',
-                  boxShadow: '0 4px 16px rgba(36,94,181,0.28), 0 1px 3px rgba(0,0,0,0.08)',
-                  transition: 'all 180ms ease-out',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = '#000080';
-                  e.currentTarget.style.transform = 'translateY(-1px)';
-                  e.currentTarget.style.boxShadow =
-                    '0 8px 24px rgba(0,0,128,0.30), 0 2px 6px rgba(0,0,0,0.1)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = '#245eb5';
-                  e.currentTarget.style.transform = 'translateY(0)';
-                  e.currentTarget.style.boxShadow =
-                    '0 4px 16px rgba(36,94,181,0.28), 0 1px 3px rgba(0,0,0,0.08)';
-                }}
-              >
-                Sign In to VectorVault
-              </button>
-
-              {/* Soft status pill — replaces harsh green box */}
-              <div
-                style={{
-                  width: '100%',
-                  marginTop: '20px',
-                  padding: '11px 14px',
-                  backgroundColor: 'rgba(248,250,252,0.82)',
-                  border: '1px solid rgba(203,213,225,0.55)',
-                  borderRadius: '12px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '10px',
-                  boxSizing: 'border-box',
-                  backdropFilter: 'blur(6px)',
-                  WebkitBackdropFilter: 'blur(6px)',
-                }}
-              >
-                {/* Pulsing green dot */}
-                <span style={{ position: 'relative', display: 'flex', flexShrink: 0, width: '8px', height: '8px' }}>
-                  <span
-                    style={{
-                      position: 'absolute',
-                      inset: 0,
-                      borderRadius: '50%',
-                      backgroundColor: '#10b981',
-                      opacity: 0.4,
-                      animation: 'pulse-ring 2s ease-out infinite',
-                    }}
-                  />
-                  <span
-                    style={{
-                      position: 'relative',
-                      display: 'block',
-                      width: '8px',
-                      height: '8px',
-                      borderRadius: '50%',
-                      backgroundColor: '#10b981',
-                    }}
-                  />
-                </span>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                  <span style={{ fontSize: '11.5px', color: '#1e293b', fontWeight: 700, lineHeight: 1 }}>
-                    VectorVault Local Node · Status: Active
-                  </span>
-                  <span style={{ fontSize: '10.5px', color: '#64748b', lineHeight: 1.4 }}>
-                    Offline inference environment. All processing remains on-device.
-                  </span>
-                </div>
-              </div>
-
-              {/* Footer legal copy */}
-              <div
-                style={{
-                  marginTop: '22px',
-                  paddingTop: '18px',
-                  borderTop: '1px solid rgba(0,0,0,0.05)',
-                }}
-              >
-                <p
-                  style={{
-                    fontSize: '11px',
-                    color: '#94a3b8',
-                    textAlign: 'center',
-                    lineHeight: 1.65,
-                    margin: 0,
-                    fontWeight: 500,
-                    letterSpacing: '0.005em',
-                  }}
-                >
-                  VectorVault Control Center · Authorized access only.
-                  <br />
-                  System activity may be logged for security and auditing purposes.
-                </p>
-              </div>
-            </form>
+          {/* Footer */}
+          <div className="vv-card-footer">
+            <p>
+              Authorized enterprise users only.<br />
+              System activity may be monitored for security auditing.
+            </p>
           </div>
         </div>
       </div>
 
-      {/* Pulse animation keyframes injected inline */}
+      {/* Scoped styles */}
       <style>{`
-        @keyframes pulse-ring {
+        /* ═══════════════════════════════════════════════════════════════════
+           VectorVault Login — Premium Glassmorphism
+           ═══════════════════════════════════════════════════════════════════ */
+
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+        .vv-login-root {
+          position: fixed;
+          inset: 0;
+          width: 100vw;
+          height: 100vh;
+          overflow-y: auto;
+          overflow-x: hidden;
+          font-family: 'Inter', 'Segoe UI Variable', 'Segoe UI', system-ui, -apple-system, sans-serif;
+          -webkit-font-smoothing: antialiased;
+          -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* ── Background ── */
+        .vv-login-bg {
+          position: absolute;
+          inset: 0;
+          width: 100%;
+          height: 100%;
+          background-image: url('/login-bg.jpg');
+          background-size: cover;
+          background-position: center;
+          background-repeat: no-repeat;
+          background-attachment: fixed;
+          z-index: 0;
+        }
+
+        .vv-login-overlay {
+          position: absolute;
+          inset: 0;
+          background: radial-gradient(ellipse at 50% 40%, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.25) 100%);
+          z-index: 1;
+        }
+
+        /* ── Container ── */
+        .vv-login-container {
+          position: relative;
+          z-index: 2;
+          width: 100%;
+          min-height: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 28px 24px;
+        }
+
+        /* ── Glass Card ── */
+        .vv-glass-card {
+          width: 100%;
+          max-width: 480px;
+          background: rgba(255, 255, 255, 0.08);
+          backdrop-filter: blur(28px) saturate(1.2);
+          -webkit-backdrop-filter: blur(28px) saturate(1.2);
+          border: 1px solid rgba(255, 255, 255, 0.18);
+          border-radius: 24px;
+          box-shadow:
+            0 32px 64px rgba(0, 0, 0, 0.18),
+            0 8px 24px rgba(0, 0, 0, 0.12),
+            inset 0 1px 0 rgba(255, 255, 255, 0.15),
+            inset 0 0 0 0.5px rgba(255, 255, 255, 0.08);
+          padding: 32px 36px 24px;
+          overflow: hidden;
+          position: relative;
+        }
+
+        /* Subtle top light reflection */
+        .vv-glass-card::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 10%;
+          right: 10%;
+          height: 1px;
+          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+        }
+
+        /* ── Brand Header ── */
+        .vv-brand-header {
+          display: flex;
+          align-items: center;
+          gap: 14px;
+          margin-bottom: 20px;
+        }
+
+        .vv-brand-shield {
+          width: 40px;
+          height: 40px;
+          flex-shrink: 0;
+        }
+
+        .vv-brand-text {
+          display: flex;
+          flex-direction: column;
+          gap: 2px;
+        }
+
+        .vv-brand-name {
+          font-size: 17px;
+          font-weight: 700;
+          color: #ffffff;
+          letter-spacing: -0.01em;
+        }
+
+        .vv-brand-subtitle {
+          font-size: 11px;
+          font-weight: 500;
+          color: rgba(255, 255, 255, 0.5);
+          letter-spacing: 0.06em;
+          text-transform: uppercase;
+        }
+
+        /* ── Title Block ── */
+        .vv-card-title-block {
+          margin-bottom: 20px;
+        }
+
+        .vv-card-title {
+          font-size: 24px;
+          font-weight: 700;
+          color: #ffffff;
+          line-height: 1.2;
+          margin: 0 0 8px 0;
+          letter-spacing: -0.02em;
+        }
+
+        .vv-card-desc {
+          font-size: 13.5px;
+          font-weight: 400;
+          color: rgba(255, 255, 255, 0.55);
+          line-height: 1.6;
+          margin: 0;
+        }
+
+        /* ── Form ── */
+        .vv-form {
+          display: flex;
+          flex-direction: column;
+          gap: 0;
+          margin-bottom: 20px;
+        }
+
+        .vv-field {
+          margin-bottom: 14px;
+        }
+
+        .vv-label {
+          display: block;
+          font-size: 11.5px;
+          font-weight: 600;
+          color: rgba(255, 255, 255, 0.6);
+          letter-spacing: 0.04em;
+          text-transform: uppercase;
+          margin-bottom: 8px;
+        }
+
+        .vv-input {
+          width: 100%;
+          height: 46px;
+          padding: 0 16px;
+          font-size: 14.5px;
+          font-weight: 400;
+          font-family: inherit;
+          color: #ffffff;
+          background: rgba(255, 255, 255, 0.06);
+          border: 1px solid rgba(255, 255, 255, 0.12);
+          border-radius: 14px;
+          outline: none;
+          transition: all 200ms cubic-bezier(0.2, 0, 0, 1);
+          box-sizing: border-box;
+          box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.06);
+        }
+
+        .vv-input::placeholder {
+          color: rgba(255, 255, 255, 0.25);
+          font-weight: 400;
+        }
+
+        .vv-input:focus {
+          background: rgba(255, 255, 255, 0.1);
+          border-color: rgba(96, 165, 250, 0.6);
+          box-shadow:
+            0 0 0 3px rgba(59, 130, 246, 0.15),
+            inset 0 2px 4px rgba(0, 0, 0, 0.04);
+        }
+
+        .vv-input:hover:not(:focus) {
+          border-color: rgba(255, 255, 255, 0.2);
+          background: rgba(255, 255, 255, 0.08);
+        }
+
+        /* ── Error Banner ── */
+        .vv-error-banner {
+          display: flex;
+          align-items: flex-start;
+          gap: 10px;
+          padding: 12px 14px;
+          background: rgba(239, 68, 68, 0.12);
+          border: 1px solid rgba(239, 68, 68, 0.25);
+          border-radius: 12px;
+          margin-bottom: 18px;
+          color: #fca5a5;
+          font-size: 12.5px;
+          font-weight: 500;
+          line-height: 1.45;
+        }
+
+        .vv-error-banner svg {
+          flex-shrink: 0;
+          margin-top: 1px;
+          color: #f87171;
+        }
+
+        /* ── Submit Button ── */
+        .vv-submit-btn {
+          width: 100%;
+          height: 46px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+          color: #ffffff;
+          border: 1px solid rgba(59, 130, 246, 0.3);
+          border-radius: 14px;
+          font-size: 15px;
+          font-weight: 600;
+          font-family: inherit;
+          cursor: pointer;
+          letter-spacing: 0.01em;
+          box-shadow:
+            0 4px 16px rgba(37, 99, 235, 0.35),
+            0 1px 3px rgba(0, 0, 0, 0.12),
+            inset 0 1px 0 rgba(255, 255, 255, 0.12);
+          transition: all 220ms cubic-bezier(0.2, 0, 0, 1);
+          position: relative;
+          overflow: hidden;
+        }
+
+        .vv-submit-btn::before {
+          content: '';
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 50%);
+          opacity: 0;
+          transition: opacity 200ms ease;
+        }
+
+        .vv-submit-btn:hover:not(:disabled) {
+          background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+          transform: translateY(-1px);
+          box-shadow:
+            0 8px 28px rgba(37, 99, 235, 0.45),
+            0 2px 6px rgba(0, 0, 0, 0.15),
+            inset 0 1px 0 rgba(255, 255, 255, 0.15);
+        }
+
+        .vv-submit-btn:hover::before {
+          opacity: 1;
+        }
+
+        .vv-submit-btn:active:not(:disabled) {
+          transform: translateY(0);
+          box-shadow:
+            0 2px 8px rgba(37, 99, 235, 0.3),
+            0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .vv-submit-btn:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
+
+        /* ── Spinner ── */
+        .vv-spinner {
+          width: 20px;
+          height: 20px;
+          border: 2px solid rgba(255, 255, 255, 0.25);
+          border-top-color: #ffffff;
+          border-radius: 50%;
+          animation: vv-spin 0.7s linear infinite;
+        }
+
+        @keyframes vv-spin {
+          to { transform: rotate(360deg); }
+        }
+
+        /* ── Status Card ── */
+        .vv-status-card {
+          background: rgba(255, 255, 255, 0.05);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: 12px;
+          padding: 12px 14px;
+          margin-bottom: 16px;
+        }
+
+        .vv-status-header {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          margin-bottom: 6px;
+        }
+
+        .vv-status-info {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          flex: 1;
+        }
+
+        .vv-status-title {
+          font-size: 12.5px;
+          font-weight: 600;
+          color: rgba(255, 255, 255, 0.85);
+        }
+
+        .vv-status-badge {
+          font-size: 10px;
+          font-weight: 600;
+          color: #34d399;
+          background: rgba(52, 211, 153, 0.1);
+          border: 1px solid rgba(52, 211, 153, 0.2);
+          border-radius: 6px;
+          padding: 2px 8px;
+          letter-spacing: 0.03em;
+          text-transform: uppercase;
+        }
+
+        .vv-status-desc {
+          font-size: 11.5px;
+          font-weight: 400;
+          color: rgba(255, 255, 255, 0.4);
+          line-height: 1.55;
+          margin: 0;
+        }
+
+        /* ── Security Grid ── */
+        .vv-security-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 6px;
+          margin-bottom: 16px;
+        }
+
+        .vv-security-item {
+          display: flex;
+          align-items: center;
+          gap: 7px;
+          padding: 6px 9px;
+          background: rgba(255, 255, 255, 0.03);
+          border: 1px solid rgba(255, 255, 255, 0.06);
+          border-radius: 9px;
+          transition: all 200ms ease;
+        }
+
+        .vv-security-item:hover {
+          background: rgba(255, 255, 255, 0.06);
+          border-color: rgba(255, 255, 255, 0.12);
+        }
+
+        .vv-security-icon {
+          width: 26px;
+          height: 26px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+          color: rgba(96, 165, 250, 0.8);
+          background: rgba(59, 130, 246, 0.08);
+          border-radius: 7px;
+        }
+
+        .vv-security-text {
+          font-size: 11px;
+          font-weight: 500;
+          color: rgba(255, 255, 255, 0.55);
+          line-height: 1.3;
+        }
+
+        /* ── Footer ── */
+        .vv-card-footer {
+          padding-top: 18px;
+          border-top: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .vv-card-footer p {
+          font-size: 10.5px;
+          font-weight: 400;
+          color: rgba(255, 255, 255, 0.28);
+          text-align: center;
+          line-height: 1.65;
+          margin: 0;
+          letter-spacing: 0.005em;
+        }
+
+        /* ── Pulsing Dot ── */
+        .vv-pulse-wrapper {
+          position: relative;
+          display: flex;
+          flex-shrink: 0;
+          width: 8px;
+          height: 8px;
+        }
+
+        .vv-pulse-ring {
+          position: absolute;
+          inset: 0;
+          border-radius: 50%;
+          background-color: #34d399;
+          opacity: 0.4;
+          animation: vv-pulse-ring 2s ease-out infinite;
+        }
+
+        .vv-pulse-core {
+          position: relative;
+          display: block;
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          background-color: #34d399;
+        }
+
+        @keyframes vv-pulse-ring {
           0%   { transform: scale(1);   opacity: 0.45; }
           70%  { transform: scale(2.2); opacity: 0; }
           100% { transform: scale(2.2); opacity: 0; }
+        }
+
+        /* ── Fade in animation ── */
+        .vv-fade-in {
+          animation: vv-fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        @keyframes vv-fade-up {
+          from {
+            opacity: 0;
+            transform: translateY(16px) scale(0.98);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+          }
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 540px) {
+          .vv-glass-card {
+            padding: 32px 24px 28px;
+            border-radius: 20px;
+            max-width: 100%;
+          }
+
+          .vv-card-title {
+            font-size: 20px;
+          }
+
+          .vv-security-grid {
+            grid-template-columns: 1fr;
+          }
+
+          .vv-brand-shield {
+            width: 34px;
+            height: 34px;
+          }
         }
       `}</style>
     </div>
