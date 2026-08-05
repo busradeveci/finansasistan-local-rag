@@ -166,8 +166,10 @@ def extract_text(path: Path) -> str:
 # ---------------------------------------------------------------------------
 # Text cleaning
 # ---------------------------------------------------------------------------
+from backend.sanitize import sanitize_math_latex
 
 def _clean_text(text: str) -> str:
+    text = sanitize_math_latex(text)
     text = text.replace("\r\n", "\n").replace("\r", "\n")
     text = re.sub(r"\n{3,}", "\n\n", text)
     text = re.sub(r"[ \t]{2,}", " ", text)

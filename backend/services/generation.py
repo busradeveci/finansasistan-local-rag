@@ -450,6 +450,28 @@ def _build_context(chunks: list[dict], query: str = "") -> str:
     Token budget: smart context packing limits total context to fit within
     MAX_TOTAL_PROMPT_CHARS limit, dynamically centering around exact keywords.
     """
+    import re
+    query_lower = query.lower()
+    
+    trigger_words = ["metric", "table", "deadline", "target", "section", "part", "article"]
+    if any(kw in query_lower for kw in trigger_words):
+        sec_matches = re.findall(r"\b(?:section|part|article|art\.?)\s+\d+(?:\.\d+)*\b", query_lower)
+        def chunk_priority(c: dict) -> int:
+            content_lower = c["content"].lower()
+            has_table = "|" in content_lower
+            has_sec = False
+            for sec in sec_matches:
+                if re.search(rf"\b{re.escape(sec)}\b", content_lower):
+                    has_sec = True
+                    break
+            
+            if has_table and has_sec: return 0
+            if has_table: return 1
+            if has_sec: return 2
+            return 3
+            
+        chunks = sorted(chunks, key=chunk_priority)
+
     safe_chunks = _enforce_chunk_limit(chunks)
     refs = build_citation_map(safe_chunks)
     blocks = []

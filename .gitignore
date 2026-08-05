@@ -10,10 +10,21 @@ build/
 .venv/
 venv/
 env/
+*.bak
 
 # ── Database / vector store ───────────────────────────────────────────────────
-data/vector_store.db
-data/docs/
+*.db
+*.sqlite
+*.sqlite3
+data/vault/*.db
+data/docs/*.db
+
+# ── Data / Documents ──────────────────────────────────────────────────────────
+# Ignore everything in data/vault and data/docs except .gitkeep
+data/vault/*
+!data/vault/.gitkeep
+data/docs/*
+!data/docs/.gitkeep
 
 # ── Environment ───────────────────────────────────────────────────────────────
 .env
@@ -23,6 +34,7 @@ data/docs/
 # ── Node / frontend ───────────────────────────────────────────────────────────
 node_modules/
 frontend/dist/
+frontend/node_modules/
 frontend/.cache/
 
 # ── OS ────────────────────────────────────────────────────────────────────────

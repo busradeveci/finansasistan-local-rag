@@ -25,7 +25,7 @@ from backend.config import (
     SCORE_THRESHOLD,
     TOP_K,
 )
-from backend.db.vector_store import search
+from backend.db.vector_store import search, get_chunk_by_index
 from backend.services import metrics
 from backend.services.foundry_client import embed_query
 
@@ -71,6 +71,29 @@ def _filter_and_dedupe(results: list[dict], score_threshold: float) -> list[dict
     return kept
 
 
+def _needs_continuation(content: str) -> bool:
+    content = content.strip()
+    if not content:
+        return False
+    # If it ends mid-sentence (doesn't end with sentence-ending punctuation)
+    if not re.search(r'[.!?…]$', content) and not content.endswith('”') and not content.endswith('"'):
+        return True
+    # If it ends with a structural header (e.g., Section 5.3)
+    if re.search(r'\b(?:Section|Part|Article)\s+\d+(?:\.\d+)*\s*$', content, re.IGNORECASE):
+        return True
+    return False
+
+
+def _merge_overlapping_chunks(chunk_a: str, chunk_b: str) -> str:
+    # Find the maximum overlap (suffix of A == prefix of B)
+    max_overlap = min(len(chunk_a), len(chunk_b), 1000)
+    for i in range(max_overlap, 0, -1):
+        if chunk_a.endswith(chunk_b[:i]):
+            return chunk_a + chunk_b[i:]
+    # Fallback if no overlap is found
+    return chunk_a + " " + chunk_b
+
+
 async def retrieve(
     query: str,
     top_k: int = TOP_K,
@@ -82,6 +105,7 @@ async def retrieve(
 
     Each result: {filename, chunk_index, content, score}.
     """
+    top_k = max(10, top_k)
     effective_top_k = max(1, min(top_k, MAX_CONTEXT_CHUNKS))
     t0 = time.perf_counter()
     query_embedding = await embed_query(query)
@@ -105,15 +129,25 @@ async def retrieve(
         )
         return []
 
-    cleaned = [
-        {
-            "filename": _clean_document_name(chunk["filename"]),
-            "chunk_index": chunk.get("chunk_index"),
-            "content": chunk["content"],
+    cleaned = []
+    for chunk in kept:
+        filename = chunk["filename"]
+        chunk_idx = chunk.get("chunk_index")
+        content = chunk["content"]
+        
+        # Continuity Check
+        if chunk_idx is not None and _needs_continuation(content):
+            next_chunk_text = get_chunk_by_index(filename, chunk_idx + 1, db_path=db_path)
+            if next_chunk_text:
+                content = _merge_overlapping_chunks(content, next_chunk_text)
+                logger.debug("Appended chunk #%d to chunk #%d for continuity", chunk_idx + 1, chunk_idx)
+                
+        cleaned.append({
+            "filename": _clean_document_name(filename),
+            "chunk_index": chunk_idx,
+            "content": content,
             "score": chunk["score"],
-        }
-        for chunk in kept
-    ]
+        })
 
     logger.info(
         "Retrieve returned %d chunk(s) for query (threshold=%.2f, top score=%.2f).",

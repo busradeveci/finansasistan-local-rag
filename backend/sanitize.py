@@ -136,3 +136,44 @@ def sanitize_filename(raw: str) -> str:
     # Remove characters that are problematic on Windows / POSIX
     text = re.sub(r'[<>:"/\\|?*]', "_", text)
     return text.strip() or "upload"
+
+
+def sanitize_math_latex(text: str) -> str:
+    """Sanitize raw LaTeX math formatting into clean plain-text representations.
+    
+    Prevents block math ($$...$$) and inline math ($...$) from crashing LLM
+    generation, and normalizes common symbols like \\sum, \\parallel.
+    """
+    if not text:
+        return text
+
+    # Strip block and inline math delimiters
+    text = re.sub(r'\$\$(.*?)\$\$', r'\1', text, flags=re.DOTALL)
+    text = re.sub(r'\$(.*?)\$', r'\1', text)
+
+    replacements = {
+        r'\sum': 'Sum',
+        r'\parallel': '||',
+        r'\alpha': 'alpha',
+        r'\beta': 'beta',
+        r'\mu': 'mu',
+        r'\sigma': 'sigma',
+        r'\int': 'Integral',
+        r'\infty': 'infinity',
+        r'\approx': '~',
+        r'\pm': '+-',
+        r'\left': '',
+        r'\right': '',
+        r'\le': '<=',
+        r'\ge': '>=',
+        r'\times': 'x',
+        r'\div': '/',
+        r'\{': '{',
+        r'\}': '}',
+        r'\frac': 'fraction',
+    }
+
+    for old, new in replacements.items():
+        text = text.replace(old, new)
+        
+    return text.strip()

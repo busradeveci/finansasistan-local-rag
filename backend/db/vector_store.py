@@ -132,6 +132,19 @@ def list_chunks(filename: str, db_path: Path = DB_PATH) -> list[dict]:
     finally:
         conn.close()
 
+def get_chunk_by_index(filename: str, chunk_index: int, db_path: Path = DB_PATH) -> str | None:
+    conn = get_connection(db_path)
+    try:
+        row = conn.execute(
+            "SELECT c.content_text FROM vector_chunks c "
+            "JOIN documents d ON c.document_id = d.id "
+            "WHERE d.filename = ? AND c.chunk_index = ?",
+            (filename, chunk_index),
+        ).fetchone()
+        return row["content_text"] if row else None
+    finally:
+        conn.close()
+
 def vector_index_stats(db_path: Path = DB_PATH) -> dict:
     conn = get_connection(db_path)
     try:
@@ -216,21 +229,64 @@ def search(
     scores = matrix.dot(query_vec) / (norms * query_norm)
 
     if query_text:
+        query_lower = query_text.lower()
+        
+        # Extract specific entities from query
+        specific_entities = []
+        for m in re.finditer(r"\b(?:section|part|article|art\.?)\s+\d+(?:\.\d+)*\b", query_text, flags=re.IGNORECASE):
+            specific_entities.append(m.group(0).lower())
+        for ent in ["ny dfs", "nydfs", "gdpr", "sec reg s-p"]:
+            if ent in query_lower:
+                specific_entities.append(ent)
+
         keywords = []
         for m in re.finditer(r"\b[A-Z0-9][A-Z0-9\-]{2,}\b", query_text):
             if re.search(r"[A-Z]", m.group(0)):
-                keywords.append(m.group(0))
+                keywords.append(m.group(0).lower())
         for m in re.finditer(r"\b(?:section|phase)\s+\d+(?:\.\d+)*\b", query_text, flags=re.IGNORECASE):
-            keywords.append(m.group(0))
+            keywords.append(m.group(0).lower())
             
-        if keywords:
+        if keywords or specific_entities:
             for i in range(len(valid_rows)):
-                content_lower = valid_rows[i]["content"].lower()
-                for kw in keywords:
-                    if kw.lower() in content_lower:
-                        scores[i] += 0.3
+                content = valid_rows[i]["content"]
+                content_lower = content.lower()
+                
+                boost = 0.0
+                
+                # Check for entity matches
+                entity_match = False
+                for ent in specific_entities:
+                    if re.search(rf"\b{re.escape(ent)}\b", content_lower):
+                        entity_match = True
                         break
+                
+                if entity_match:
+                    boost += 0.1
+                    
+                # Check for table syntax or explicit section headers
+                has_table_syntax = "| regulation |" in content_lower or "| gdpr art" in content_lower
+                header_match = False
+                for ent in specific_entities:
+                    if re.search(rf"^#+\s+.*{re.escape(ent)}\b", content_lower, flags=re.MULTILINE):
+                        header_match = True
+                        break
+                        
+                if has_table_syntax or header_match:
+                    boost += 0.1
+                    
+                # Apply legacy keyword boost
+                kw_match = False
+                for kw in keywords:
+                    if re.search(rf"\b{re.escape(kw)}\b", content_lower):
+                        kw_match = True
+                        break
+                        
+                if kw_match:
+                    boost += 0.05
+                    
+                scores[i] += min(boost, 0.25)
 
+    scores = np.clip(scores, 0.0, 1.0)
     order = np.argsort(scores)[::-1]
 
     results: list[dict] = []
