@@ -13,20 +13,15 @@ type HeaderProps = {
 const HYPER_GLASS =
   "bg-white/30 backdrop-blur-md border border-white/60 shadow-[0_4px_12px_rgba(0,0,0,0.05),inset_0_1px_1px_rgba(255,255,255,0.9)] rounded-full hover:bg-white/40 transition-all duration-300"
 
-const MOCK_NOTIFICATIONS = [
-  { id: 1, type: "success", title: "Document Indexed", message: "Q3_Financial_Report.pdf processed into 2 chunks (2m ago).", iconNode: "🟢" },
-  { id: 2, type: "warning", title: "Security Alert", message: "Global PII Redaction masked 1 sensitivity pattern (12m ago).", iconNode: "🛡️" },
-  { id: 3, type: "info", title: "Air-Gap Verified", message: "Local node inference engine running 100% offline (1h ago).", iconNode: "⚡" },
-]
-
 export function Header({ breadcrumb }: HeaderProps) {
   const { hasBackgroundActivity, uploadQueue, isGenerating, alerts, dismissAlert } = useWorkstation()
   const indexingCount = uploadQueue.filter((q) => q.status === "indexing").length
 
   const [activeModal, setActiveModal] = useState<"command" | "notifications" | "help" | "profile" | "profile_details" | "security_audit" | "workspace_prefs" | null>(null)
-  const [notifications, setNotifications] = useState(MOCK_NOTIFICATIONS)
+  const [notifications, setNotifications] = useState<any[]>([])
   const [user, setUser] = useState<{email: string, displayName: string, initials: string, role: string} | null>(null)
   const [auditLogs, setAuditLogs] = useState<any[]>([])
+  const [telemetry, setTelemetry] = useState<any>(null)
   const headerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -48,6 +43,11 @@ export function Header({ breadcrumb }: HeaderProps) {
         ]);
       }
     }
+
+    fetch('http://127.0.0.1:8000/api/v1/telemetry/system')
+      .then(r => r.ok ? r.json() : null)
+      .then(data => setTelemetry(data))
+      .catch(() => {});
   }, [])
 
   useEffect(() => {
@@ -130,14 +130,26 @@ export function Header({ breadcrumb }: HeaderProps) {
                   : `${indexingCount} indexing`}
             </span>
           )}
-          <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold text-orange-700 ${HYPER_GLASS}`}>
-            <WifiOff className="h-3.5 w-3.5" />
-            100% Offline
-          </span>
-          <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold text-slate-800 ${HYPER_GLASS}`}>
-            <ShieldCheck className="h-3.5 w-3.5" />
-            Verified
-          </span>
+          {telemetry?.network?.offline_mode != null ? (
+            <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold ${telemetry.network.offline_mode ? "text-orange-700" : "text-emerald-700"} ${HYPER_GLASS}`}>
+              <WifiOff className="h-3.5 w-3.5" />
+              {telemetry.network.offline_mode ? "100% Offline" : "Online"}
+            </span>
+          ) : (
+            <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold text-slate-500 ${HYPER_GLASS}`}>
+              Awaiting Backend Integration
+            </span>
+          )}
+          {telemetry?.network?.zero_outbound != null ? (
+            <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold ${telemetry.network.zero_outbound ? "text-slate-800" : "text-red-700"} ${HYPER_GLASS}`}>
+              <ShieldCheck className="h-3.5 w-3.5" />
+              {telemetry.network.zero_outbound ? "Verified" : "Unverified"}
+            </span>
+          ) : (
+            <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold text-slate-500 ${HYPER_GLASS}`}>
+              Awaiting Backend Integration
+            </span>
+          )}
         </div>
 
         <div className="flex items-center gap-1.5 relative">
