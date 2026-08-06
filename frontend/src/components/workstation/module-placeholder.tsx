@@ -1,5 +1,5 @@
 import { Construction } from "lucide-react"
-import type { NavItem } from "@/components/dashboard/nav-config"
+import type { NavItem } from "@/components/workstation/nav-config"
 
 export function ModulePlaceholder({ item }: { item: NavItem }) {
   const Icon = item?.icon ?? Construction

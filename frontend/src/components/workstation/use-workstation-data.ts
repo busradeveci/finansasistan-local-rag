@@ -7,7 +7,7 @@ export type StatusPacket = {
   models: { chat_model: string; embed_model: string; router_model?: string }
 }
 
-export type DashboardData = {
+export type WorkstationData = {
   status: StatusPacket | null
   analytics: AnalyticsPacket | null
   telemetry: TelemetryPacket | null
@@ -15,7 +15,7 @@ export type DashboardData = {
   loading: boolean
 }
 
-export function useDashboardData(pollMs = 5000, enabled = true): DashboardData {
+export function useWorkstationData(pollMs = 5000, enabled = true): WorkstationData {
   const [status, setStatus] = useState<StatusPacket | null>(null)
   const [analytics, setAnalytics] = useState<AnalyticsPacket | null>(null)
   const [telemetry, setTelemetry] = useState<TelemetryPacket | null>(null)

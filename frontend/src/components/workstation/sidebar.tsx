@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { PanelLeftClose, PanelLeftOpen, ChevronDown, Plus, Trash2 } from "lucide-react"
-import { navGroups } from "@/components/dashboard/nav-config"
+import { navGroups } from "@/components/workstation/nav-config"
 import { useWorkstation } from "@/context/WorkstationContext"
 import { VectorVaultLogo } from "@/components/VectorVaultLogo"
 const GLASS_SIDEBAR =

@@ -29,7 +29,7 @@ export const navGroups: NavGroup[] = [
     title: "Workspace",
     items: [
       { id: "chat", label: "Conversation", icon: MessagesSquare },
-      { id: "dashboard", label: "Workstation", icon: LayoutDashboard },
+      { id: "workstation", label: "Workstation", icon: LayoutDashboard },
       { id: "knowledge", label: "Knowledge Hub", icon: FolderSearch },
       { id: "documents", label: "Documents", icon: FileStack },
     ],

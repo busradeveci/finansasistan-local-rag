@@ -2,7 +2,7 @@
 
 export type AppModule =
   | "chat"
-  | "dashboard"
+  | "workstation"
   | "knowledge"
   | "documents"
   | "vector"

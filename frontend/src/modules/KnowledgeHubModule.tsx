@@ -15,7 +15,7 @@ function documentTypeIcon(filename: string) {
   return <FileText className="h-4 w-4 shrink-0 text-blue-600" strokeWidth={2} />
 }
 
-export default function KnowledgeBaseModule() {
+export default function KnowledgeHubModule() {
   const { documentInventory } = useWorkstation()
   const [active, setActive] = useState<string | null>(null)
   const [chunks, setChunks] = useState<ChunkIndexRow[]>([])

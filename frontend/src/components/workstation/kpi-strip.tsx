@@ -1,5 +1,5 @@
 import { MessagesSquare, Timer, FileStack, Boxes, TrendingUp, TrendingDown } from "lucide-react"
-import type { StatusPacket } from "@/components/dashboard/use-dashboard-data"
+import type { StatusPacket } from "@/components/workstation/use-workstation-data"
 import type { AnalyticsPacket } from "@/types/workstation"
 
 type KpiStripProps = {

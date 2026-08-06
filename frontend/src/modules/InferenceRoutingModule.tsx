@@ -1,6 +1,6 @@
-import { LlmRouting } from "@/components/dashboard/llm-routing"
+import { LlmRouting } from "@/components/workstation/llm-routing"
 
-export default function RouterModule() {
+export default function InferenceRoutingModule() {
   return (
     <div className="flex flex-col gap-3">
       <div className="flex flex-col">

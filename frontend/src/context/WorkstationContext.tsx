@@ -117,7 +117,7 @@ function nowLabel() {
 }
 
 export function WorkstationProvider({ children }: { children: ReactNode }) {
-  const [module, setModule] = useState<AppModule>("dashboard")
+  const [module, setModule] = useState<AppModule>("workstation")
   const [sessions, setSessions] = useState<ConversationSession[]>([])
   const [activeSessionId, setActiveSessionId] = useState<string | null>(null)
   const [sessionEvidenceStates, setSessionEvidenceStates] = useState<

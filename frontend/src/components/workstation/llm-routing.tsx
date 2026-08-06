@@ -1,5 +1,5 @@
 import { Route, Cpu, Sigma, ArrowRight, CircuitBoard } from "lucide-react"
-import { useDashboardData, type StatusPacket } from "@/components/dashboard/use-dashboard-data"
+import { useWorkstationData, type StatusPacket } from "@/components/workstation/use-workstation-data"
 import type { AnalyticsPacket } from "@/types/workstation"
 
 type Node = {
@@ -23,7 +23,7 @@ const HYPER_GLASS =
   "bg-white/42 backdrop-blur-md border border-white/75 shadow-[0_4px_14px_rgba(0,0,0,0.05),inset_0_1px_1px_rgba(255,255,255,0.92)] rounded-full hover:bg-white/55 transition-all duration-300"
 
 export function LlmRouting(props: LlmRoutingProps = {}) {
-  const polled = useDashboardData(undefined, props.status === undefined)
+  const polled = useWorkstationData(undefined, props.status === undefined)
   const status = props.status !== undefined ? props.status : polled.status
   const analytics = props.analytics !== undefined ? props.analytics : polled.analytics
   const loading = props.loading !== undefined ? props.loading : polled.loading

@@ -1,7 +1,7 @@
 import "./App.css"
 
 import { WorkstationProvider } from "@/context/WorkstationContext"
-import { WorkstationShell } from "@/components/dashboard/workstation-shell"
+import { WorkstationShell } from "@/components/workstation/workstation-shell"
 import { BrowserRouter, Routes, Route } from "react-router-dom"
 import LoginPage from "./pages/LoginPage"
 

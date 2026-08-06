@@ -1,40 +1,40 @@
 import { useEffect, useState } from "react"
 import { Shield, X } from "lucide-react"
-import { Sidebar } from "@/components/dashboard/sidebar"
-import { Header } from "@/components/dashboard/header"
-import { DashboardView } from "@/components/dashboard/dashboard-view"
-import { ModulePlaceholder } from "@/components/dashboard/module-placeholder"
-import { findNavItem } from "@/components/dashboard/nav-config"
+import { Sidebar } from "@/components/workstation/sidebar"
+import { Header } from "@/components/workstation/header"
+import { WorkstationView } from "#components/workstation/WorkstationOverview.tsx"
+import { ModulePlaceholder } from "@/components/workstation/module-placeholder"
+import { findNavItem } from "@/components/workstation/nav-config"
 import { useWorkstation } from "@/context/WorkstationContext"
 import ChatModule from "@/modules/ChatModule"
-import DocumentsModule from "@/modules/DocumentsModule"
-import KnowledgeBaseModule from "@/modules/KnowledgeBaseModule"
-import AnalyticsModule from "@/modules/AnalyticsModule"
-import FinancialIntelligenceModule from "@/modules/FinancialIntelligenceModule"
-import SecurityCenterModule from "@/modules/SecurityCenterModule"
-import SettingsModule from "@/modules/SettingsModule"
-import RouterModule from "@/modules/RouterModule"
+import DocumentsModule from "#modules/DocumentsModule.tsx"
+import KnowledgeHubModule from "#modules/KnowledgeHubModule.tsx"
+import SystemTelemetryModule from "#modules/SystemTelemetryModule.tsx"
+import InferenceRuntimeModule from "#modules/InferenceRuntimeModule.tsx"
+import SecurityCenterModule from "#modules/SecurityCenterModule.tsx"
+import SettingsModule from "#modules/SettingsModule.tsx"
+import InferenceRoutingModule from "#modules/InferenceRoutingModule.tsx"
 import type { AppModule } from "@/types/workstation"
 
 const BANNER_STORAGE_KEY = "ws-offline-banner-dismissed"
 
 function renderModule(module: AppModule) {
   switch (module) {
-    case "dashboard":
-      return <DashboardView />
+    case "workstation":
+      return <WorkstationView />
     case "chat":
       return <ChatModule />
     case "documents":
       return <DocumentsModule />
     case "knowledge":
     case "vector":
-      return <KnowledgeBaseModule />
+      return <KnowledgeHubModule />
     case "router":
-      return <RouterModule />
+      return <InferenceRoutingModule />
     case "inference":
-      return <FinancialIntelligenceModule />
+      return <InferenceRuntimeModule />
     case "telemetry":
-      return <AnalyticsModule />
+      return <SystemTelemetryModule />
     case "security":
       return <SecurityCenterModule />
     case "settings":
