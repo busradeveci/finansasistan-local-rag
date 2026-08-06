@@ -10,7 +10,6 @@ export type AppModule =
   | "inference"
   | "telemetry"
   | "security"
-  | "compute"
   | "settings"
 
 export interface TelemetryPacket {

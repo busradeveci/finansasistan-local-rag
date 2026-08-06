@@ -130,12 +130,10 @@ export function Sidebar() {
       </div>
 
       <nav className="flex-1 overflow-y-auto px-3 py-4 scrollbar-none">
-        {navGroups.map((group) => (
-          <div key={group.title} className="mb-4">
-            {!collapsed && (
-              <div className="px-2 pb-1.5 text-[10px] font-semibold uppercase tracking-wider text-slate-400">
-                {group.title}
-              </div>
+        {navGroups.map((group, index) => (
+          <div key={index} className="mb-2">
+            {index > 0 && (
+              <div className="mx-2 mb-3 mt-1 h-px bg-slate-200/50" />
             )}
             <ul className="flex flex-col gap-0.5">
               {group.items.map((item) => {

@@ -39,7 +39,6 @@ function renderModule(module: AppModule) {
       return <SecurityCenterModule />
     case "settings":
       return <SettingsModule />
-    case "compute":
     default:
       return <ModulePlaceholder item={findNavItem(module).item} />
   }
@@ -47,8 +46,8 @@ function renderModule(module: AppModule) {
 
 export function WorkstationShell() {
   const { module } = useWorkstation()
-  const { group, item } = findNavItem(module)
-  const breadcrumb = [group, item.label]
+  const { item } = findNavItem(module)
+  const breadcrumb = [item.label]
 
   const [bannerDismissed, setBannerDismissed] = useState(() => {
     try {
