@@ -1,6 +1,6 @@
 import time
-import psutil
-import jwt
+import psutil  # type: ignore
+import jwt  # type: ignore
 import platform
 import socket
 import sys
@@ -8,25 +8,28 @@ import os
 import hashlib
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from pydantic import BaseModel
-from fastapi import APIRouter, HTTPException
-from backend.config import DB_PATH, CHAT_MODEL, EMBED_MODEL, ROUTER_MODEL
+from pydantic import BaseModel  # type: ignore
+from fastapi import APIRouter, HTTPException  # type: ignore
+from backend.config import (
+    DB_PATH, CHAT_MODEL, EMBED_MODEL, ROUTER_MODEL,
+    CHUNK_SIZE, CHUNK_OVERLAP, TOP_K, SCORE_THRESHOLD,
+    RELATIVE_SCORE_CUTOFF, MAX_CONTEXT_CHUNKS
+)
 from backend.db.database import get_connection
 
 try:
     # Python 3.12+ removed distutils, causing GPUtil to throw ModuleNotFoundError.
-    import sys
     if "distutils" not in sys.modules:
         import types
         import shutil
         distutils = types.ModuleType("distutils")
-        distutils.spawn = types.ModuleType("distutils.spawn")
-        distutils.spawn.find_executable = shutil.which
+        distutils.spawn = types.ModuleType("distutils.spawn")  # type: ignore
+        distutils.spawn.find_executable = shutil.which  # type: ignore
         sys.modules["distutils"] = distutils
-        sys.modules["distutils.spawn"] = distutils.spawn
-    import GPUtil
+        sys.modules["distutils.spawn"] = distutils.spawn  # type: ignore
+    import GPUtil  # type: ignore
 except ImportError:
-    GPUtil = None
+    GPUtil = None  # type: ignore
 
 _last_disk_io = None
 _last_net_io = None
@@ -222,3 +225,24 @@ def get_security_logs():
         ]
     finally:
         conn.close()
+
+@router.get("/config")
+def get_config():
+    return {
+        "models": {
+            "chat_model": CHAT_MODEL,
+            "embed_model": EMBED_MODEL,
+            "router_model": ROUTER_MODEL
+        },
+        "retrieval": {
+            "score_threshold": SCORE_THRESHOLD,
+            "relative_cutoff": RELATIVE_SCORE_CUTOFF,
+            "max_context_chunks": MAX_CONTEXT_CHUNKS,
+            "top_k": TOP_K
+        },
+        "indexing": {
+            "chunk_size": CHUNK_SIZE,
+            "chunk_overlap": CHUNK_OVERLAP
+        }
+    }
+

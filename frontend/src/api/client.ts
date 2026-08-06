@@ -90,6 +90,8 @@ export const getSecurity = () =>
 
 export const getStatus = () => api.get("/api/status", { timeout: 10_000 }).then((r) => r.data)
 
+export const getConfig = () => api.get("/api/v1/config", { timeout: 5_000 }).then((r) => r.data)
+
 export const streamQuery = (
   question: string,
   topK = 4,
