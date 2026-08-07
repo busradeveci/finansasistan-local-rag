@@ -102,10 +102,10 @@
     line-height: 1.5;
     color: var(--ws-text);
     background:
-      radial-gradient(ellipse at 20% 20%, rgba(176, 224, 230, 0.45) 0%, transparent 40%),
-      radial-gradient(ellipse at 80% 10%, rgba(176, 224, 230, 0.30) 0%, transparent 35%),
-      radial-gradient(ellipse at 50% 90%, rgba(176, 224, 230, 0.35) 0%, transparent 40%),
-      #F5F8FC;
+      radial-gradient(1100px 700px at 88% -12%, rgba(37, 99, 235, 0.11) 0%, transparent 62%),
+      radial-gradient(900px 620px at 6% -4%, rgba(255, 255, 255, 0.92) 0%, transparent 58%),
+      radial-gradient(1000px 780px at 104% 108%, rgba(79, 70, 229, 0.09) 0%, transparent 62%),
+      linear-gradient(158deg, #F8FAFF 0%, #EFF4FD 46%, #E8EEFB 100%);
     background-attachment: fixed;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -450,10 +450,10 @@
     width: 100%;
     max-width: 100%;
     background:
-      radial-gradient(ellipse at 20% 20%, rgba(176, 224, 230, 0.40) 0%, transparent 40%),
-      radial-gradient(ellipse at 80% 10%, rgba(176, 224, 230, 0.25) 0%, transparent 35%),
-      radial-gradient(ellipse at 50% 90%, rgba(176, 224, 230, 0.30) 0%, transparent 40%),
-      #F5F8FC;
+      radial-gradient(1100px 700px at 88% -12%, rgba(37, 99, 235, 0.11) 0%, transparent 62%),
+      radial-gradient(900px 620px at 6% -4%, rgba(255, 255, 255, 0.92) 0%, transparent 58%),
+      radial-gradient(1000px 780px at 104% 108%, rgba(79, 70, 229, 0.09) 0%, transparent 62%),
+      linear-gradient(158deg, #F8FAFF 0%, #EFF4FD 46%, #E8EEFB 100%);
     background-attachment: fixed;
   }
 
@@ -793,5 +793,585 @@
 
   .lucide {
     stroke-width: 1.5px;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   VectorVault Workstation — enterprise dashboard design system
+   Microsoft Fluent: light material, layered depth, purposeful motion.
+   Scoped to `vv-` so no existing module surface is affected.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* Accent inherited from the sign-in experience */
+  --vv-accent: #2563eb;
+  --vv-accent-deep: #1d4ed8;
+  --vv-accent-tint: rgba(37, 99, 235, 0.08);
+  --vv-accent-ring: rgba(37, 99, 235, 0.16);
+  --vv-positive: #059669;
+  --vv-positive-tint: rgba(5, 150, 105, 0.09);
+  --vv-caution: #d97706;
+
+  /* Ink scale */
+  --vv-ink: #1c0f45;
+  --vv-ink-2: #334155;
+  --vv-ink-3: #64748b;
+  --vv-ink-4: #94a3b8;
+
+  /* Material */
+  --vv-surface: linear-gradient(155deg, rgba(255, 255, 255, 0.88) 0%, rgba(255, 255, 255, 0.64) 100%);
+  --vv-surface-hover: linear-gradient(155deg, rgba(255, 255, 255, 0.96) 0%, rgba(255, 255, 255, 0.78) 100%);
+  --vv-stroke: rgba(255, 255, 255, 0.9);
+  --vv-stroke-hover: rgba(255, 255, 255, 1);
+  --vv-hairline: rgba(15, 40, 90, 0.07);
+
+  /* Fluent depth ramp */
+  --vv-elev-1: 0 1px 2px rgba(16, 32, 64, 0.04), 0 8px 24px rgba(16, 32, 64, 0.05);
+  --vv-elev-2: 0 2px 6px rgba(16, 32, 64, 0.06), 0 18px 44px rgba(16, 32, 64, 0.09);
+  --vv-elev-inner: inset 0 1px 0 rgba(255, 255, 255, 0.92);
+
+  /* Motion */
+  --vv-ease: cubic-bezier(0.2, 0, 0, 1);
+  --vv-ease-soft: cubic-bezier(0.16, 1, 0.3, 1);
+  --vv-dur: 260ms;
+  --vv-pipeline-cycle: 6.3s;
+}
+
+/* ── Layout shell ─────────────────────────────────────────────────────── */
+
+.vv-overview {
+  height: 100%;
+  width: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  color: var(--vv-ink);
+}
+
+/* ── Surfaces ─────────────────────────────────────────────────────────── */
+
+.vv-card {
+  position: relative;
+  border-radius: 24px;
+  background: var(--vv-surface);
+  border: 1px solid var(--vv-stroke);
+  box-shadow: var(--vv-elev-1), var(--vv-elev-inner);
+  backdrop-filter: blur(24px) saturate(1.35);
+  -webkit-backdrop-filter: blur(24px) saturate(1.35);
+  transition:
+    transform var(--vv-dur) var(--vv-ease),
+    box-shadow var(--vv-dur) var(--vv-ease),
+    border-color var(--vv-dur) var(--vv-ease),
+    background var(--vv-dur) var(--vv-ease);
+}
+
+/* Specular top edge — mirrors the sign-in card */
+.vv-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 12%;
+  right: 12%;
+  height: 1px;
+  border-radius: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.95), transparent);
+  pointer-events: none;
+}
+
+.vv-card--hover:hover {
+  transform: translateY(-2px);
+  background: var(--vv-surface-hover);
+  border-color: var(--vv-stroke-hover);
+  box-shadow: var(--vv-elev-2), var(--vv-elev-inner);
+}
+
+.vv-tile {
+  position: relative;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.58);
+  border: 1px solid rgba(255, 255, 255, 0.82);
+  box-shadow: 0 1px 2px rgba(16, 32, 64, 0.03), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  transition:
+    transform var(--vv-dur) var(--vv-ease),
+    background var(--vv-dur) var(--vv-ease),
+    border-color var(--vv-dur) var(--vv-ease),
+    box-shadow var(--vv-dur) var(--vv-ease);
+}
+
+.vv-tile--hover:hover {
+  transform: translateY(-1px);
+  background: rgba(255, 255, 255, 0.86);
+  border-color: #ffffff;
+  box-shadow: 0 2px 4px rgba(16, 32, 64, 0.05), 0 10px 24px rgba(16, 32, 64, 0.07);
+}
+
+.vv-row {
+  border-radius: 14px;
+  transition: background var(--vv-dur) var(--vv-ease);
+}
+
+.vv-row:hover {
+  background: rgba(255, 255, 255, 0.62);
+}
+
+/* Icon plate — consistent container for every glyph in the dashboard */
+.vv-plate {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border-radius: 10px;
+  color: var(--vv-accent);
+  background: var(--vv-accent-tint);
+  box-shadow: inset 0 0 0 1px var(--vv-accent-ring);
+}
+
+/* ── Typography ───────────────────────────────────────────────────────── */
+
+.vv-eyebrow {
+  font-size: 10.5px;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--vv-ink-4);
+}
+
+.vv-title-page {
+  font-size: 30px;
+  font-weight: 600;
+  line-height: 1.14;
+  letter-spacing: -0.03em;
+  color: var(--vv-ink);
+}
+
+.vv-title-section {
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.022em;
+  color: var(--vv-ink);
+}
+
+.vv-title-card {
+  font-size: 14.5px;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -0.012em;
+  color: var(--vv-ink);
+}
+
+.vv-metric {
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 1.05;
+  letter-spacing: -0.028em;
+  color: var(--vv-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.vv-metric-sm {
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--vv-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.vv-body {
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.58;
+  color: var(--vv-ink-2);
+}
+
+.vv-caption {
+  font-size: 11.5px;
+  font-weight: 500;
+  line-height: 1.45;
+  color: var(--vv-ink-3);
+}
+
+/* ── Live status indicator ────────────────────────────────────────────── */
+
+.vv-live {
+  position: relative;
+  display: inline-flex;
+  flex-shrink: 0;
+  width: 7px;
+  height: 7px;
+}
+
+.vv-live__ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: currentColor;
+  opacity: 0.45;
+  animation: vv-live-ring 2.4s var(--vv-ease-soft) infinite;
+}
+
+.vv-live__core {
+  position: relative;
+  width: 7px;
+  height: 7px;
+  border-radius: 9999px;
+  background: currentColor;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.65);
+}
+
+@keyframes vv-live-ring {
+  0% { transform: scale(1); opacity: 0.5; }
+  70% { transform: scale(2.6); opacity: 0; }
+  100% { transform: scale(2.6); opacity: 0; }
+}
+
+/* ── Loading shimmer ──────────────────────────────────────────────────── */
+
+.vv-shimmer {
+  position: relative;
+  overflow: hidden;
+  border-radius: 6px;
+  background: rgba(148, 163, 184, 0.16);
+}
+
+.vv-shimmer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.75) 50%,
+    transparent 100%
+  );
+  animation: vv-shimmer 1.7s var(--vv-ease) infinite;
+}
+
+@keyframes vv-shimmer {
+  100% { transform: translateX(100%); }
+}
+
+/* ── Entrance choreography ────────────────────────────────────────────── */
+
+.vv-rise {
+  animation: vv-rise 560ms var(--vv-ease-soft) both;
+}
+
+@keyframes vv-rise {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* ── RAG pipeline ─────────────────────────────────────────────────────── */
+
+.vv-pipeline {
+  display: flex;
+  align-items: stretch;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x proximity;
+  /* Breathing room so the stage hover lift and its shadow are not clipped by
+     the scroll container; negative margin keeps the optical alignment. */
+  padding: 12px 4px 20px;
+  margin: -12px -4px -20px;
+}
+
+.vv-stage {
+  position: relative;
+  flex: 1 1 0%;
+  min-width: 78px;
+  scroll-snap-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 6px 11px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.78);
+  box-shadow: 0 1px 2px rgba(16, 32, 64, 0.03), inset 0 1px 0 rgba(255, 255, 255, 0.82);
+  transition:
+    transform var(--vv-dur) var(--vv-ease),
+    background var(--vv-dur) var(--vv-ease),
+    border-color var(--vv-dur) var(--vv-ease),
+    box-shadow var(--vv-dur) var(--vv-ease);
+}
+
+.vv-stage:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.88);
+  border-color: #ffffff;
+  box-shadow: 0 2px 6px rgba(16, 32, 64, 0.06), 0 12px 28px rgba(16, 32, 64, 0.08);
+}
+
+/* Traversal glow — peaks as the data packet reaches this stage */
+.vv-stage__glow {
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(120% 116% at 50% 0%, var(--vv-stage-glow, rgba(37, 99, 235, 0.2)) 0%, transparent 72%);
+  animation: vv-stage-glow var(--vv-pipeline-cycle) linear infinite;
+  animation-delay: var(--vv-delay, 0s);
+}
+
+/* The cycle is divided into 7 slots: 6 hops between stages plus one rest beat,
+   so stage 7 finishes before stage 1 re-fires. */
+@keyframes vv-stage-glow {
+  0% { opacity: 0; }
+  3% { opacity: 1; }
+  9% { opacity: 0.5; }
+  15% { opacity: 0; }
+  100% { opacity: 0; }
+}
+
+.vv-stage__icon {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 11px;
+  animation: vv-stage-pop var(--vv-pipeline-cycle) var(--vv-ease) infinite;
+  animation-delay: var(--vv-delay, 0s);
+}
+
+@keyframes vv-stage-pop {
+  0% { transform: scale(1); }
+  4% { transform: scale(1.1); }
+  13% { transform: scale(1); }
+  100% { transform: scale(1); }
+}
+
+.vv-flow {
+  position: relative;
+  flex: 1 1 18px;
+  min-width: 14px;
+  max-width: 54px;
+  height: 2px;
+  border-radius: 2px;
+  /* Sits level with the centre of each stage icon so the trace reads as one
+     continuous line through the glyphs, not through the labels. */
+  align-self: flex-start;
+  margin-top: 28px;
+}
+
+.vv-flow__line {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    90deg,
+    rgba(148, 163, 184, 0.22),
+    rgba(148, 163, 184, 0.42),
+    rgba(148, 163, 184, 0.22)
+  );
+}
+
+.vv-flow__runner {
+  position: absolute;
+  inset: 0;
+  animation: vv-flow-run var(--vv-pipeline-cycle) linear infinite;
+  animation-delay: var(--vv-delay, 0s);
+  will-change: transform;
+}
+
+.vv-flow__comet {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 18px;
+  height: 3px;
+  margin-top: -1.5px;
+  margin-left: -18px;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, rgba(37, 99, 235, 0), var(--vv-accent));
+  box-shadow: 0 0 8px rgba(37, 99, 235, 0.55);
+}
+
+@keyframes vv-flow-run {
+  0% { transform: translateX(0); opacity: 0; }
+  1.5% { opacity: 1; }
+  12% { opacity: 1; }
+  14.2857% { transform: translateX(100%); opacity: 0; }
+  100% { transform: translateX(100%); opacity: 0; }
+}
+
+/* ── Charts ───────────────────────────────────────────────────────────── */
+
+.vv-spark__line {
+  animation: vv-draw 900ms var(--vv-ease-soft) both;
+}
+
+@keyframes vv-draw {
+  from { stroke-dashoffset: 1; }
+  to { stroke-dashoffset: 0; }
+}
+
+.vv-spark__head {
+  animation: vv-head-pulse 2.4s var(--vv-ease-soft) infinite;
+  transform-origin: center;
+}
+
+@keyframes vv-head-pulse {
+  0%, 100% { opacity: 0.25; transform: scale(1); }
+  50% { opacity: 0; transform: scale(2.6); }
+}
+
+.vv-bar {
+  transform-origin: left center;
+  animation: vv-bar-grow 780ms var(--vv-ease-soft) both;
+  transition: width 620ms var(--vv-ease-soft);
+}
+
+@keyframes vv-bar-grow {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+/* ── Quick actions ────────────────────────────────────────────────────── */
+
+.vv-qa {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+.vv-qa__circle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 9999px;
+  color: var(--vv-ink-2);
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.96), rgba(255, 255, 255, 0.7));
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  box-shadow: 0 1px 2px rgba(16, 32, 64, 0.04), 0 8px 20px rgba(16, 32, 64, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  transition:
+    transform var(--vv-dur) var(--vv-ease),
+    color var(--vv-dur) var(--vv-ease),
+    box-shadow var(--vv-dur) var(--vv-ease);
+}
+
+.vv-qa:hover .vv-qa__circle {
+  transform: translateY(-3px);
+  color: var(--vv-accent-deep);
+  box-shadow: 0 2px 6px rgba(16, 32, 64, 0.06), 0 14px 30px rgba(37, 99, 235, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.95);
+}
+
+.vv-qa:active .vv-qa__circle {
+  transform: translateY(-1px) scale(0.97);
+}
+
+.vv-qa__label {
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.3;
+  text-align: center;
+  color: var(--vv-ink-3);
+  transition: color var(--vv-dur) var(--vv-ease);
+}
+
+.vv-qa:hover .vv-qa__label {
+  color: var(--vv-ink);
+}
+
+.vv-qa__badge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 9999px;
+  background: var(--vv-accent);
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 18px;
+  text-align: center;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.9);
+}
+
+/* ── Hero ambience ────────────────────────────────────────────────────── */
+
+.vv-orb {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(38px);
+  will-change: transform;
+  animation: vv-drift 22s ease-in-out infinite alternate;
+}
+
+@keyframes vv-drift {
+  from { transform: translate3d(0, 0, 0) scale(1); }
+  to { transform: translate3d(-18px, 14px, 0) scale(1.12); }
+}
+
+.vv-ripple {
+  position: absolute;
+  border-radius: 9999px;
+  border: 1px solid rgba(37, 99, 235, 0.22);
+  opacity: 0;
+  animation: vv-ripple 7s var(--vv-ease-soft) infinite;
+}
+
+@keyframes vv-ripple {
+  0% { transform: scale(0.55); opacity: 0; }
+  22% { opacity: 0.55; }
+  100% { transform: scale(1.35); opacity: 0; }
+}
+
+.vv-dotfield {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, rgba(37, 99, 235, 0.16) 1px, transparent 1px);
+  background-size: 18px 18px;
+  -webkit-mask-image: linear-gradient(to left, #000 5%, transparent 78%);
+  mask-image: linear-gradient(to left, #000 5%, transparent 78%);
+}
+
+/* ── Focus ring (Fluent keyboard affordance) ──────────────────────────── */
+
+.vv-focus:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px var(--vv-accent);
+}
+
+/* ── Accessibility: honour reduced-motion ─────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .vv-live__ring,
+  .vv-shimmer::after,
+  .vv-rise,
+  .vv-stage__glow,
+  .vv-stage__icon,
+  .vv-flow__runner,
+  .vv-spark__line,
+  .vv-spark__head,
+  .vv-bar,
+  .vv-orb,
+  .vv-ripple {
+    animation: none !important;
+  }
+
+  .vv-flow__runner { opacity: 0; }
+  .vv-rise { opacity: 1; transform: none; }
+  .vv-card,
+  .vv-tile,
+  .vv-stage,
+  .vv-qa__circle {
+    transition-duration: 1ms !important;
   }
 }

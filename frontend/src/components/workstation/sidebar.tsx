@@ -5,13 +5,13 @@ import { useWorkstation } from "@/context/WorkstationContext"
 import { VectorVaultLogo } from "@/components/VectorVaultLogo"
 
 const GLASS_SIDEBAR =
-  "bg-white/90 backdrop-blur-md border-r border-slate-200/60 shadow-sm"
+  "bg-white/45 backdrop-blur-2xl backdrop-saturate-[1.25] border-r border-white/70 shadow-[1px_0_2px_rgba(16,32,64,0.02)]"
 
 const HYPER_GLASS =
-  "bg-white/60 backdrop-blur-md border border-slate-200/50 shadow-sm rounded-full hover:bg-white/90 transition-all duration-200"
+  "bg-white/60 backdrop-blur-md border border-white/70 shadow-[0_1px_2px_rgba(16,32,64,0.04)] rounded-full hover:bg-white/90 transition-all duration-200"
 
 const GLASS_CARD =
-  "bg-white/90 backdrop-blur-md border border-slate-200/60 shadow-sm rounded-3xl"
+  "bg-white/70 backdrop-blur-xl border border-white/80 shadow-[0_1px_2px_rgba(16,32,64,0.04),inset_0_1px_0_rgba(255,255,255,0.9)] rounded-2xl"
 
 function ChatSessionsPanel() {
   const [open, setOpen] = useState(true)
@@ -19,7 +19,7 @@ function ChatSessionsPanel() {
   const activeSession = sessions.find((s) => s.id === activeSessionId)
 
   return (
-    <div className="mt-3 border-t border-slate-200/60 px-2 pt-4">
+    <div className="mt-3 border-t border-white/80 px-2 pt-4">
       <div className="flex items-center gap-1">
         <button
           type="button"
@@ -98,7 +98,7 @@ export function Sidebar() {
   return (
     <aside className={`flex hidden shrink-0 flex-col lg:flex transition-all duration-300 ${collapsed ? "w-16" : "w-52"} ${GLASS_SIDEBAR}`}>
       {/* Sidebar header — brand left, toggle right; in collapsed state icon is clickable expand */}
-      <div className={`flex h-14 items-center border-b border-slate-200/60 px-3 ${collapsed ? "justify-center" : "justify-between gap-2"}`}>
+      <div className={`flex h-14 items-center border-b border-white/70 px-3 ${collapsed ? "justify-center" : "justify-between gap-2"}`}>
         {collapsed ? (
           /* Collapsed: brand icon IS the toggle button, centered */
           <button
@@ -134,7 +134,7 @@ export function Sidebar() {
         {navGroups.map((group, index) => (
           <div key={index} className="mb-2">
             {index > 0 && (
-              <div className="mx-2 mb-3 mt-1 h-px bg-slate-200/60" />
+              <div className="mx-2 mb-3 mt-1 h-px bg-white/80" />
             )}
             <ul className="flex flex-col gap-0.5">
               {group.items.map((item) => {
@@ -152,8 +152,8 @@ export function Sidebar() {
                         "group flex w-full items-center py-2.5 text-left text-[14px] font-medium transition-all duration-300 " +
                         (collapsed ? "justify-center px-0 rounded-2xl " : "gap-3 px-3.5 rounded-2xl ") +
                         (active
-                          ? "bg-white shadow-[0_4px_12px_rgba(0,0,0,0.05)] border border-white/60 text-slate-900"
-                          : "bg-transparent border border-transparent text-slate-500 hover:text-slate-900 hover:bg-white/40")
+                          ? "bg-white/95 shadow-[0_1px_2px_rgba(16,32,64,0.04),0_8px_20px_rgba(16,32,64,0.06),inset_0_1px_0_rgba(255,255,255,0.95)] border border-white text-slate-900"
+                          : "bg-transparent border border-transparent text-slate-500 hover:text-slate-900 hover:bg-white/55")
                       }
                     >
                       <Icon
@@ -180,8 +180,8 @@ export function Sidebar() {
         {!collapsed && module === "chat" && <ChatSessionsPanel />}
       </nav>
       {!collapsed && (
-        <div className="border-t border-slate-200/60 p-3">
-          <div className={`p-3 ${GLASS_CARD} !bg-white/90`}>
+        <div className="border-t border-white/70 p-3">
+          <div className={`p-3 ${GLASS_CARD}`}>
             <div className="flex items-center gap-2">
               <span className="relative flex h-1.5 w-1.5">
                 <span className="absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-60" />
@@ -192,7 +192,7 @@ export function Sidebar() {
             <p className="mt-1 text-[10px] leading-snug text-slate-500">
               Offline inference engine available
             </p>
-            <div className="mt-2.5 flex items-center justify-between border-t border-slate-200/60 pt-2.5 font-mono text-[10px] text-slate-500">
+            <div className="mt-2.5 flex items-center justify-between border-t border-white/80 pt-2.5 font-mono text-[10px] text-slate-500">
               <span>Authorized operators only</span>
               <span className="font-semibold text-emerald-600">● online</span>
             </div>
