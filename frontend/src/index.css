@@ -1013,6 +1013,68 @@
     line-height: 1.6;
     color: var(--vv-ink-3, #64748b);
   }
+
+  /* ═══════════════════════════════════════════════════════════════════
+     Knowledge Hub — reuses the vv Workstation dashboard design language.
+     ═══════════════════════════════════════════════════════════════════ */
+
+  /* Chunk preview — application UI font with a comfortable reading rhythm.
+     Never monospace; only genuine code blocks would stay mono. */
+  .vv-kh-preview {
+    font-family: "Segoe UI Variable", "Segoe UI", system-ui, sans-serif;
+    font-size: 12.5px;
+    line-height: 1.65;
+    letter-spacing: 0.002em;
+    color: var(--vv-ink-3, #64748b);
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  /* Accent identifier chip — mirrors the .vv-plate accent treatment. */
+  .vv-kh-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 9px;
+    border-radius: 9px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--vv-accent);
+    background: var(--vv-accent-tint);
+    box-shadow: inset 0 0 0 1px var(--vv-accent-ring);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Document inventory card — a selectable vv-tile with a Fluent accent state. */
+  .vv-kh-doc {
+    width: 100%;
+    text-align: left;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.72);
+    box-shadow: 0 1px 2px rgba(16, 32, 64, 0.03), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    transition:
+      transform var(--vv-dur) var(--vv-ease),
+      background var(--vv-dur) var(--vv-ease),
+      border-color var(--vv-dur) var(--vv-ease),
+      box-shadow var(--vv-dur) var(--vv-ease);
+  }
+
+  .vv-kh-doc:hover {
+    transform: translateY(-1px);
+    background: rgba(255, 255, 255, 0.84);
+    border-color: #ffffff;
+    box-shadow: 0 2px 4px rgba(16, 32, 64, 0.05), 0 10px 24px rgba(16, 32, 64, 0.07);
+  }
+
+  .vv-kh-doc--active,
+  .vv-kh-doc--active:hover {
+    transform: none;
+    background: var(--vv-accent-tint);
+    border-color: var(--vv-accent-ring);
+    box-shadow: 0 1px 2px rgba(16, 32, 64, 0.04), inset 0 0 0 1px var(--vv-accent-ring);
+  }
 }
 
 @layer utilities {
@@ -1660,7 +1722,8 @@
   .vv-card,
   .vv-tile,
   .vv-stage,
-  .vv-qa__circle {
+  .vv-qa__circle,
+  .vv-kh-doc {
     transition-duration: 1ms !important;
   }
 }

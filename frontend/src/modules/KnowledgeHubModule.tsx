@@ -1,22 +1,101 @@
-import { useEffect, useState, useMemo } from "react"
+import { useEffect, useMemo, useState, type ReactNode } from "react"
+import {
+  Activity,
+  ChevronDown,
+  ChevronUp,
+  Clock,
+  Database,
+  FileCode,
+  FileSpreadsheet,
+  FileText,
+  Gauge,
+  Info,
+  Layers,
+  Maximize2,
+  Minimize2,
+  Search,
+  SearchX,
+  Server,
+} from "lucide-react"
 import { getDocumentChunks } from "@/api/client"
 import { useWorkstation } from "@/context/WorkstationContext"
+import { Panel } from "@/components/workstation/overview/primitives"
 import type { ChunkIndexRow } from "@/types/workstation"
-import { 
-  Database, FileText, FileCode, FileSpreadsheet, Search, 
-  SearchX, Activity, Server, Clock, ChevronDown, ChevronUp,
-  Info
-} from "lucide-react"
+
+const AWAITING = "Awaiting Backend Integration"
 
 function documentTypeIcon(filename: string) {
   const ext = (filename.split(".").pop() || "").toLowerCase()
-  if (ext === "xlsx" || ext === "csv") {
-    return <FileSpreadsheet className="h-4 w-4 shrink-0 text-emerald-600" strokeWidth={2} />
+  if (ext === "xlsx" || ext === "xls" || ext === "csv") {
+    return <FileSpreadsheet className="h-4 w-4 shrink-0 text-emerald-600" strokeWidth={1.9} />
   }
   if (ext === "md" || ext === "txt") {
-    return <FileCode className="h-4 w-4 shrink-0 text-amber-600" strokeWidth={2} />
+    return <FileCode className="h-4 w-4 shrink-0 text-amber-600" strokeWidth={1.9} />
   }
-  return <FileText className="h-4 w-4 shrink-0 text-[#000080]" strokeWidth={2} />
+  if (ext === "pdf") {
+    return <FileText className="h-4 w-4 shrink-0 text-rose-500" strokeWidth={1.9} />
+  }
+  return <FileText className="h-4 w-4 shrink-0 text-[#2563eb]" strokeWidth={1.9} />
+}
+
+/* ── Overview KPI tile ─────────────────────────────────────────────────── */
+
+function KpiTile({ label, value, awaiting }: { label: string; value: string; awaiting?: boolean }) {
+  return (
+    <div className="vv-tile vv-tile--hover min-w-0 px-3.5 py-3">
+      <div className="vv-eyebrow mb-1.5">{label}</div>
+      {awaiting ? (
+        <p className="truncate text-[11px] font-medium italic text-slate-400">{AWAITING}</p>
+      ) : (
+        <p className="truncate text-[14px] font-semibold tabular-nums text-slate-700" title={value}>
+          {value}
+        </p>
+      )}
+    </div>
+  )
+}
+
+/* ── Statistics card ───────────────────────────────────────────────────── */
+
+function StatCard({
+  icon: Icon,
+  label,
+  value,
+  caption,
+  awaiting,
+}: {
+  icon: React.ComponentType<{ className?: string; strokeWidth?: number }>
+  label: string
+  value?: string
+  caption?: string
+  awaiting?: boolean
+}) {
+  return (
+    <div className="vv-tile px-3.5 py-3">
+      <div className="mb-1.5 flex items-center gap-1.5">
+        <Icon className="h-3.5 w-3.5 text-slate-400" strokeWidth={1.9} />
+        <span className="vv-eyebrow">{label}</span>
+      </div>
+      {awaiting || value == null ? (
+        <p className="text-[11px] font-medium italic text-slate-400">{AWAITING}</p>
+      ) : (
+        <p className="flex items-baseline gap-1">
+          <span className="text-[16px] font-semibold tabular-nums text-slate-700">{value}</span>
+          {caption && <span className="text-[10.5px] font-medium text-slate-400">{caption}</span>}
+        </p>
+      )}
+    </div>
+  )
+}
+
+/* ── Neutral metadata pill ─────────────────────────────────────────────── */
+
+function Pill({ children }: { children: ReactNode }) {
+  return (
+    <span className="inline-flex items-center gap-1.5 rounded-full border border-white/85 bg-white/65 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.09em] text-slate-500 shadow-[0_1px_2px_rgba(16,32,64,0.04)]">
+      {children}
+    </span>
+  )
 }
 
 export default function KnowledgeHubModule() {
@@ -24,6 +103,7 @@ export default function KnowledgeHubModule() {
   const [active, setActive] = useState<string | null>(null)
   const [chunks, setChunks] = useState<ChunkIndexRow[]>([])
   const [searchQuery, setSearchQuery] = useState("")
+  const [expandedChunks, setExpandedChunks] = useState<Record<number, boolean>>({})
 
   useEffect(() => {
     if (!active) {
@@ -33,264 +113,315 @@ export default function KnowledgeHubModule() {
     getDocumentChunks(active).then(setChunks).catch(() => setChunks([]))
   }, [active, documentInventory])
 
-  const totalChunks = useMemo(() => documentInventory.reduce((n, d) => n + d.chunks, 0), [documentInventory])
-  
-  const embeddingModel = documentInventory[0]?.embedding_model || "Awaiting Backend Integration"
-  const vectorDimensions = documentIndex?.dimensions || "Awaiting Backend Integration"
-  
-  const lastIndexDate = useMemo(() => {
-    const dates = documentInventory
-      .map(d => d.last_updated ? new Date(d.last_updated).getTime() : 0)
-      .filter(t => t > 0);
-    if (dates.length === 0) return "Awaiting Backend Integration";
-    return new Date(Math.max(...dates)).toLocaleString([], {
-      day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit"
-    });
-  }, [documentInventory])
-
-  const filteredInventory = useMemo(() => {
-    return documentInventory.filter(d => 
-      d.filename.toLowerCase().includes(searchQuery.toLowerCase())
-    )
-  }, [documentInventory, searchQuery])
-
-  const [expandedChunks, setExpandedChunks] = useState<Record<number, boolean>>({})
-  
-  const toggleChunk = (index: number) => {
-    setExpandedChunks(prev => ({ ...prev, [index]: !prev[index] }))
-  }
-
-  // Effect to reset expanded chunks when changing active doc
   useEffect(() => {
     setExpandedChunks({})
   }, [active])
 
-  return (
-    <div className="flex h-full min-h-0 flex-1 flex-col overflow-hidden p-4 sm:p-6 lg:p-8 bg-transparent gap-6">
-      
-      {/* Knowledge Overview (Top Section) */}
-      <div className="bg-white/90 backdrop-blur-md border border-slate-200/60 shadow-sm rounded-2xl p-5 flex flex-wrap gap-4 items-center justify-between shrink-0">
-        <div>
-          <h1 className="text-lg font-bold text-slate-800 tracking-tight flex items-center gap-2">
-            <Server className="h-5 w-5 text-[#000080]" />
-            Knowledge Overview
-          </h1>
-          <p className="text-xs font-medium text-slate-500 mt-1">Enterprise Platform Metadata & Telemetry</p>
-        </div>
-        
-        <div className="flex flex-wrap gap-x-6 gap-y-3">
-          <div className="flex flex-col">
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Indexed Documents</span>
-            <span className="text-sm font-semibold text-slate-800">{documentInventory.length}</span>
-          </div>
-          <div className="flex flex-col">
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total Chunks</span>
-            <span className="text-sm font-semibold text-slate-800">{totalChunks}</span>
-          </div>
-          <div className="flex flex-col">
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Embedding Model</span>
-            <span className="text-sm font-semibold text-slate-800">{embeddingModel}</span>
-          </div>
-          <div className="flex flex-col">
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Vector Store Type</span>
-            <span className="text-xs font-medium text-slate-400 italic mt-0.5">Awaiting Backend Integration</span>
-          </div>
-          <div className="flex flex-col">
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Vector Dimensions</span>
-            <span className="text-sm font-semibold text-slate-800">{vectorDimensions}</span>
-          </div>
-          <div className="flex flex-col">
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Database Size</span>
-            <span className="text-xs font-medium text-slate-400 italic mt-0.5">Awaiting Backend Integration</span>
-          </div>
-          <div className="flex flex-col">
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Last Index Operation</span>
-            <span className="text-sm font-semibold text-slate-800">{lastIndexDate}</span>
-          </div>
-        </div>
-      </div>
+  const toggleChunk = (index: number) => {
+    setExpandedChunks((prev) => ({ ...prev, [index]: !prev[index] }))
+  }
 
-      <div className="flex h-full min-h-0 flex-1 gap-6">
-        {/* Left Panel - Document List */}
-        <div className="w-80 shrink-0 flex flex-col gap-3 min-h-0">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-            <input
-              type="text"
-              placeholder="Search indexed documents..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-white/90 backdrop-blur-md border border-slate-200/60 focus:border-[#000080]/50 focus:ring-4 focus:ring-[#000080]/10 shadow-sm rounded-xl pl-9 pr-4 py-2.5 text-sm font-medium text-slate-800 placeholder-slate-400 transition-all outline-none"
-            />
+  const totalChunks = useMemo(
+    () => documentInventory.reduce((n, d) => n + d.chunks, 0),
+    [documentInventory],
+  )
+
+  const embeddingModel = documentInventory[0]?.embedding_model || AWAITING
+  const rawDimensions = documentIndex?.dimensions
+  const vectorDimensions = rawDimensions ? rawDimensions.toLocaleString() : AWAITING
+
+  const lastIndexDate = useMemo(() => {
+    const dates = documentInventory
+      .map((d) => (d.last_updated ? new Date(d.last_updated).getTime() : 0))
+      .filter((t) => t > 0)
+    if (dates.length === 0) return AWAITING
+    return new Date(Math.max(...dates)).toLocaleString([], {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    })
+  }, [documentInventory])
+
+  const filteredInventory = useMemo(
+    () =>
+      documentInventory.filter((d) =>
+        d.filename.toLowerCase().includes(searchQuery.toLowerCase()),
+      ),
+    [documentInventory, searchQuery],
+  )
+
+  // Derived purely from the already-fetched chunk rows (chars is backend data).
+  const chunkStats = useMemo(() => {
+    if (chunks.length === 0) return null
+    const sizes = chunks.map((c) => c.chars)
+    const total = sizes.reduce((a, b) => a + b, 0)
+    return {
+      avg: Math.round(total / sizes.length),
+      max: Math.max(...sizes),
+      min: Math.min(...sizes),
+    }
+  }, [chunks])
+
+  const kpis: { label: string; value: string; awaiting?: boolean }[] = [
+    { label: "Indexed Documents", value: documentInventory.length.toLocaleString() },
+    { label: "Total Chunks", value: totalChunks.toLocaleString() },
+    { label: "Embedding Model", value: embeddingModel, awaiting: embeddingModel === AWAITING },
+    { label: "Vector Dimensions", value: vectorDimensions, awaiting: vectorDimensions === AWAITING },
+    { label: "Vector Store Type", value: AWAITING, awaiting: true },
+    { label: "Database Size", value: AWAITING, awaiting: true },
+    { label: "Last Index Operation", value: lastIndexDate, awaiting: lastIndexDate === AWAITING },
+  ]
+
+  return (
+    <div className="flex h-full min-h-0 w-full flex-col overflow-hidden p-4 sm:p-5 lg:p-6">
+      <div className="mx-auto flex h-full min-h-0 w-full max-w-[1720px] flex-col gap-5">
+        {/* ── 1. Knowledge Overview ─────────────────────────────────────── */}
+        <Panel className="shrink-0 p-5" delay={0}>
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-2.5">
+              <span className="vv-plate h-8 w-8">
+                <Server className="h-[16px] w-[16px]" strokeWidth={1.9} />
+              </span>
+              <div>
+                <h1 className="vv-title-section">Knowledge Overview</h1>
+                <p className="vv-caption mt-0.5">Enterprise knowledge repository · index telemetry</p>
+              </div>
+            </div>
+            <Pill>
+              <Database className="h-3 w-3" strokeWidth={2} />
+              {documentInventory.length.toLocaleString()} indexed
+            </Pill>
           </div>
-          
-          <div className="flex-1 overflow-y-auto fluent-scrollbar bg-white/90 backdrop-blur-md border border-slate-200/60 shadow-sm rounded-2xl p-2.5">
-            {filteredInventory.length === 0 ? (
-              <div className="flex flex-col items-center justify-center h-full text-center p-4">
-                <SearchX className="h-8 w-8 text-slate-300 mb-2" />
-                <p className="text-sm font-medium text-slate-500">No documents found</p>
+
+          <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-7">
+            {kpis.map((kpi) => (
+              <KpiTile key={kpi.label} label={kpi.label} value={kpi.value} awaiting={kpi.awaiting} />
+            ))}
+          </div>
+        </Panel>
+
+        {/* ── Main working area ─────────────────────────────────────────── */}
+        <div className="flex min-h-0 flex-1 flex-col gap-5 lg:flex-row">
+          {/* Left — search + document inventory */}
+          <div className="flex min-h-0 shrink-0 flex-col gap-3 lg:w-[300px] xl:w-[330px] 2xl:w-[372px]">
+            <div className="ws-input-bar flex shrink-0 items-center gap-2.5">
+              <Search className="h-4 w-4 shrink-0 text-slate-400" strokeWidth={1.9} />
+              <input
+                type="search"
+                placeholder="Search indexed documents..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                aria-label="Search indexed documents"
+                className="min-w-0 flex-1 border-0 bg-transparent p-0 text-[13px] font-medium text-slate-700 placeholder:font-normal placeholder:text-slate-400 focus:outline-none"
+              />
+            </div>
+
+            <Panel className="flex min-h-0 flex-1 flex-col overflow-hidden p-2.5" delay={70}>
+              {filteredInventory.length === 0 ? (
+                <div className="flex flex-1 flex-col items-center justify-center p-6 text-center">
+                  <span className="vv-plate mb-3 h-11 w-11" style={{ color: "#94a3b8", background: "rgba(148,163,184,0.12)", boxShadow: "inset 0 0 0 1px rgba(148,163,184,0.2)" }}>
+                    <SearchX className="h-5 w-5" strokeWidth={1.7} />
+                  </span>
+                  <p className="text-[13px] font-medium text-slate-500">No documents found</p>
+                  <p className="vv-caption mt-1">Try a different search term.</p>
+                </div>
+              ) : (
+                <ul className="fluent-scrollbar flex flex-1 flex-col gap-2 overflow-y-auto pr-0.5">
+                  {filteredInventory.map((d) => {
+                    const isActive = active === d.filename
+                    const docDate = d.last_updated
+                      ? new Date(d.last_updated).toLocaleDateString([], {
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric",
+                        })
+                      : AWAITING
+                    const docType = d.type || d.file_type || AWAITING
+
+                    return (
+                      <li key={d.filename}>
+                        <button
+                          type="button"
+                          onClick={() => setActive(d.filename)}
+                          aria-pressed={isActive}
+                          className={`vv-kh-doc flex flex-col gap-3 p-3 ${isActive ? "vv-kh-doc--active" : ""}`}
+                        >
+                          <div className="flex w-full items-start gap-2.5">
+                            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[10px] border border-white/80 bg-white/80 shadow-[0_1px_2px_rgba(16,32,64,0.05)]">
+                              {documentTypeIcon(d.filename)}
+                            </span>
+                            <div className="flex min-w-0 flex-1 flex-col">
+                              <span
+                                className={`truncate text-[12.5px] font-semibold ${isActive ? "text-[#1d4ed8]" : "text-slate-700"}`}
+                                title={d.filename}
+                              >
+                                {d.filename}
+                              </span>
+                              <div className="mt-0.5 flex items-center gap-2 text-[10.5px] text-slate-400">
+                                <span className="truncate font-medium">{docType}</span>
+                                <span className="flex shrink-0 items-center gap-1">
+                                  <Clock className="h-3 w-3" strokeWidth={2} />
+                                  {docDate}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="flex flex-wrap items-center gap-1.5 border-t border-white/60 pt-2.5">
+                            <span className="inline-flex items-center gap-1 rounded-md border border-white/80 bg-white/70 px-2 py-0.5 text-[10px] font-medium text-slate-500">
+                              <Activity className="h-3 w-3 text-slate-400" strokeWidth={2} />
+                              {d.indexation_state}
+                            </span>
+                            <span className="vv-kh-chip !py-0.5 !text-[10px]">
+                              {d.chunks.toLocaleString()} chunks
+                            </span>
+                          </div>
+                        </button>
+                      </li>
+                    )
+                  })}
+                </ul>
+              )}
+            </Panel>
+          </div>
+
+          {/* Right — document inspector / knowledge statistics */}
+          <Panel className="flex min-h-0 flex-1 flex-col overflow-hidden p-5 sm:p-6" delay={140}>
+            {!active ? (
+              /* ── Empty state + Knowledge Statistics ─────────────────── */
+              <div className="flex flex-1 flex-col items-center justify-center">
+                <div className="mb-8 flex flex-col items-center text-center">
+                  <span className="vv-plate mb-4 h-12 w-12">
+                    <Database className="h-6 w-6" strokeWidth={1.6} />
+                  </span>
+                  <h2 className="vv-title-section mb-1.5">Knowledge Statistics</h2>
+                  <p className="vv-body max-w-sm text-slate-500">
+                    Select a document from the inventory to inspect its vectorised chunk rows and embedding
+                    telemetry.
+                  </p>
+                </div>
+
+                <div className="grid w-full max-w-2xl grid-cols-2 gap-2.5 sm:grid-cols-4">
+                  <StatCard icon={Gauge} label="Average Chunk Size" awaiting />
+                  <StatCard icon={Layers} label="Average Tokens" awaiting />
+                  <StatCard icon={Maximize2} label="Largest Chunk" awaiting />
+                  <StatCard icon={Minimize2} label="Smallest Chunk" awaiting />
+                </div>
               </div>
             ) : (
-              <ul className="flex flex-col gap-1.5">
-                {filteredInventory.map((d) => {
-                  const isActive = active === d.filename;
-                  const docDate = d.last_updated 
-                    ? new Date(d.last_updated).toLocaleDateString([], { month: "short", day: "numeric", year: "numeric" })
-                    : "Awaiting Backend Integration";
-                    
-                  return (
-                    <li key={d.filename}>
-                      <button
-                        type="button"
-                        onClick={() => setActive(d.filename)}
-                        className={`w-full flex flex-col p-3 rounded-xl transition-all text-left ${
-                          isActive
-                            ? "bg-[#000080]/5 border border-[#000080]/20 shadow-sm"
-                            : "bg-transparent border border-transparent hover:bg-slate-50 hover:border-slate-200/60"
-                        }`}
-                      >
-                        <div className="flex items-start gap-3 w-full">
-                          <div className="mt-0.5 bg-white p-1.5 rounded-lg border border-slate-200/60 shadow-sm shrink-0">
-                            {documentTypeIcon(d.filename)}
-                          </div>
-                          <div className="flex flex-col min-w-0 flex-1">
-                            <span className={`text-xs truncate ${isActive ? "text-[#000080] font-bold" : "text-slate-800 font-semibold"}`}>
-                              {d.filename}
-                            </span>
-                            <div className="flex items-center justify-between mt-1">
-                              <span className="text-[10px] font-medium text-slate-500 truncate mr-2">
-                                {d.type || d.file_type || "Awaiting Backend Integration"}
-                              </span>
-                              <span className="text-[10px] font-medium text-slate-400 flex items-center gap-1 shrink-0">
-                                <Clock className="h-3 w-3" />
-                                {docDate}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                        
-                        <div className="flex flex-wrap items-center gap-1.5 mt-3 pt-2 border-t border-slate-200/60">
-                           <span className="inline-flex items-center gap-1 bg-white text-slate-600 text-[9px] font-bold uppercase tracking-wide px-2 py-0.5 rounded border border-slate-200/60">
-                              <Activity className="h-3 w-3 text-slate-400" />
-                              Status: {d.indexation_state}
-                           </span>
-                           <span className="inline-flex items-center bg-[#000080]/5 text-[#000080] border border-[#000080]/10 text-[9px] font-bold uppercase tracking-wide px-2 py-0.5 rounded">
-                              {d.chunks} Chunks
-                           </span>
-                           <span className="inline-flex items-center bg-slate-50 text-slate-400 border border-slate-200/50 text-[9px] font-medium uppercase tracking-wide px-2 py-0.5 rounded italic">
-                              Format: Awaiting Backend Integration
-                           </span>
-                        </div>
-                      </button>
-                    </li>
-                  );
-                })}
-              </ul>
-            )}
-          </div>
-        </div>
-
-        {/* Right Panel - Document Inspector */}
-        <div className="flex-1 flex flex-col min-h-0 bg-white/90 backdrop-blur-md border border-slate-200/60 shadow-sm rounded-2xl p-5">
-          {!active ? (
-            <div className="flex-1 flex flex-col items-center justify-center">
-              <div className="w-12 h-12 rounded-2xl bg-white text-[#000080] flex items-center justify-center mb-4 shadow-sm border border-slate-200/60">
-                <Database className="h-6 w-6" strokeWidth={1.5} />
-              </div>
-              <h3 className="text-sm font-semibold text-slate-800 mb-1">Knowledge Statistics</h3>
-              <p className="text-xs font-medium text-slate-500 mb-6 max-w-sm text-center">
-                Select a document from the inventory to inspect its vectorized chunk rows and telemetry.
-              </p>
-              
-              <div className="grid grid-cols-2 gap-4 w-full max-w-md">
-                <div className="bg-slate-50 p-4 rounded-xl border border-slate-200/60 shadow-sm">
-                   <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Average Chunk Size</p>
-                   <p className="text-xs font-medium text-slate-400 italic">Awaiting Backend Integration</p>
-                </div>
-                <div className="bg-slate-50 p-4 rounded-xl border border-slate-200/60 shadow-sm">
-                   <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Average Tokens/Chunk</p>
-                   <p className="text-xs font-medium text-slate-400 italic">Awaiting Backend Integration</p>
-                </div>
-                <div className="bg-slate-50 p-4 rounded-xl border border-slate-200/60 shadow-sm">
-                   <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Largest Chunk</p>
-                   <p className="text-xs font-medium text-slate-400 italic">Awaiting Backend Integration</p>
-                </div>
-                <div className="bg-slate-50 p-4 rounded-xl border border-slate-200/60 shadow-sm">
-                   <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Smallest Chunk</p>
-                   <p className="text-xs font-medium text-slate-400 italic">Awaiting Backend Integration</p>
-                </div>
-              </div>
-            </div>
-          ) : (
-            <div className="flex flex-col h-full">
-              <div className="mb-4 pb-4 border-b border-slate-200/60">
-                <h2 className="text-lg font-bold text-slate-800 tracking-tight truncate flex items-center gap-2">
-                  <Info className="h-5 w-5 text-[#000080]" />
-                  Document Inspector: {active}
-                </h2>
-                <p className="text-xs font-medium text-slate-500 mt-1">
-                  RAG Chunk Inspector · Embedding Analysis
-                </p>
-              </div>
-              <div className="flex-1 overflow-y-auto fluent-scrollbar flex flex-col gap-4 pr-2">
-                {chunks.map((c) => {
-                  const isExpanded = expandedChunks[c.chunk_index] || false;
-                  
-                  return (
-                    <div key={c.chunk_index} className="bg-white border border-slate-200/60 rounded-xl p-4 shadow-sm flex flex-col gap-3 transition-shadow hover:shadow-md">
-                      {/* Header Row */}
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 items-center">
-                        <div className="flex flex-col">
-                          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Chunk ID / Order</span>
-                          <span className="text-xs font-semibold text-[#000080] bg-[#000080]/5 px-2 py-0.5 rounded-md border border-[#000080]/10 w-fit mt-1">
-                            CHUNK-{(c.chunk_index).toString().padStart(3, '0')}
-                          </span>
-                        </div>
-                        <div className="flex flex-col">
-                           <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Token Count</span>
-                           <span className="text-xs font-semibold text-slate-800 mt-1">
-                             {c.chars}
-                           </span>
-                        </div>
-                        <div className="flex flex-col">
-                           <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Chunk Size</span>
-                           <span className="text-[10px] font-medium text-slate-400 italic mt-1">Awaiting Backend Integration</span>
-                        </div>
-                        <div className="flex flex-col">
-                           <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Vector Format</span>
-                           <span className="text-[10px] font-medium text-slate-400 italic mt-1">Awaiting Backend Integration</span>
-                        </div>
-                      </div>
-                      
-                      <div className="mt-1 pt-3 border-t border-slate-200/60">
-                         <div className="flex items-center justify-between mb-2">
-                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Embedding Status</span>
-                            <span className="text-[10px] font-medium text-slate-400 italic">Awaiting Backend Integration</span>
-                         </div>
-                         
-                         {/* Text Preview */}
-                         <div className="relative group">
-                            <div className={`text-xs text-slate-800 bg-slate-50 p-3.5 rounded-lg border border-slate-200/60 font-mono leading-relaxed whitespace-pre-wrap break-words transition-all ${isExpanded ? "" : "line-clamp-4 max-h-[6.5rem] overflow-hidden"}`}>
-                              {c.preview}
-                            </div>
-                            <button
-                               onClick={() => toggleChunk(c.chunk_index)}
-                               className="w-full flex items-center justify-center gap-1 py-1.5 mt-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-md transition-colors text-[11px] font-semibold"
-                            >
-                               {isExpanded ? (
-                                  <><ChevronUp className="h-3 w-3" /> Collapse Preview</>
-                               ) : (
-                                  <><ChevronDown className="h-3 w-3" /> Expand Full Chunk</>
-                               )}
-                            </button>
-                         </div>
-                      </div>
+              <div className="flex h-full min-h-0 flex-col">
+                {/* Inspector header */}
+                <div className="mb-4 flex shrink-0 flex-wrap items-start justify-between gap-3 border-b border-white/60 pb-4">
+                  <div className="flex min-w-0 items-center gap-2.5">
+                    <span className="vv-plate h-8 w-8">
+                      <Info className="h-[16px] w-[16px]" strokeWidth={1.9} />
+                    </span>
+                    <div className="min-w-0">
+                      <h2 className="vv-title-card truncate" title={active}>
+                        {active}
+                      </h2>
+                      <p className="vv-caption mt-0.5">RAG chunk inspector · embedding analysis</p>
                     </div>
-                  );
-                })}
+                  </div>
+                  <Pill>
+                    <Layers className="h-3 w-3" strokeWidth={2} />
+                    {chunks.length.toLocaleString()} chunks
+                  </Pill>
+                </div>
+
+                {/* Knowledge Statistics — derived from loaded chunk rows */}
+                <div className="mb-4 grid shrink-0 grid-cols-2 gap-2.5 sm:grid-cols-4">
+                  <StatCard
+                    icon={Gauge}
+                    label="Average Chunk Size"
+                    value={chunkStats ? chunkStats.avg.toLocaleString() : undefined}
+                    caption="chars"
+                    awaiting={!chunkStats}
+                  />
+                  <StatCard icon={Layers} label="Average Tokens" awaiting />
+                  <StatCard
+                    icon={Maximize2}
+                    label="Largest Chunk"
+                    value={chunkStats ? chunkStats.max.toLocaleString() : undefined}
+                    caption="chars"
+                    awaiting={!chunkStats}
+                  />
+                  <StatCard
+                    icon={Minimize2}
+                    label="Smallest Chunk"
+                    value={chunkStats ? chunkStats.min.toLocaleString() : undefined}
+                    caption="chars"
+                    awaiting={!chunkStats}
+                  />
+                </div>
+
+                {/* Chunk cards */}
+                {chunks.length === 0 ? (
+                  <div className="flex flex-1 flex-col items-center justify-center text-center">
+                    <p className="vv-caption">Loading chunk index…</p>
+                  </div>
+                ) : (
+                  <div className="fluent-scrollbar grid min-h-0 flex-1 auto-rows-min gap-3.5 overflow-y-auto pr-1 xl:grid-cols-2">
+                    {chunks.map((c, i) => {
+                      const isExpanded = expandedChunks[c.chunk_index] || false
+                      return (
+                        <div
+                          key={c.chunk_index}
+                          className="vv-tile vv-rise flex flex-col gap-3 self-start p-4"
+                          style={{ animationDelay: `${Math.min(i, 10) * 45}ms` }}
+                        >
+                          <div className="flex flex-wrap items-center justify-between gap-2">
+                            <span className="vv-kh-chip">
+                              CHUNK-{c.chunk_index.toString().padStart(3, "0")}
+                            </span>
+                            <div className="flex items-center gap-4">
+                              <div className="flex flex-col items-end">
+                                <span className="vv-eyebrow">Characters</span>
+                                <span className="text-[12.5px] font-semibold tabular-nums text-slate-700">
+                                  {c.chars.toLocaleString()}
+                                </span>
+                              </div>
+                              <div className="flex flex-col items-end">
+                                <span className="vv-eyebrow">Tokens</span>
+                                <span className="text-[10.5px] font-medium italic text-slate-400">
+                                  {AWAITING}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="border-t border-white/60 pt-3">
+                            <div className="mb-1.5 flex items-center justify-between">
+                              <span className="vv-eyebrow">Preview</span>
+                              <span className="vv-eyebrow text-slate-300">Order {c.chunk_index}</span>
+                            </div>
+                            <p className={`vv-kh-preview ${isExpanded ? "" : "line-clamp-4"}`}>{c.preview}</p>
+                            <button
+                              type="button"
+                              onClick={() => toggleChunk(c.chunk_index)}
+                              className="mt-2.5 inline-flex items-center gap-1.5 text-[11px] font-medium text-slate-500 transition-colors hover:text-[#1d4ed8]"
+                            >
+                              {isExpanded ? (
+                                <>
+                                  <ChevronUp className="h-3.5 w-3.5" strokeWidth={2} /> Collapse preview
+                                </>
+                              ) : (
+                                <>
+                                  <ChevronDown className="h-3.5 w-3.5" strokeWidth={2} /> Expand full chunk
+                                </>
+                              )}
+                            </button>
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                )}
               </div>
-            </div>
-          )}
+            )}
+          </Panel>
         </div>
       </div>
     </div>
