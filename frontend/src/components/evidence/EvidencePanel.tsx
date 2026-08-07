@@ -4,13 +4,7 @@ import type { EvidenceChunk } from "@/types/workstation"
 
 import { useWorkstation } from "@/context/WorkstationContext"
 
-import { FileText } from "lucide-react"
-
-const HYPER_GLASS =
-  "bg-white/90 backdrop-blur-md border border-slate-200/60 shadow-sm rounded-full hover:bg-white transition-all duration-200"
-
-const GLASS_INNER =
-  "bg-white/90 backdrop-blur-md border border-slate-200/60 shadow-sm rounded-3xl"
+import { FileText, Library } from "lucide-react"
 
 interface Props {
   sources: EvidenceChunk[]
@@ -36,27 +30,33 @@ export default function EvidencePanel({ sources, selected, onSelect }: Props) {
 
   return (
     <aside className="ws-evidence-panel flex h-full w-full shrink-0 flex-col overflow-hidden">
-      <header className="mb-1 shrink-0 border-b border-white/40 pb-1.5">
-        <h2 className="truncate text-badge font-bold uppercase tracking-wider text-[var(--ws-text)]">
-          Retrieved Sources
-        </h2>
-        <p className="mt-0.5 truncate text-badge leading-snug tracking-wide text-[var(--ws-text-muted)]">
-          Supporting Documents
-        </p>
+      <header className="mb-3 flex shrink-0 items-center gap-2.5 border-b border-white/50 pb-3">
+        <span className="vv-chat-avatar vv-chat-avatar--assistant">
+          <Library className="h-3.5 w-3.5" strokeWidth={1.9} />
+        </span>
+        <div className="min-w-0">
+          <h2 className="vv-title-card truncate">Retrieved Sources</h2>
+          <p className="vv-caption truncate">Evidence grounding this answer</p>
+        </div>
       </header>
 
-      <div className="fluent-scrollbar min-h-0 flex-1 space-y-2 overflow-y-auto metric-display">
+      <div className="fluent-scrollbar min-h-0 flex-1 space-y-3 overflow-y-auto metric-display">
         {sources.length === 0 ? (
-          <p className="text-body-sm leading-relaxed tracking-wide text-[var(--ws-text-muted)]">
-            No active conversations.
-          </p>
+          <div className="vv-rise flex h-full flex-col items-center justify-center px-4 py-8 text-center">
+            <span className="vv-chat-empty-icon mb-4">
+              <Library className="h-6 w-6" strokeWidth={1.7} />
+            </span>
+            <p className="vv-title-card mb-1.5">No sources yet</p>
+            <p className="vv-caption max-w-[220px]">
+              Ask a question and the documents used to ground the answer will appear here with
+              similarity and confidence scores.
+            </p>
+          </div>
         ) : (
           <>
             <section>
-              <p className="mb-1 text-badge font-semibold uppercase tracking-wider text-[var(--ws-text-muted)]">
-                Retrieved Sources
-              </p>
-              <ul className="space-y-0.5">
+              <p className="vv-eyebrow mb-2">Retrieved Sources</p>
+              <ul className="space-y-1.5">
                 {sources.map((s, i) => {
                   const domKey = String(s.ref ?? s.chunk_index ?? i)
                   const isActive =
@@ -74,21 +74,25 @@ export default function EvidencePanel({ sources, selected, onSelect }: Props) {
                       <button
                         type="button"
                         onClick={() => onSelect(s)}
-                        className={`w-full px-2 py-1.5 text-left text-caption leading-snug tracking-wide transition-colors ${HYPER_GLASS} !rounded-2xl ${
+                        className={`vv-tile vv-focus flex w-full items-center gap-2 px-2.5 py-2 text-left transition-all ${
                           isActive
-                            ? "text-slate-800 ring-1 ring-blue-500/20"
-                            : "text-slate-500"
+                            ? "ring-1 ring-[var(--vv-accent)]/25"
+                            : "vv-tile--hover"
                         }`}
                       >
-                        <span className="truncate">
-                          {s.ref != null && (
-                            <span className="mr-0.5 font-bold tabular-nums text-[var(--ws-primary)]">
-                              [{s.ref}]
-                            </span>
-                          )}
-                          {s.filename}
+                        {s.ref != null && (
+                          <span className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-md bg-[var(--vv-accent-tint)] text-[10.5px] font-semibold tabular-nums text-[var(--vv-accent)]">
+                            {s.ref}
+                          </span>
+                        )}
+                        <span className="min-w-0 flex-1">
+                          <span className="block truncate text-[12px] font-medium text-slate-700">
+                            {s.filename}
+                          </span>
                           {s.chunk_index != null && (
-                            <span className="text-[var(--ws-text-muted)] tabular-nums"> · #{s.chunk_index}</span>
+                            <span className="block text-[10.5px] font-medium tabular-nums text-slate-400">
+                              Chunk #{s.chunk_index}
+                            </span>
                           )}
                         </span>
                       </button>
@@ -114,15 +118,13 @@ export default function EvidencePanel({ sources, selected, onSelect }: Props) {
                 </section>
 
                 <section>
-                  <p className="mb-1 text-badge font-semibold uppercase tracking-wider text-[var(--ws-text-muted)]">
-                    Context
-                  </p>
-                  <pre className={`max-h-36 overflow-y-auto whitespace-pre-wrap break-words p-2.5 text-body-sm leading-relaxed tracking-wide text-slate-500 fluent-scrollbar ${GLASS_INNER}`}>
+                  <p className="vv-eyebrow mb-2">Context</p>
+                  <div className="vv-tile vv-evidence-context max-h-40 overflow-y-auto whitespace-pre-wrap break-words p-3 fluent-scrollbar">
                     {active.content ?? active.preview}
-                  </pre>
+                  </div>
                 </section>
 
-                <section className="flex flex-wrap items-center gap-1 border-t border-white/40 pt-2 text-caption tracking-wide text-[var(--ws-text-muted)]">
+                <section className="flex flex-wrap items-center gap-1.5 border-t border-white/50 pt-3 text-caption tracking-wide text-[var(--ws-text-muted)]">
                   <span className="truncate">
                     <span className="font-semibold text-[var(--ws-text-secondary)]">{active.filename}</span>
                     {" · "}

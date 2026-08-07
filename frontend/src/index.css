@@ -312,17 +312,27 @@
   }
 
   .ws-input-bar {
-    @apply bg-white/30 backdrop-blur-md border border-white/60 shadow-[0_4px_12px_rgba(0,0,0,0.05),inset_0_1px_1px_rgba(255,255,255,0.9)] rounded-full transition-all duration-200;
-    padding: 0.25rem 0.75rem;
+    @apply bg-white/55 backdrop-blur-xl border border-white/85 transition-all duration-300;
+    border-radius: 22px;
+    padding: 0.5rem 0.5rem 0.5rem 1rem;
+    box-shadow:
+      0 1px 2px rgba(16, 32, 64, 0.04),
+      0 10px 28px rgba(16, 32, 64, 0.06),
+      inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    transition:
+      background var(--vv-dur, 260ms) var(--vv-ease),
+      border-color var(--vv-dur, 260ms) var(--vv-ease),
+      box-shadow var(--vv-dur, 260ms) var(--vv-ease);
   }
 
   .ws-input-bar:focus-within {
-    @apply bg-white/55;
-    border-color: #0066FF;
+    @apply bg-white/75;
+    border-color: rgba(37, 99, 235, 0.55);
     box-shadow:
-      0 4px 12px rgba(0, 0, 0, 0.05),
-      inset 0 1px 1px rgba(255, 255, 255, 0.9),
-      0 0 0 0 transparent;
+      0 2px 6px rgba(16, 32, 64, 0.06),
+      0 14px 34px rgba(16, 32, 64, 0.09),
+      inset 0 1px 0 rgba(255, 255, 255, 0.92),
+      0 0 0 3px rgba(37, 99, 235, 0.12);
   }
 
   .ws-toolbar-btn {
@@ -510,18 +520,62 @@
   }
 
   .ws-chat-messages {
-    padding: calc(0.5rem) calc(0.375rem);
+    padding: 0.75rem 0.5rem 0.5rem;
+  }
+
+  /* Centred reading column — keeps line length comfortable and prevents
+     oversized empty gutters on 1536px / ultrawide displays. */
+  .ws-chat-column {
+    width: 100%;
+    max-width: 58rem;
+    margin-inline: auto;
   }
 
   .ws-chat-message-list {
     display: flex;
     flex-direction: column;
-    gap: calc(0.75rem);
+    gap: 1rem;
   }
 
   .ws-chat-bubble {
-    @apply bg-white/70 backdrop-blur-lg border border-white/70 shadow-[0_6px_18px_rgba(20,40,70,0.05),inset_0_1px_0_rgba(255,255,255,0.85)] rounded-3xl;
-    padding: calc(0.75rem) calc(0.875rem);
+    position: relative;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.62);
+    border: 1px solid rgba(255, 255, 255, 0.85);
+    box-shadow:
+      0 1px 2px rgba(16, 32, 64, 0.04),
+      0 8px 22px rgba(16, 32, 64, 0.05),
+      inset 0 1px 0 rgba(255, 255, 255, 0.88);
+    backdrop-filter: blur(18px) saturate(1.3);
+    -webkit-backdrop-filter: blur(18px) saturate(1.3);
+    padding: 0.875rem 1rem;
+    transition:
+      box-shadow var(--vv-dur, 260ms) var(--vv-ease),
+      border-color var(--vv-dur, 260ms) var(--vv-ease),
+      background var(--vv-dur, 260ms) var(--vv-ease);
+  }
+
+  /* Assistant answers read as the primary surface. */
+  .ws-chat-bubble--assistant {
+    background: rgba(255, 255, 255, 0.72);
+  }
+
+  /* User prompts carry a faint accent wash so the exchange is scannable. */
+  .ws-chat-bubble--user {
+    background: linear-gradient(155deg, rgba(37, 99, 235, 0.07), rgba(37, 99, 235, 0.03));
+    border-color: rgba(37, 99, 235, 0.16);
+  }
+
+  .ws-chat-bubble--clickable {
+    cursor: pointer;
+  }
+
+  .ws-chat-bubble--clickable:hover {
+    border-color: rgba(37, 99, 235, 0.28);
+    box-shadow:
+      0 2px 6px rgba(16, 32, 64, 0.06),
+      0 12px 28px rgba(16, 32, 64, 0.08),
+      inset 0 1px 0 rgba(255, 255, 255, 0.9);
   }
 
   .ws-chat-empty {
@@ -544,10 +598,13 @@
   }
 
   .ws-chat-textarea {
-    max-height: calc(95px);
-    min-height: calc(18px);
-    font-size: calc(13px);
-    line-height: 1.45;
+    max-height: calc(120px);
+    min-height: 26px;
+    padding-block: 2px;
+    font-family: "Segoe UI Variable", "Segoe UI", system-ui, sans-serif;
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: var(--vv-ink, #1c0f45);
   }
 
   .ws-chat-send-btn {
@@ -620,16 +677,15 @@
   }
 
   .ws-chat-workspace .ws-chat-messages {
-    padding: 0.5rem 0.375rem;
+    padding: 0.75rem 0.5rem 0.5rem;
   }
 
   .ws-chat-workspace .ws-chat-message-list {
-    gap: 0.75rem;
+    gap: 1rem;
   }
 
   .ws-chat-workspace .ws-chat-bubble {
-    @apply bg-white/70 backdrop-blur-lg border border-white/70 shadow-[0_6px_18px_rgba(20,40,70,0.05),inset_0_1px_0_rgba(255,255,255,0.85)] rounded-3xl;
-    padding: 0.75rem 0.875rem;
+    padding: 0.875rem 1rem;
   }
 
   .ws-chat-workspace .ws-chat-empty {
@@ -648,9 +704,10 @@
   }
 
   .ws-chat-workspace .ws-chat-textarea {
-    max-height: 95px;
-    min-height: 18px;
-    font-size: 13px;
+    max-height: 120px;
+    min-height: 26px;
+    font-size: 13.5px;
+    line-height: 1.5;
   }
 
   .ws-chat-workspace .ws-chat-send-btn {
@@ -677,16 +734,23 @@
   }
 
   .ws-chat-workspace .ws-input-bar {
-    @apply bg-white/60 backdrop-blur-md border border-white/75 shadow-[0_4px_14px_rgba(20,40,70,0.05),inset_0_1px_0_rgba(255,255,255,0.88)] rounded-full transition-all duration-200;
-    padding: 0.25rem 0.75rem;
+    @apply bg-white/60 backdrop-blur-xl border border-white/85 transition-all duration-300;
+    border-radius: 22px;
+    padding: 0.5rem 0.5rem 0.5rem 1rem;
+    box-shadow:
+      0 1px 2px rgba(16, 32, 64, 0.04),
+      0 10px 28px rgba(16, 32, 64, 0.06),
+      inset 0 1px 0 rgba(255, 255, 255, 0.9);
   }
 
   .ws-chat-workspace .ws-input-bar:focus-within {
     @apply bg-white/80;
-    border-color: #0066FF;
+    border-color: rgba(37, 99, 235, 0.55);
     box-shadow:
-      0 4px 16px rgba(20, 40, 70, 0.07),
-      inset 0 1px 0 rgba(255, 255, 255, 0.9);
+      0 2px 6px rgba(16, 32, 64, 0.06),
+      0 14px 34px rgba(16, 32, 64, 0.09),
+      inset 0 1px 0 rgba(255, 255, 255, 0.92),
+      0 0 0 3px rgba(37, 99, 235, 0.12);
   }
 
   .ws-chat-workspace .ws-toolbar-btn {
@@ -728,6 +792,226 @@
 
   .ws-chat-workspace .text-card-title {
     font-size: 16px;
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════
+     Conversation module — aligned to the vv Workstation design system.
+     ═══════════════════════════════════════════════════════════════════ */
+
+  /* Role avatar plate — mirrors the dashboard .vv-plate treatment. */
+  .vv-chat-avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 26px;
+    height: 26px;
+    border-radius: 9px;
+  }
+
+  .vv-chat-avatar--assistant {
+    color: var(--vv-accent, #2563eb);
+    background: var(--vv-accent-tint, rgba(37, 99, 235, 0.08));
+    box-shadow: inset 0 0 0 1px var(--vv-accent-ring, rgba(37, 99, 235, 0.16));
+  }
+
+  .vv-chat-avatar--user {
+    color: #475569;
+    background: rgba(100, 116, 139, 0.1);
+    box-shadow: inset 0 0 0 1px rgba(100, 116, 139, 0.16);
+  }
+
+  .vv-chat-role {
+    font-size: 11.5px;
+    font-weight: 600;
+    line-height: 1.3;
+    letter-spacing: -0.005em;
+    color: var(--vv-ink-2, #334155);
+  }
+
+  /* Subtle model badge — reads as metadata, not a header. */
+  .vv-chat-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 2px 8px 2px 7px;
+    border-radius: 9999px;
+    border: 1px solid rgba(37, 99, 235, 0.16);
+    background: rgba(37, 99, 235, 0.055);
+    font-size: 10.5px;
+    font-weight: 500;
+    line-height: 1.4;
+    letter-spacing: 0.003em;
+    color: #51648f;
+    max-width: 220px;
+  }
+
+  .vv-chat-tag__dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 9999px;
+    background: var(--vv-accent, #2563eb);
+    opacity: 0.75;
+    flex-shrink: 0;
+  }
+
+  /* Message body — application UI font, comfortable rhythm, never monospace. */
+  .vv-chat-body {
+    font-family: "Segoe UI Variable", "Segoe UI", system-ui, sans-serif;
+    font-size: 13.5px;
+    line-height: 1.65;
+    letter-spacing: 0.002em;
+    color: var(--vv-ink-2, #334155);
+  }
+
+  .vv-chat-placeholder {
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--vv-ink-4, #94a3b8);
+  }
+
+  /* Streaming caret — soft, thin, not a chunky block. */
+  .vv-chat-caret {
+    display: inline-block;
+    width: 2px;
+    height: 1.05em;
+    margin-left: 2px;
+    vertical-align: -0.15em;
+    border-radius: 2px;
+    background: var(--vv-accent, #2563eb);
+    animation: vv-caret 1.1s steps(1, end) infinite;
+  }
+
+  @keyframes vv-caret {
+    0%, 50% { opacity: 1; }
+    50.01%, 100% { opacity: 0; }
+  }
+
+  /* Typing indicator while the first tokens are pending. */
+  .vv-typing {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .vv-typing span {
+    width: 6px;
+    height: 6px;
+    border-radius: 9999px;
+    background: var(--vv-ink-4, #94a3b8);
+    animation: vv-dot 1.25s ease-in-out infinite;
+  }
+
+  .vv-typing span:nth-child(2) { animation-delay: 0.16s; }
+  .vv-typing span:nth-child(3) { animation-delay: 0.32s; }
+
+  @keyframes vv-dot {
+    0%, 60%, 100% { opacity: 0.25; transform: translateY(0); }
+    30% { opacity: 1; transform: translateY(-2px); }
+  }
+
+  /* Retrieved-source chips under an answer. */
+  .vv-chat-source {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    max-width: 220px;
+    padding: 3px 10px;
+    border-radius: 9999px;
+    border: 1px solid rgba(255, 255, 255, 0.85);
+    background: rgba(255, 255, 255, 0.6);
+    box-shadow: 0 1px 2px rgba(16, 32, 64, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 1.4;
+    color: var(--vv-ink-3, #64748b);
+    transition:
+      transform var(--vv-dur, 260ms) var(--vv-ease),
+      background var(--vv-dur, 260ms) var(--vv-ease),
+      border-color var(--vv-dur, 260ms) var(--vv-ease),
+      box-shadow var(--vv-dur, 260ms) var(--vv-ease),
+      color var(--vv-dur, 260ms) var(--vv-ease);
+  }
+
+  .vv-chat-source:hover {
+    transform: translateY(-1px);
+    background: rgba(255, 255, 255, 0.9);
+    border-color: #ffffff;
+    color: var(--vv-ink-2, #334155);
+    box-shadow: 0 2px 4px rgba(16, 32, 64, 0.05), 0 8px 18px rgba(16, 32, 64, 0.07);
+  }
+
+  .vv-chat-source__ref {
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    color: var(--vv-accent, #2563eb);
+  }
+
+  /* Empty state ─ enterprise welcome. */
+  .vv-chat-empty-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 18px;
+    color: var(--vv-accent, #2563eb);
+    background: var(--vv-accent-tint, rgba(37, 99, 235, 0.08));
+    box-shadow:
+      inset 0 0 0 1px var(--vv-accent-ring, rgba(37, 99, 235, 0.16)),
+      0 10px 26px rgba(37, 99, 235, 0.1);
+  }
+
+  /* Suggestion chips ─ starter prompts. */
+  .vv-suggestion {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    text-align: left;
+    padding: 11px 14px;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.85);
+    background: rgba(255, 255, 255, 0.55);
+    box-shadow: 0 1px 2px rgba(16, 32, 64, 0.03), inset 0 1px 0 rgba(255, 255, 255, 0.85);
+    font-size: 12.5px;
+    font-weight: 500;
+    line-height: 1.4;
+    color: var(--vv-ink-2, #334155);
+    transition:
+      transform var(--vv-dur, 260ms) var(--vv-ease),
+      background var(--vv-dur, 260ms) var(--vv-ease),
+      border-color var(--vv-dur, 260ms) var(--vv-ease),
+      box-shadow var(--vv-dur, 260ms) var(--vv-ease);
+  }
+
+  .vv-suggestion:hover {
+    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.88);
+    border-color: #ffffff;
+    color: var(--vv-ink, #1c0f45);
+    box-shadow: 0 2px 6px rgba(16, 32, 64, 0.06), 0 12px 26px rgba(16, 32, 64, 0.08);
+  }
+
+  .vv-suggestion__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    border-radius: 9px;
+    color: var(--vv-accent, #2563eb);
+    background: var(--vv-accent-tint, rgba(37, 99, 235, 0.08));
+    box-shadow: inset 0 0 0 1px var(--vv-accent-ring, rgba(37, 99, 235, 0.16));
+  }
+
+  /* Evidence context body — readable UI text, not a code block. */
+  .vv-evidence-context {
+    font-family: "Segoe UI Variable", "Segoe UI", system-ui, sans-serif;
+    font-size: 12.5px;
+    line-height: 1.6;
+    color: var(--vv-ink-3, #64748b);
   }
 }
 
@@ -1362,9 +1646,14 @@
   .vv-spark__head,
   .vv-bar,
   .vv-orb,
-  .vv-ripple {
+  .vv-ripple,
+  .vv-typing span,
+  .vv-chat-caret,
+  [class*="animate-vv-"] {
     animation: none !important;
   }
+
+  .vv-chat-caret { opacity: 1; }
 
   .vv-flow__runner { opacity: 0; }
   .vv-rise { opacity: 1; transform: none; }

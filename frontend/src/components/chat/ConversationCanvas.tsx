@@ -1,14 +1,20 @@
 import { useEffect, useMemo, useRef, useState } from "react"
 
 import {
+  BarChart3,
+  Bot,
   ChevronDown,
   FileDown,
+  FileSearch,
   Loader2,
   PanelRightClose,
   Plus,
   Send,
+  ShieldCheck,
+  Sparkles,
   Square,
   Trash2,
+  User,
 } from "lucide-react"
 
 import { exportExecutivePdf } from "@/api/client"
@@ -44,6 +50,12 @@ const HYPER_GLASS =
 
 const GLASS_CARD =
   "bg-white/90 backdrop-blur-md border border-slate-200/60 shadow-sm rounded-3xl"
+
+const PROMPT_SUGGESTIONS: { icon: typeof FileSearch; label: string }[] = [
+  { icon: FileSearch, label: "Summarize the key findings across my indexed documents" },
+  { icon: BarChart3, label: "Compare the financial metrics between the latest reports" },
+  { icon: ShieldCheck, label: "Highlight risks and compliance obligations with citations" },
+]
 
 function uniqueSourcesByFilename(sources: EvidenceChunk[]): EvidenceChunk[] {
   const seen = new Set<string>()
@@ -375,7 +387,7 @@ export default function ConversationCanvas({
 
     textareaRef.current.style.height = "auto"
 
-    textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 95)}px`
+    textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 120)}px`
 
   }, [chatInput])
 
@@ -419,10 +431,9 @@ export default function ConversationCanvas({
             <div className="flex min-w-0 items-center gap-x-2">
               <h2 className="truncate min-w-0 flex-1 text-card-title">Intelligence Chat</h2>
               {(activeAgentBadge || (isGenerating && !activeAgentBadge)) && (
-                <span
-                  className={`shrink-0 rounded-full px-1.5 py-0.5 text-body-sm font-semibold uppercase tracking-wide text-slate-800 ${HYPER_GLASS}`}
-                >
-                  [Active Model: {activeAgentBadge ?? "Inference"}]
+                <span className="vv-chat-tag shrink-0" title={`Active model: ${activeAgentBadge ?? "Inference"}`}>
+                  <span className="vv-chat-tag__dot" />
+                  <span className="truncate">{activeAgentBadge ?? "Inference"}</span>
                 </span>
               )}
             </div>
@@ -467,16 +478,40 @@ export default function ConversationCanvas({
           {messages.length === 0 ? (
 
             <div className="ws-chat-empty flex h-full items-center justify-center">
-              <p className="max-w-lg text-center text-[var(--ws-text-muted)]">
-
-                No active conversations.
-
-              </p>
+              <div className="ws-chat-column vv-rise flex max-w-xl flex-col items-center px-4 text-center">
+                <span className="vv-chat-empty-icon mb-5">
+                  <Sparkles className="h-7 w-7" strokeWidth={1.7} />
+                </span>
+                <h3 className="vv-title-section mb-2">How can I help you today?</h3>
+                <p className="vv-body mb-7 max-w-md">
+                  Ask a question, analyze evidence, or search across your indexed knowledge —
+                  answers are grounded in your documents with inline citations.
+                </p>
+                <div className="grid w-full gap-2.5 sm:grid-cols-1">
+                  {PROMPT_SUGGESTIONS.map(({ icon: Icon, label }) => (
+                    <button
+                      key={label}
+                      type="button"
+                      onClick={() => {
+                        setChatInput(label)
+                        textareaRef.current?.focus()
+                      }}
+                      className="vv-suggestion vv-focus"
+                    >
+                      <span className="vv-suggestion__icon">
+                        <Icon className="h-3.5 w-3.5" strokeWidth={1.8} />
+                      </span>
+                      <span className="min-w-0 flex-1">{label}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
 
             </div>
 
           ) : (
 
+            <div className="ws-chat-column">
             <div className="ws-chat-message-list flex w-full flex-col">
 
               {messages.map((message, index) => {
@@ -495,7 +530,11 @@ export default function ConversationCanvas({
 
                     key={message.id}
 
-                    className="ws-chat-bubble transition-all duration-200 ease-in-out"
+                    className={`ws-chat-bubble animate-vv-message-in ${
+                      isUser ? "ws-chat-bubble--user" : "ws-chat-bubble--assistant"
+                    } ${
+                      !isUser && message.sources.length > 0 ? "ws-chat-bubble--clickable" : ""
+                    }`}
 
                     onClick={() => {
 
@@ -509,19 +548,30 @@ export default function ConversationCanvas({
 
                   >
 
-                    <div className="mb-1.5 flex min-w-0 flex-wrap items-center gap-x-2 gap-y-0.5">
+                    <div className="mb-2 flex min-w-0 items-center gap-2">
 
-                      <p className="text-badge font-semibold uppercase tracking-wider text-[var(--ws-text-muted)]">
+                      <span
+                        className={`vv-chat-avatar ${
+                          isUser ? "vv-chat-avatar--user" : "vv-chat-avatar--assistant"
+                        }`}
+                        aria-hidden="true"
+                      >
+                        {isUser ? (
+                          <User className="h-3.5 w-3.5" strokeWidth={1.9} />
+                        ) : (
+                          <Bot className="h-3.5 w-3.5" strokeWidth={1.9} />
+                        )}
+                      </span>
 
-                        {isUser ? "Prompt" : "Response"}
-
-                      </p>
+                      <span className="vv-chat-role">{isUser ? "You" : "Assistant"}</span>
 
                       {!isUser && message.agentBadge && (
 
-                        <span className={`truncate px-1.5 py-0.5 text-body-sm font-semibold tracking-wide text-slate-800 ${HYPER_GLASS}`}>
+                        <span className="vv-chat-tag min-w-0" title={`Model: ${message.agentBadge}`}>
 
-                          [{message.agentBadge}]
+                          <span className="vv-chat-tag__dot" />
+
+                          <span className="truncate">{message.agentBadge}</span>
 
                         </span>
 
@@ -545,7 +595,7 @@ export default function ConversationCanvas({
 
                     {message.content ? (
 
-                      <p className="whitespace-pre-wrap break-words text-body-sm leading-relaxed text-[var(--ws-text-secondary)]">
+                      <div className="vv-chat-body whitespace-pre-wrap break-words">
 
                         {!isUser && message.sources.length > 0 ? (
 
@@ -567,37 +617,39 @@ export default function ConversationCanvas({
 
                         {isLatestAssistant && (
 
-                          <span className="ml-1 inline-block animate-pulse text-[var(--ws-primary)]">▌</span>
+                          <span className="vv-chat-caret" aria-hidden="true" />
 
                         )}
 
-                      </p>
+                      </div>
+
+                    ) : isLatestAssistant ? (
+
+                      <div className="vv-chat-placeholder flex items-center gap-2.5">
+
+                        <span className="vv-typing" aria-hidden="true">
+                          <span />
+                          <span />
+                          <span />
+                        </span>
+
+                        <span>{streamStatusText ?? "Thinking…"}</span>
+
+                      </div>
 
                     ) : (
 
-                      <p className="text-body-sm text-[var(--ws-text-muted)]">
-
-                        {isLatestAssistant
-
-                          ? (streamStatusText ?? "Loading...")
-
-                          : "Response"}
-
-                      </p>
+                      <p className="vv-chat-placeholder">No response generated.</p>
 
                     )}
 
                     {!isUser && message.sources.length > 0 && (
 
-                      <div className="mt-2 border-t border-white/40 pt-2">
+                      <div className="mt-3 border-t border-white/50 pt-3">
 
-                        <p className="mb-1 text-badge font-semibold uppercase tracking-wider text-[var(--ws-text-muted)]">
+                        <p className="vv-eyebrow mb-2">Sources</p>
 
-                          Supporting Documents
-
-                        </p>
-
-                        <div className="flex flex-wrap gap-1">
+                        <div className="flex flex-wrap gap-1.5">
 
                           {uniqueSourcesByFilename(message.sources).map((source) => (
 
@@ -623,21 +675,17 @@ export default function ConversationCanvas({
 
                               }}
 
-                              className="ws-toolbar-btn px-1.5 py-0.5 text-caption"
+                              className="vv-chat-source vv-focus"
 
                             >
 
                               {source.ref != null && (
 
-                                <span className="mr-0.5 font-semibold tabular-nums text-[var(--ws-primary)]">
-
-                                  [{source.ref}]
-
-                                </span>
+                                <span className="vv-chat-source__ref">[{source.ref}]</span>
 
                               )}
 
-                              <span className="max-w-[160px] truncate">{source.filename}</span>
+                              <span className="truncate">{source.filename}</span>
 
                             </button>
 
@@ -655,6 +703,7 @@ export default function ConversationCanvas({
 
               })}
 
+            </div>
             </div>
 
           )}
@@ -675,7 +724,9 @@ export default function ConversationCanvas({
 
         <footer className="ws-chat-input-footer shrink-0 border-t border-white/40">
 
-          <div className="ws-input-bar flex items-end gap-1.5">
+          <div className="ws-chat-column">
+
+          <div className="ws-input-bar flex items-end gap-2">
 
             <textarea
 
@@ -687,9 +738,9 @@ export default function ConversationCanvas({
 
               onKeyDown={handleKeyDown}
 
-              placeholder="Search enterprise knowledge, analyze evidence, or query documents..."
+              placeholder="Ask VectorVault…"
 
-              className="ws-chat-textarea flex-1 resize-none overflow-y-hidden bg-transparent text-[var(--ws-text)] placeholder:text-[var(--ws-text-muted)] scrollbar-none focus:outline-none"
+              className="ws-chat-textarea flex-1 resize-none overflow-y-hidden bg-transparent text-[var(--vv-ink)] placeholder:text-[var(--vv-ink-4)] scrollbar-none focus:outline-none"
 
               disabled={isGenerating}
 
@@ -746,6 +797,8 @@ export default function ConversationCanvas({
             Enter to send. Shift+Enter for new line.
 
           </p>
+
+          </div>
 
         </footer>
 

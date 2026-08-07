@@ -110,6 +110,9 @@ export default {
         glass: "0 1px 2px rgba(15, 23, 42, 0.04)",
         "glass-hover": "0 1px 3px rgba(15, 23, 42, 0.06)",
         card: "0 1px 2px rgba(15, 23, 42, 0.04)",
+        /* Fluent depth ramp — mirrors the Workstation dashboard elevation tokens */
+        "vv-1": "0 1px 2px rgba(16, 32, 64, 0.04), 0 8px 24px rgba(16, 32, 64, 0.05)",
+        "vv-2": "0 2px 6px rgba(16, 32, 64, 0.06), 0 18px 44px rgba(16, 32, 64, 0.09)",
       },
       borderRadius: {
         DEFAULT: "4px",
@@ -117,6 +120,20 @@ export default {
         md: "4px",
         sm: "2px",
         xl: "6px",
+      },
+      keyframes: {
+        "vv-message-in": {
+          from: { opacity: "0", transform: "translateY(8px)" },
+          to: { opacity: "1", transform: "none" },
+        },
+        "vv-typing": {
+          "0%, 60%, 100%": { opacity: "0.25", transform: "translateY(0)" },
+          "30%": { opacity: "1", transform: "translateY(-2px)" },
+        },
+      },
+      animation: {
+        "vv-message-in": "vv-message-in 460ms cubic-bezier(0.16, 1, 0.3, 1) both",
+        "vv-typing": "vv-typing 1.25s ease-in-out infinite",
       },
     },
   },
