@@ -7,10 +7,10 @@ import { useWorkstation } from "@/context/WorkstationContext"
 import { FileText } from "lucide-react"
 
 const HYPER_GLASS =
-  "bg-white/58 backdrop-blur-md border border-white/74 shadow-[0_6px_16px_rgba(20,40,70,0.06),inset_0_1px_0_rgba(255,255,255,0.88)] rounded-full hover:bg-white/68 transition-all duration-200"
+  "bg-white/90 backdrop-blur-md border border-slate-200/60 shadow-sm rounded-full hover:bg-white transition-all duration-200"
 
 const GLASS_INNER =
-  "bg-white/70 backdrop-blur-lg border border-white/74 shadow-[0_6px_18px_rgba(20,40,70,0.06),inset_0_1px_0_rgba(255,255,255,0.88)] rounded-3xl"
+  "bg-white/90 backdrop-blur-md border border-slate-200/60 shadow-sm rounded-3xl"
 
 interface Props {
   sources: EvidenceChunk[]

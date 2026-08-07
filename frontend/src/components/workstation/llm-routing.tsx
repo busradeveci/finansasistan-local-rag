@@ -2,10 +2,10 @@ import { Search, Route, Server, Shield, FileText, ArrowRight, Brain, CircleDot, 
 import { useWorkstationData } from "@/components/workstation/use-workstation-data"
 
 const GLASS_CARD =
-  "bg-white/40 backdrop-blur-2xl backdrop-saturate-[1.12] border border-white/70 shadow-[0_14px_38px_rgba(20,40,70,0.06),inset_0_1px_0_rgba(255,255,255,0.86),inset_0_-1px_0_rgba(255,255,255,0.28)] rounded-3xl"
+  "bg-white/90 backdrop-blur-md border border-slate-200/60 shadow-sm rounded-3xl"
 
 const HYPER_GLASS =
-  "bg-white/50 backdrop-blur-md border border-white/75 shadow-[0_4px_14px_rgba(0,0,0,0.05),inset_0_1px_1px_rgba(255,255,255,0.92)] rounded-2xl"
+  "bg-white/60 backdrop-blur-md border border-slate-200/50 shadow-sm rounded-2xl hover:bg-white/90 transition-all duration-300"
 
 export function LlmRouting() {
   const { status, analytics } = useWorkstationData()
@@ -26,7 +26,7 @@ export function LlmRouting() {
         <input
           type="text"
           placeholder="Search routing events, models, or policies..."
-          className="w-full rounded-2xl border border-white/40 bg-white/40 py-3.5 pl-12 pr-4 text-[13px] font-medium text-slate-800 shadow-[0_8px_30px_rgb(0,0,0,0.04),inset_0_1px_0_rgba(255,255,255,0.8)] backdrop-blur-xl transition-all placeholder:text-slate-400 focus:bg-white/60 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+          className="w-full rounded-2xl border border-slate-200/60 bg-white/90 py-3.5 pl-12 pr-4 text-[13px] font-medium text-slate-800 shadow-sm backdrop-blur-md transition-all placeholder:text-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#000080]/20"
         />
       </div>
 
@@ -83,7 +83,7 @@ export function LlmRouting() {
           <ArrowRight className="text-slate-300 hidden md:block" />
 
           <div className="flex flex-col items-center gap-2">
-            <div className={`flex h-12 w-12 items-center justify-center text-blue-600 ${HYPER_GLASS}`}>
+            <div className={`flex h-12 w-12 items-center justify-center text-[#000080] ${HYPER_GLASS}`}>
               <CircleDot className="h-5 w-5" />
             </div>
             <span className="text-[11px] font-medium text-slate-600">Intent Classification</span>
@@ -92,7 +92,7 @@ export function LlmRouting() {
           <ArrowRight className="text-slate-300 hidden md:block" />
 
           <div className="flex flex-col items-center gap-2">
-            <div className={`flex h-14 w-14 items-center justify-center text-indigo-600 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.1),inset_0_1px_0_rgba(255,255,255,1)] rounded-2xl border border-white`}>
+            <div className={`flex h-14 w-14 items-center justify-center text-cyan-600 bg-white shadow-sm rounded-2xl border border-slate-200/60`}>
               <Route className="h-6 w-6" />
             </div>
             <span className="text-[11px] font-bold text-slate-800">Semantic Router</span>
@@ -132,13 +132,13 @@ export function LlmRouting() {
             <div key={m.role} className={`flex flex-col p-5 ${GLASS_CARD}`}>
               <div className="mb-4 flex items-center justify-between">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">{m.role}</span>
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold text-emerald-700">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold text-emerald-700 border border-emerald-200/60">
                   <span className="h-1.5 w-1.5 rounded-full bg-emerald-500"></span> Active
                 </span>
               </div>
               <div className="mb-4 truncate font-mono text-lg font-medium text-slate-800">{m.name}</div>
               
-              <div className="flex flex-col gap-2 border-t border-white/40 pt-4 text-xs">
+              <div className="flex flex-col gap-2 border-t border-slate-200/60 pt-4 text-xs">
                 <div className="flex justify-between">
                   <span className="text-slate-500">Purpose</span>
                   <span className="font-medium text-slate-700">{m.purpose}</span>
@@ -174,12 +174,12 @@ export function LlmRouting() {
               <div className="mb-2 text-sm font-semibold text-slate-800">{policy.rule}</div>
               <div className="mb-3 flex items-center gap-2">
                 <ArrowRight className="h-4 w-4 text-slate-400" />
-                <span className="font-mono text-xs font-medium text-blue-600">{policy.target}</span>
+                <span className="font-mono text-xs font-medium text-[#000080]">{policy.target}</span>
               </div>
               <div className="text-[11px] text-slate-500">
                 <span className="font-medium text-slate-600">Reason:</span> {policy.reason}
               </div>
-              <div className="mt-3 border-t border-white/40 pt-3 text-[10px] text-slate-400">
+              <div className="mt-3 border-t border-slate-200/60 pt-3 text-[10px] text-slate-400">
                 Source: Awaiting Backend Integration
               </div>
             </div>
@@ -190,9 +190,9 @@ export function LlmRouting() {
       {/* 5. Recent Routing Decisions */}
       <section>
         <h3 className="mb-4 text-sm font-semibold text-slate-800">Recent Routing Decisions</h3>
-        <div className={`overflow-hidden ${GLASS_CARD}`}>
+        <div className={`overflow-hidden ${GLASS_CARD} !p-0`}>
           <table className="w-full text-left text-sm">
-            <thead className="border-b border-white/40 bg-white/20 text-xs text-slate-500">
+            <thead className="border-b border-slate-200/60 bg-slate-50 text-xs text-slate-500">
               <tr>
                 <th className="px-4 py-3 font-medium">Timestamp</th>
                 <th className="px-4 py-3 font-medium">Intent</th>

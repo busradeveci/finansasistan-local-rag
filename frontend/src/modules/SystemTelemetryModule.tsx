@@ -16,20 +16,20 @@ import {
   Layers
 } from "lucide-react"
 
-const glassCardClasses = "bg-white/60 backdrop-blur-md border border-white/80 shadow-sm rounded-xl p-5 hover:bg-white/70 transition-all duration-300";
+const glassCardClasses = "bg-white/90 backdrop-blur-md border border-slate-200/60 shadow-sm rounded-2xl p-5 hover:-translate-y-1 hover:shadow-md transition-all duration-300 group";
 
 const MetricCard = ({ title, value, icon: Icon, description }: any) => (
   <div className={`${glassCardClasses} flex flex-col h-full`}>
-    <div className="flex items-center gap-2 text-sm font-medium text-slate-600 mb-4">
-      <Icon className="w-4 h-4 text-[#007FFF]" />
+    <div className="flex items-center gap-2 text-xs font-bold text-slate-500 uppercase tracking-wide mb-4">
+      <Icon className="w-4 h-4 text-[#000080] group-hover:scale-110 transition-transform duration-300" />
       <span>{title}</span>
     </div>
     <div className="mt-auto">
-      <div className="text-xl font-semibold tracking-tight text-slate-900">
-        {value != null ? value : <span className="text-xs text-slate-400 font-normal">Awaiting Backend Integration</span>}
+      <div className="text-3xl font-bold tracking-tight text-slate-800 leading-none">
+        {value != null ? value : <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest leading-none">Awaiting Backend</span>}
       </div>
       {description && (
-        <div className="text-xs text-slate-500 mt-1.5">{description}</div>
+        <div className="text-[11px] text-slate-500 font-medium mt-2">{description}</div>
       )}
     </div>
   </div>
@@ -39,18 +39,18 @@ const TimelineChart = ({ title }: { title: string }) => {
   const emptyData: any[] = [];
   return (
     <div className={`${glassCardClasses} flex flex-col min-h-[240px]`}>
-      <div className="text-sm font-medium text-slate-600 mb-4">{title}</div>
-      <div className="flex-1 relative border border-slate-100 rounded-lg bg-white/40 pt-4 pr-4">
+      <div className="text-sm font-bold text-slate-800 mb-4">{title}</div>
+      <div className="flex-1 relative border border-slate-200/60 rounded-xl bg-slate-50/50 pt-4 pr-4">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={emptyData}>
             <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
             <XAxis dataKey="time" stroke="#cbd5e1" fontSize={10} tickLine={false} axisLine={false} />
             <YAxis stroke="#cbd5e1" fontSize={10} tickLine={false} axisLine={false} />
-            <Line type="monotone" dataKey="value" stroke="#007FFF" strokeWidth={2} dot={false} />
+            <Line type="monotone" dataKey="value" stroke="#000080" strokeWidth={2} dot={false} />
           </LineChart>
         </ResponsiveContainer>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <span className="text-xs text-slate-500 font-medium bg-white/80 backdrop-blur-sm px-3 py-1.5 rounded-md shadow-sm border border-slate-200/60">
+          <span className="text-[10px] text-slate-400 font-bold bg-white px-3 py-1.5 rounded-full shadow-sm border border-slate-200/60 uppercase tracking-wider">
             Awaiting Backend Integration
           </span>
         </div>
@@ -91,11 +91,11 @@ export default function SystemTelemetryModule() {
   });
 
   return (
-    <div className="flex h-full min-h-0 flex-col overflow-y-auto w-full p-6 space-y-10">
+    <div className="flex h-full min-h-0 flex-col overflow-y-auto w-full bg-transparent p-4 sm:p-6 lg:p-8 space-y-10 fluent-scrollbar">
       {/* Header */}
       <header className="flex flex-col gap-2 shrink-0">
-        <h1 className="text-2xl font-semibold text-slate-900 tracking-tight">System Telemetry</h1>
-        <p className="text-sm text-slate-600 max-w-2xl">
+        <h1 className="text-xl font-bold text-slate-800 tracking-tight">System Telemetry</h1>
+        <p className="text-sm font-medium text-slate-500 max-w-2xl">
           Monitor the health and operational status of the local workstation hosting the Enterprise Local RAG platform.
         </p>
       </header>
@@ -103,13 +103,13 @@ export default function SystemTelemetryModule() {
       {/* SECTION 1 — Machine Health */}
       <section className="flex flex-col gap-5 shrink-0">
         <div className="flex items-center justify-between">
-          <h2 className="text-xs font-semibold uppercase tracking-widest text-slate-500">Machine Health</h2>
-          <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-medium border backdrop-blur-md transition-colors ${
+          <h2 className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Machine Health</h2>
+          <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border backdrop-blur-md transition-colors ${
             telemetry 
-              ? "bg-emerald-50/60 text-emerald-700 border-emerald-200/60" 
-              : "bg-amber-50/60 text-amber-700 border-amber-200/60"
+              ? "bg-emerald-50 text-emerald-700 border-emerald-200/60" 
+              : "bg-amber-50 text-amber-700 border-amber-200/60"
           }`}>
-            <span className={`w-1.5 h-1.5 rounded-full ${telemetry ? "bg-emerald-500" : "bg-amber-500"}`}></span>
+            <span className={`w-1.5 h-1.5 rounded-full ${telemetry ? "bg-emerald-500 animate-pulse" : "bg-amber-500"}`}></span>
             {telemetry ? "Live Telemetry" : "Backend Pending"}
           </div>
         </div>
@@ -165,7 +165,7 @@ export default function SystemTelemetryModule() {
 
       {/* SECTION 2 — Hardware Monitoring */}
       <section className="flex flex-col gap-5 shrink-0">
-        <h2 className="text-xs font-semibold uppercase tracking-widest text-slate-500">Hardware Monitoring</h2>
+        <h2 className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Hardware Monitoring</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <TimelineChart title="CPU Usage Timeline" />
           <TimelineChart title="RAM Usage Timeline" />
@@ -176,23 +176,23 @@ export default function SystemTelemetryModule() {
 
       {/* SECTION 3 — System Logs */}
       <section className="flex flex-col gap-5 shrink-0">
-        <h2 className="text-xs font-semibold uppercase tracking-widest text-slate-500">System Logs</h2>
-        <div className={`${glassCardClasses} flex flex-col min-h-[400px] p-0 overflow-hidden`}>
-          <div className="flex flex-wrap items-center gap-6 border-b border-gray-200/60 px-6 pt-4 pb-0 shrink-0">
+        <h2 className="text-[11px] font-bold uppercase tracking-wider text-slate-400">System Logs</h2>
+        <div className="bg-white/90 backdrop-blur-md border border-slate-200/60 shadow-sm rounded-2xl flex flex-col min-h-[400px] overflow-hidden">
+          <div className="flex flex-wrap items-center gap-6 border-b border-slate-200/60 px-6 pt-4 pb-0 shrink-0 bg-slate-50/50">
             {tabs.map(tab => (
               <button 
                 key={tab} 
                 onClick={() => setActiveTab(tab)}
-                className={`text-sm font-medium transition-colors px-1 pb-4 border-b-2 ${activeTab === tab ? 'text-[#000080] border-[#000080]' : 'text-slate-500 border-transparent hover:text-slate-800'}`}
+                className={`text-xs font-bold uppercase tracking-wider transition-colors px-1 pb-4 border-b-2 ${activeTab === tab ? 'text-[#000080] border-[#000080]' : 'text-slate-400 border-transparent hover:text-slate-700'}`}
               >
                 {tab}
               </button>
             ))}
           </div>
           
-          <div className="overflow-x-auto flex-1 bg-white/30">
+          <div className="overflow-x-auto flex-1">
             <div className="min-w-[800px] p-6">
-              <div className="grid grid-cols-12 gap-4 text-[10px] font-semibold uppercase tracking-wider text-slate-400 pb-3 border-b border-slate-200/60">
+              <div className="grid grid-cols-12 gap-4 text-[10px] font-bold uppercase tracking-wider text-slate-400 pb-3 border-b border-slate-100">
                 <div className="col-span-2">TIMESTAMP</div>
                 <div className="col-span-2">LEVEL</div>
                 <div className="col-span-3">COMPONENT</div>
@@ -202,21 +202,21 @@ export default function SystemTelemetryModule() {
               <div className="flex flex-col mt-2">
                 {filteredLogs.length > 0 ? (
                   filteredLogs.map((log: any, i: number) => (
-                    <div key={i} className="grid grid-cols-12 gap-4 py-3 text-sm font-normal text-slate-700 items-center border-b border-slate-100 last:border-transparent hover:bg-white/40 transition-colors px-2 -mx-2 rounded-lg">
+                    <div key={i} className="grid grid-cols-12 gap-4 py-3 text-sm font-normal text-slate-700 items-center border-b border-slate-50 last:border-transparent hover:bg-slate-50 transition-colors px-2 -mx-2 rounded-lg">
                       <div className="col-span-2 text-slate-500 font-mono text-xs">{log.timestamp}</div>
                       <div className="col-span-2">
-                        <span className="text-xs font-semibold px-2 py-1 bg-slate-100 text-slate-600 rounded-md">
+                        <span className="text-[10px] font-bold uppercase tracking-wide px-2 py-1 bg-slate-100 text-slate-600 rounded-md border border-slate-200/60">
                           {log.level}
                         </span>
                       </div>
-                      <div className="col-span-3 font-medium text-slate-800 truncate" title={log.component}>{log.component}</div>
-                      <div className="col-span-5 text-slate-600 truncate" title={log.message}>{log.message}</div>
+                      <div className="col-span-3 font-semibold text-slate-800 truncate" title={log.component}>{log.component}</div>
+                      <div className="col-span-5 text-slate-600 font-medium truncate" title={log.message}>{log.message}</div>
                     </div>
                   ))
                 ) : (
                   <div className="py-16 text-center flex flex-col items-center justify-center gap-3">
                     <List className="w-8 h-8 text-slate-300" />
-                    <span className="text-sm text-slate-400 font-medium">Awaiting Backend Integration</span>
+                    <span className="text-[11px] text-slate-400 font-bold uppercase tracking-wider">Awaiting Backend Integration</span>
                   </div>
                 )}
               </div>
@@ -225,10 +225,10 @@ export default function SystemTelemetryModule() {
         </div>
       </section>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 shrink-0">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 shrink-0 pb-10">
         {/* SECTION 4 — Storage */}
         <section className="flex flex-col gap-5">
-          <h2 className="text-xs font-semibold uppercase tracking-widest text-slate-500">Storage Health</h2>
+          <h2 className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Storage Health</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 h-full">
             <MetricCard 
               title="Total Disk Capacity" 
@@ -255,7 +255,7 @@ export default function SystemTelemetryModule() {
 
         {/* SECTION 5 — Network */}
         <section className="flex flex-col gap-5">
-          <h2 className="text-xs font-semibold uppercase tracking-widest text-slate-500">Network</h2>
+          <h2 className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Network</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 h-full">
             <MetricCard 
               title="Offline Mode" 
@@ -283,5 +283,3 @@ export default function SystemTelemetryModule() {
     </div>
   )
 }
-
-

@@ -42,7 +42,7 @@ export default function SettingsModule() {
     return (
       <div className="flex h-full items-center justify-center ws-module-shell">
         <div className="flex flex-col items-center text-slate-500">
-          <RefreshCw className="mb-4 h-8 w-8 animate-spin text-blue-500" />
+          <RefreshCw className="mb-4 h-8 w-8 animate-spin text-[#000080]" />
           <p className="text-sm font-medium">Loading platform configuration...</p>
         </div>
       </div>
@@ -66,17 +66,17 @@ export default function SettingsModule() {
     )
   }
 
-  const CARD_CLASS = "relative p-6 rounded-2xl bg-white/70 dark:bg-slate-900/70 backdrop-blur-md border border-white/50 dark:border-slate-800 shadow-sm flex flex-col justify-between"
-  const ROW_CLASS = "flex items-center justify-between py-3 border-b border-slate-100 dark:border-slate-800/50 last:border-none"
+  const CARD_CLASS = "relative p-6 rounded-2xl bg-white/90 backdrop-blur-md border border-slate-200/60 shadow-sm flex flex-col justify-between"
+  const ROW_CLASS = "flex items-center justify-between py-3 border-b border-slate-100/70 last:border-none"
   const LABEL_CLASS = "text-sm font-medium text-slate-700"
-  const VALUE_CLASS = "text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300"
-  const BADGE_CLASS = "text-xs font-semibold px-2.5 py-1 rounded-full bg-indigo-50 text-indigo-600"
+  const VALUE_CLASS = "text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-50 text-slate-700 border border-slate-200/60"
+  const BADGE_CLASS = "text-xs font-semibold px-2.5 py-1 rounded-full bg-[#000080]/5 text-[#000080] border border-[#000080]/10"
 
   return (
-    <div className="flex h-full min-h-0 flex-col overflow-hidden ws-module-shell">
+    <div className="flex h-full min-h-0 flex-col overflow-hidden ws-module-shell bg-transparent p-4 sm:p-6 lg:p-8">
       <header className="mb-6 shrink-0">
-        <h1 className="text-page-title">Settings</h1>
-        <p className="mt-1 truncate text-sm font-medium text-slate-600/80">
+        <h1 className="text-xl font-bold text-slate-800 tracking-tight">Settings</h1>
+        <p className="mt-1 truncate text-sm font-medium text-slate-500">
           Platform configuration center for retrieval, model orchestration, and RAG behavior
         </p>
       </header>
@@ -86,31 +86,31 @@ export default function SettingsModule() {
         {/* 1. AI Models */}
         <section className={CARD_CLASS}>
           <div>
-            <div className="mb-4 pb-2 border-b border-slate-100 dark:border-slate-800/50">
-              <h2 className="text-lg font-semibold text-slate-900">AI Models</h2>
-              <p className="mt-1 text-sm text-slate-500">Configured local orchestration models</p>
+            <div className="mb-4 pb-2 border-b border-slate-100">
+              <h2 className="text-lg font-semibold text-slate-800 tracking-tight">AI Models</h2>
+              <p className="mt-1 text-xs text-slate-500 font-medium">Configured local orchestration models</p>
             </div>
             <div className="flex flex-col">
               <div className={ROW_CLASS}>
                 <div className="flex flex-col">
                   <span className={LABEL_CLASS}>{config?.models.chat_model || "Awaiting Backend Integration"}</span>
-                  <span className="text-xs text-slate-500">Backend Config</span>
+                  <span className="text-xs text-slate-500 font-medium">Backend Config</span>
                 </div>
                 <span className={BADGE_CLASS}>Active (Chat)</span>
               </div>
               <div className={ROW_CLASS}>
                 <div className="flex flex-col">
                   <span className={LABEL_CLASS}>{config?.models.embed_model || "Awaiting Backend Integration"}</span>
-                  <span className="text-xs text-slate-500">Backend Config</span>
+                  <span className="text-xs text-slate-500 font-medium">Backend Config</span>
                 </div>
-                <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-600">Active (Embed)</span>
+                <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200/60">Active (Embed)</span>
               </div>
               <div className={ROW_CLASS}>
                 <div className="flex flex-col">
                   <span className={LABEL_CLASS}>{config?.models.router_model || "Awaiting Backend Integration"}</span>
-                  <span className="text-xs text-slate-500">Backend Config</span>
+                  <span className="text-xs text-slate-500 font-medium">Backend Config</span>
                 </div>
-                <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-purple-50 text-purple-600">Active (Router)</span>
+                <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-purple-50 text-purple-700 border border-purple-200/60">Active (Router)</span>
               </div>
             </div>
           </div>
@@ -119,9 +119,9 @@ export default function SettingsModule() {
         {/* 2. Retrieval Configuration */}
         <section className={CARD_CLASS}>
           <div>
-            <div className="mb-4 pb-2 border-b border-slate-100 dark:border-slate-800/50">
-              <h2 className="text-lg font-semibold text-slate-900">Retrieval Configuration</h2>
-              <p className="mt-1 text-sm text-slate-500">Vector search backend parameters</p>
+            <div className="mb-4 pb-2 border-b border-slate-100">
+              <h2 className="text-lg font-semibold text-slate-800 tracking-tight">Retrieval Configuration</h2>
+              <p className="mt-1 text-xs text-slate-500 font-medium">Vector search backend parameters</p>
             </div>
             <div className="flex flex-col">
               <div className={ROW_CLASS}>
@@ -159,9 +159,9 @@ export default function SettingsModule() {
         {/* 3. Generation Configuration */}
         <section className={CARD_CLASS}>
           <div>
-            <div className="mb-4 pb-2 border-b border-slate-100 dark:border-slate-800/50">
-              <h2 className="text-lg font-semibold text-slate-900">Generation Configuration</h2>
-              <p className="mt-1 text-sm text-slate-500">Inference parameters</p>
+            <div className="mb-4 pb-2 border-b border-slate-100">
+              <h2 className="text-lg font-semibold text-slate-800 tracking-tight">Generation Configuration</h2>
+              <p className="mt-1 text-xs text-slate-500 font-medium">Inference parameters</p>
             </div>
             <div className="flex flex-col">
               {["Maximum Response Tokens", "Temperature", "Top P", "Frequency Penalty", "Presence Penalty", "Streaming Enabled"].map(label => (
@@ -177,9 +177,9 @@ export default function SettingsModule() {
         {/* 4. Embedding Configuration */}
         <section className={CARD_CLASS}>
           <div>
-            <div className="mb-4 pb-2 border-b border-slate-100 dark:border-slate-800/50">
-              <h2 className="text-lg font-semibold text-slate-900">Embedding Configuration</h2>
-              <p className="mt-1 text-sm text-slate-500">Vector generation settings</p>
+            <div className="mb-4 pb-2 border-b border-slate-100">
+              <h2 className="text-lg font-semibold text-slate-800 tracking-tight">Embedding Configuration</h2>
+              <p className="mt-1 text-xs text-slate-500 font-medium">Vector generation settings</p>
             </div>
             <div className="flex flex-col">
               <div className={ROW_CLASS}>
@@ -199,9 +199,9 @@ export default function SettingsModule() {
         {/* 5. Indexing Configuration */}
         <section className={CARD_CLASS}>
           <div>
-            <div className="mb-4 pb-2 border-b border-slate-100 dark:border-slate-800/50">
-              <h2 className="text-lg font-semibold text-slate-900">Indexing Configuration</h2>
-              <p className="mt-1 text-sm text-slate-500">Document processing pipeline</p>
+            <div className="mb-4 pb-2 border-b border-slate-100">
+              <h2 className="text-lg font-semibold text-slate-800 tracking-tight">Indexing Configuration</h2>
+              <p className="mt-1 text-xs text-slate-500 font-medium">Document processing pipeline</p>
             </div>
             <div className="flex flex-col">
               <div className={ROW_CLASS}>
@@ -225,22 +225,22 @@ export default function SettingsModule() {
         {/* 6. Configuration Source */}
         <section className={`${CARD_CLASS} lg:col-span-2`}>
           <div>
-            <div className="mb-4 pb-2 border-b border-slate-100 dark:border-slate-800/50">
-              <h2 className="text-lg font-semibold text-slate-900">Configuration Source</h2>
-              <p className="mt-1 text-sm text-slate-500">Origin of active platform settings</p>
+            <div className="mb-4 pb-2 border-b border-slate-100">
+              <h2 className="text-lg font-semibold text-slate-800 tracking-tight">Configuration Source</h2>
+              <p className="mt-1 text-xs text-slate-500 font-medium">Origin of active platform settings</p>
             </div>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-              <div className="bg-white/50 dark:bg-slate-800/50 rounded-xl p-4 border border-slate-200 dark:border-slate-700">
-                <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-500">Configuration File</p>
-                <p className="mt-1 text-sm font-semibold text-slate-400">Awaiting Backend Integration</p>
+              <div className="bg-white rounded-xl p-4 border border-slate-200/60 shadow-sm text-center">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Configuration File</p>
+                <p className="mt-1.5 text-xs font-semibold text-slate-400 italic">Awaiting Backend Integration</p>
               </div>
-              <div className="bg-white/50 dark:bg-slate-800/50 rounded-xl p-4 border border-slate-200 dark:border-slate-700">
-                <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-500">Environment Variables</p>
-                <p className="mt-1 text-sm font-semibold text-slate-400">Awaiting Backend Integration</p>
+              <div className="bg-white rounded-xl p-4 border border-slate-200/60 shadow-sm text-center">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Environment Variables</p>
+                <p className="mt-1.5 text-xs font-semibold text-slate-400 italic">Awaiting Backend Integration</p>
               </div>
-              <div className="bg-white/50 dark:bg-slate-800/50 rounded-xl p-4 border-t-2 border-t-blue-500 border-x-slate-200 border-b-slate-200 dark:border-x-slate-700 dark:border-b-slate-700">
-                <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-500">Backend Config</p>
-                <p className="mt-1 text-sm font-semibold text-blue-600">Loaded Successfully</p>
+              <div className="bg-[#000080]/5 rounded-xl p-4 border border-[#000080]/20 shadow-sm text-center">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-[#000080]/60">Backend Config</p>
+                <p className="mt-1.5 text-sm font-bold text-[#000080]">Loaded Successfully</p>
               </div>
             </div>
           </div>

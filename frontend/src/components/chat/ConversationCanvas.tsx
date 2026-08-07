@@ -40,10 +40,10 @@ interface ConversationCanvasProps {
 
 
 const HYPER_GLASS =
-  "bg-white/55 backdrop-blur-md border border-white/70 shadow-[0_6px_18px_rgba(20,40,70,0.06),inset_0_1px_0_rgba(255,255,255,0.86)] rounded-full hover:bg-white/65 transition-all duration-200"
+  "bg-white/90 backdrop-blur-md border border-slate-200/60 shadow-sm rounded-full hover:bg-white transition-all duration-200"
 
 const GLASS_CARD =
-  "bg-white/72 backdrop-blur-xl border border-white/70 shadow-[0_8px_26px_rgba(20,40,70,0.06),inset_0_1px_0_rgba(255,255,255,0.86)] rounded-3xl"
+  "bg-white/90 backdrop-blur-md border border-slate-200/60 shadow-sm rounded-3xl"
 
 function uniqueSourcesByFilename(sources: EvidenceChunk[]): EvidenceChunk[] {
   const seen = new Set<string>()

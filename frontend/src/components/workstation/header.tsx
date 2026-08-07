@@ -11,7 +11,10 @@ type HeaderProps = {
 }
 
 const HYPER_GLASS =
-  "bg-white/30 backdrop-blur-md border border-white/60 shadow-[0_4px_12px_rgba(0,0,0,0.05),inset_0_1px_1px_rgba(255,255,255,0.9)] rounded-full hover:bg-white/40 transition-all duration-300"
+  "bg-white/60 backdrop-blur-md border border-slate-200/50 shadow-sm rounded-full hover:bg-white/90 transition-all duration-300"
+
+const LIGHT_DROPDOWN =
+  "absolute right-0 top-full mt-2 rounded-3xl border border-slate-200/60 bg-white/95 p-3 shadow-lg backdrop-blur-md z-50"
 
 export function Header({ breadcrumb }: HeaderProps) {
   const { hasBackgroundActivity, uploadQueue, isGenerating, alerts, dismissAlert } = useWorkstation()
@@ -91,13 +94,13 @@ export function Header({ breadcrumb }: HeaderProps) {
       <header ref={headerRef} className="ws-header sticky top-0 z-20 flex h-12 shrink-0 items-center gap-3 px-3 md:px-4">
         <nav aria-label="Breadcrumb" className="hidden md:block">
           <ol className="flex items-center gap-1.5 text-sm">
-            <li className="text-slate-400">VectorVault</li>
+            <li className="text-slate-500">VectorVault</li>
             {breadcrumb.map((crumb, i) => {
               const last = i === breadcrumb.length - 1
               return (
                 <li key={`${crumb}-${i}`} className="flex items-center gap-1.5">
-                  <ChevronRight className="h-3.5 w-3.5 text-slate-300" aria-hidden="true" />
-                  <span className={last ? "font-semibold text-slate-800" : "text-slate-400"}>{crumb}</span>
+                  <ChevronRight className="h-3.5 w-3.5 text-slate-400" aria-hidden="true" />
+                  <span className={last ? "font-semibold text-slate-800" : "text-slate-500"}>{crumb}</span>
                 </li>
               )
             })}
@@ -112,17 +115,17 @@ export function Header({ breadcrumb }: HeaderProps) {
             aria-label="Search"
             readOnly
             onClick={() => setActiveModal("command")}
-            className={`h-8 w-full pl-8 pr-12 cursor-text text-[13px] text-slate-800 placeholder:text-slate-500 focus:outline-none ${HYPER_GLASS}`}
+            className={`h-8 w-full pl-8 pr-12 cursor-text text-[13px] text-slate-800 placeholder:text-slate-500 focus:outline-none bg-white ${HYPER_GLASS}`}
           />
-          <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1 bg-white/50 border border-white/60 px-1.5 py-0.5 rounded text-[10px] font-medium text-slate-500 shadow-sm pointer-events-none">
+          <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1 bg-slate-100 border border-slate-200 px-1.5 py-0.5 rounded text-[10px] font-medium text-slate-500 shadow-sm pointer-events-none">
              <Command className="h-3 w-3" /> K
           </div>
         </div>
 
         <div className="hidden items-center gap-2 xl:flex">
           {hasBackgroundActivity && (
-            <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold text-slate-800 ${HYPER_GLASS}`}>
-              <Loader2 className="h-3.5 w-3.5 animate-spin text-orange-600" />
+            <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold text-slate-700 ${HYPER_GLASS}`}>
+              <Loader2 className="h-3.5 w-3.5 animate-spin text-orange-500" />
               {isGenerating && indexingCount > 0
                 ? `Streaming · ${indexingCount} upload${indexingCount > 1 ? "s" : ""}`
                 : isGenerating
@@ -131,7 +134,7 @@ export function Header({ breadcrumb }: HeaderProps) {
             </span>
           )}
           {telemetry?.network?.offline_mode != null ? (
-            <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold ${telemetry.network.offline_mode ? "text-orange-700" : "text-emerald-700"} ${HYPER_GLASS}`}>
+            <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold ${telemetry.network.offline_mode ? "text-orange-500" : "text-emerald-600"} ${HYPER_GLASS}`}>
               <WifiOff className="h-3.5 w-3.5" />
               {telemetry.network.offline_mode ? "100% Offline" : "Online"}
             </span>
@@ -141,7 +144,7 @@ export function Header({ breadcrumb }: HeaderProps) {
             </span>
           )}
           {telemetry?.network?.zero_outbound != null ? (
-            <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold ${telemetry.network.zero_outbound ? "text-slate-800" : "text-red-700"} ${HYPER_GLASS}`}>
+            <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold ${telemetry.network.zero_outbound ? "text-slate-700" : "text-red-500"} ${HYPER_GLASS}`}>
               <ShieldCheck className="h-3.5 w-3.5" />
               {telemetry.network.zero_outbound ? "Verified" : "Unverified"}
             </span>
@@ -160,13 +163,13 @@ export function Header({ breadcrumb }: HeaderProps) {
               type="button"
               onClick={() => setActiveModal(activeModal === "help" ? null : "help")}
               aria-label="Help"
-              className={`flex h-8 w-8 items-center justify-center text-slate-500 hover:text-slate-700 ${HYPER_GLASS} !rounded-2xl ${activeModal === "help" ? "bg-white/60" : ""}`}
+              className={`flex h-8 w-8 items-center justify-center text-slate-500 hover:text-slate-700 ${HYPER_GLASS} !rounded-2xl ${activeModal === "help" ? "bg-slate-100" : ""}`}
             >
               <HelpCircle className="h-4 w-4" />
             </button>
             {activeModal === "help" && (
-              <div className="absolute right-0 top-full mt-2 w-80 rounded-2xl border border-white/80 bg-white/90 p-3 shadow-2xl backdrop-blur-xl z-50">
-                 <div className="mb-2 px-2 pb-2 border-b border-white/50">
+              <div className={`${LIGHT_DROPDOWN} w-80`}>
+                 <div className="mb-2 px-2 pb-2 border-b border-slate-200">
                    <h3 className="text-sm font-semibold text-slate-800">Help & Resources</h3>
                  </div>
                  <div className="space-y-4 px-1 py-1">
@@ -197,22 +200,22 @@ export function Header({ breadcrumb }: HeaderProps) {
                    <div>
                      <h4 className="text-xs font-semibold text-slate-500 mb-2 uppercase tracking-wider">Documentation</h4>
                      <ul className="space-y-1">
-                       <li><a href="#" className="text-[13px] text-blue-600 hover:underline">Enterprise RAG Architecture</a></li>
-                       <li><a href="#" className="text-[13px] text-blue-600 hover:underline">Air-Gap Protocol</a></li>
-                       <li><a href="#" className="text-[13px] text-blue-600 hover:underline">Local Vector Store</a></li>
+                       <li><a href="#" className="text-[13px] text-[#000080] hover:underline">Enterprise RAG Architecture</a></li>
+                       <li><a href="#" className="text-[13px] text-[#000080] hover:underline">Air-Gap Protocol</a></li>
+                       <li><a href="#" className="text-[13px] text-[#000080] hover:underline">Local Vector Store</a></li>
                      </ul>
                    </div>
 
                    <div>
                      <h4 className="text-xs font-semibold text-slate-500 mb-2 uppercase tracking-wider">AI Security & Privacy</h4>
                      <ul className="space-y-1">
-                       <li className="flex items-center gap-2 text-[13px] text-slate-700"><Shield className="h-3.5 w-3.5 text-emerald-600" /> Zero Outbound Egress</li>
-                       <li className="flex items-center gap-2 text-[13px] text-slate-700"><Shield className="h-3.5 w-3.5 text-emerald-600" /> PII Rules</li>
-                       <li className="flex items-center gap-2 text-[13px] text-slate-700"><Shield className="h-3.5 w-3.5 text-emerald-600" /> Prompt Injection Guard</li>
+                       <li className="flex items-center gap-2 text-[13px] text-slate-600"><Shield className="h-3.5 w-3.5 text-emerald-500" /> Zero Outbound Egress</li>
+                       <li className="flex items-center gap-2 text-[13px] text-slate-600"><Shield className="h-3.5 w-3.5 text-emerald-500" /> PII Rules</li>
+                       <li className="flex items-center gap-2 text-[13px] text-slate-600"><Shield className="h-3.5 w-3.5 text-emerald-500" /> Prompt Injection Guard</li>
                      </ul>
                    </div>
 
-                   <div className="pt-2 border-t border-white/50">
+                   <div className="pt-2 border-t border-slate-200">
                      <p className="text-xs text-slate-500 flex items-center justify-between">
                        <span>v1.0.0 (Local Enterprise Build)</span>
                        <span className="flex items-center gap-1 text-emerald-600 font-medium">Operational <span className="h-2 w-2 rounded-full bg-emerald-500 inline-block animate-pulse"></span></span>
@@ -229,7 +232,7 @@ export function Header({ breadcrumb }: HeaderProps) {
               type="button"
               onClick={() => setActiveModal(activeModal === "notifications" ? null : "notifications")}
               aria-label="Notifications"
-              className={`relative flex h-8 w-8 items-center justify-center text-slate-500 hover:text-slate-700 ${HYPER_GLASS} !rounded-2xl ${activeModal === "notifications" ? "bg-white/60" : ""}`}
+              className={`relative flex h-8 w-8 items-center justify-center text-slate-500 hover:text-slate-700 ${HYPER_GLASS} !rounded-2xl ${activeModal === "notifications" ? "bg-slate-100" : ""}`}
             >
               <Bell className="h-4 w-4" />
               {notifications.length > 0 && (
@@ -239,11 +242,11 @@ export function Header({ breadcrumb }: HeaderProps) {
               )}
             </button>
             {activeModal === "notifications" && (
-              <div className="absolute right-0 top-full mt-2 w-80 rounded-2xl border border-white/80 bg-white/90 p-3 shadow-2xl backdrop-blur-xl z-50">
+              <div className={`${LIGHT_DROPDOWN} w-80`}>
                  <div className="flex items-center justify-between mb-3 px-1">
                    <h3 className="text-sm font-semibold text-slate-800">Notifications</h3>
                    {notifications.length > 0 && (
-                     <button onClick={() => setNotifications([])} className="text-[11px] font-medium text-blue-600 hover:text-blue-700">Mark all as read</button>
+                     <button onClick={() => setNotifications([])} className="text-[11px] font-medium text-[#000080] hover:text-blue-900">Mark all as read</button>
                    )}
                  </div>
                  {notifications.length === 0 ? (
@@ -255,7 +258,7 @@ export function Header({ breadcrumb }: HeaderProps) {
                  ) : (
                    <div className="space-y-1">
                      {notifications.map(n => (
-                       <div key={n.id} className="flex gap-3 rounded-xl p-2 hover:bg-white/60 transition-colors cursor-pointer">
+                       <div key={n.id} className="flex gap-3 rounded-xl p-2 hover:bg-slate-50 transition-colors cursor-pointer">
                          <div className="text-base mt-0.5 shrink-0">
                            {n.iconNode}
                          </div>
@@ -278,30 +281,30 @@ export function Header({ breadcrumb }: HeaderProps) {
             <button
               type="button"
               onClick={() => setActiveModal(activeModal === "profile" ? null : "profile")}
-              className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-slate-800 to-slate-900 text-[11px] font-semibold text-white shadow-[0_4px_16px_0_rgba(15,23,42,0.15)] ring-1 ring-white/20 transition-transform hover:scale-105 active:scale-95"
+              className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-[#000080] to-blue-700 text-[11px] font-semibold text-white shadow-md ring-1 ring-[#000080]/20 transition-transform hover:scale-105 active:scale-95"
             >
               {user?.initials || "BD"}
             </button>
             {activeModal === "profile" && (
-              <div className="absolute right-0 top-full mt-2 w-72 rounded-2xl border border-white/80 bg-white/90 p-2 shadow-2xl backdrop-blur-xl z-50">
-                <div className="p-2 border-b border-slate-200/50 mb-1">
+              <div className={`${LIGHT_DROPDOWN} w-72 !p-2`}>
+                <div className="p-2 border-b border-slate-200 mb-1">
                   <p className="text-sm font-semibold text-slate-800">{user?.displayName || "Büşra Deveci"}</p>
                   <p className="text-[11px] text-slate-500 font-medium mt-0.5">{user?.role || "Lead Systems Architect / Enterprise Security Operator"}</p>
-                  <p className="text-[11px] text-slate-400 mt-1 truncate">{user?.email || "busra.deveci@vectorvault.local"}</p>
+                  <p className="text-[11px] text-slate-500 mt-1 truncate">{user?.email || "busra.deveci@vectorvault.local"}</p>
                 </div>
                 <div className="space-y-0.5">
-                  <button onClick={() => setActiveModal("profile_details")} className="w-full flex items-center gap-2.5 rounded-xl px-2.5 py-2 text-[13px] font-medium text-slate-700 hover:bg-white/60 hover:text-slate-900 transition-colors">
-                    <User className="h-4 w-4 text-slate-400" /> Profile & Credentials
+                  <button onClick={() => setActiveModal("profile_details")} className="w-full flex items-center gap-2.5 rounded-xl px-2.5 py-2 text-[13px] font-medium text-slate-700 hover:bg-slate-50 hover:text-[#000080] transition-colors">
+                    <User className="h-4 w-4 text-slate-500" /> Profile & Credentials
                   </button>
-                  <button onClick={() => setActiveModal("workspace_prefs")} className="w-full flex items-center gap-2.5 rounded-xl px-2.5 py-2 text-[13px] font-medium text-slate-700 hover:bg-white/60 hover:text-slate-900 transition-colors">
-                    <Settings className="h-4 w-4 text-slate-400" /> Workspace Preferences
+                  <button onClick={() => setActiveModal("workspace_prefs")} className="w-full flex items-center gap-2.5 rounded-xl px-2.5 py-2 text-[13px] font-medium text-slate-700 hover:bg-slate-50 hover:text-[#000080] transition-colors">
+                    <Settings className="h-4 w-4 text-slate-500" /> Workspace Preferences
                   </button>
-                  <button onClick={() => setActiveModal("security_audit")} className="w-full flex items-center gap-2.5 rounded-xl px-2.5 py-2 text-[13px] font-medium text-slate-700 hover:bg-white/60 hover:text-slate-900 transition-colors">
-                    <Shield className="h-4 w-4 text-slate-400" /> Security Audit & Access Keys
+                  <button onClick={() => setActiveModal("security_audit")} className="w-full flex items-center gap-2.5 rounded-xl px-2.5 py-2 text-[13px] font-medium text-slate-700 hover:bg-slate-50 hover:text-[#000080] transition-colors">
+                    <Shield className="h-4 w-4 text-slate-500" /> Security Audit & Access Keys
                   </button>
-                  <div className="h-px bg-slate-200/50 my-1 mx-2" />
-                  <button className="w-full flex items-center gap-2.5 rounded-xl px-2.5 py-2 text-[13px] font-medium text-slate-700 hover:bg-white/60 hover:text-slate-900 transition-colors">
-                    <Monitor className="h-4 w-4 text-slate-400" /> Appearance
+                  <div className="h-px bg-slate-200 my-1 mx-2" />
+                  <button className="w-full flex items-center gap-2.5 rounded-xl px-2.5 py-2 text-[13px] font-medium text-slate-700 hover:bg-slate-50 hover:text-[#000080] transition-colors">
+                    <Monitor className="h-4 w-4 text-slate-500" /> Appearance
                   </button>
                   <button className="w-full flex items-center gap-2.5 rounded-xl px-2.5 py-2 text-[13px] font-medium text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors" onClick={() => { localStorage.removeItem('vectorvault_user'); window.location.href = "/"; }}>
                     <LogOut className="h-4 w-4 text-red-500" /> Sign Out
@@ -317,8 +320,8 @@ export function Header({ breadcrumb }: HeaderProps) {
       {activeModal === "command" && (
         <div className="fixed inset-0 z-[100] flex items-start justify-center pt-[15vh] px-4">
           <div className="absolute inset-0 bg-slate-900/20 backdrop-blur-sm transition-opacity" onClick={() => setActiveModal(null)} />
-          <div className="relative w-full max-w-2xl overflow-hidden rounded-2xl border border-white/80 bg-white/90 shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in-95 duration-200">
-            <div className="flex items-center border-b border-slate-200/50 px-4 py-3">
+          <div className="relative w-full max-w-2xl overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex items-center border-b border-slate-200 px-4 py-3">
               <Search className="h-5 w-5 text-slate-400" />
               <input
                 type="text"
@@ -336,7 +339,7 @@ export function Header({ breadcrumb }: HeaderProps) {
                 <h4 className="px-2 pb-2 text-xs font-semibold text-slate-500 uppercase tracking-wider">Quick Navigation</h4>
                 <div className="space-y-0.5">
                   {['Workstation', 'Knowledge Hub', 'Documents', 'Security Center', 'System Telemetry'].map((item, i) => (
-                    <button key={item} className="w-full flex items-center justify-between rounded-xl px-3 py-2 text-sm text-slate-700 hover:bg-slate-100/80 transition-colors">
+                    <button key={item} className="w-full flex items-center justify-between rounded-xl px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 transition-colors">
                       <span className="flex items-center gap-2.5">
                          {i === 0 && <Monitor className="h-4 w-4 text-slate-400" />}
                          {i === 1 && <Database className="h-4 w-4 text-slate-400" />}
@@ -345,7 +348,7 @@ export function Header({ breadcrumb }: HeaderProps) {
                          {i === 4 && <Activity className="h-4 w-4 text-slate-400" />}
                          {item}
                       </span>
-                      <ChevronRight className="h-4 w-4 text-slate-300" />
+                      <ChevronRight className="h-4 w-4 text-slate-400" />
                     </button>
                   ))}
                 </div>
@@ -354,14 +357,14 @@ export function Header({ breadcrumb }: HeaderProps) {
               <div className="mb-4">
                 <h4 className="px-2 pb-2 text-xs font-semibold text-slate-500 uppercase tracking-wider">Document Shortcuts</h4>
                 <div className="space-y-0.5">
-                  <button className="w-full flex items-center rounded-xl px-3 py-2 text-sm text-slate-700 hover:bg-slate-100/80 transition-colors">
+                  <button className="w-full flex items-center rounded-xl px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 transition-colors">
                     <span className="flex items-center gap-2.5">
-                      <FileText className="h-4 w-4 text-blue-500" /> Q3_Financial_Report.pdf
+                      <FileText className="h-4 w-4 text-[#000080]" /> Q3_Financial_Report.pdf
                     </span>
                   </button>
-                  <button className="w-full flex items-center rounded-xl px-3 py-2 text-sm text-slate-700 hover:bg-slate-100/80 transition-colors">
+                  <button className="w-full flex items-center rounded-xl px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 transition-colors">
                     <span className="flex items-center gap-2.5">
-                      <FileText className="h-4 w-4 text-blue-500" /> Security_Audit_2026.docx
+                      <FileText className="h-4 w-4 text-[#000080]" /> Security_Audit_2026.docx
                     </span>
                   </button>
                 </div>
@@ -370,12 +373,12 @@ export function Header({ breadcrumb }: HeaderProps) {
               <div>
                 <h4 className="px-2 pb-2 text-xs font-semibold text-slate-500 uppercase tracking-wider">Actions</h4>
                 <div className="space-y-0.5">
-                  <button className="w-full flex items-center rounded-xl px-3 py-2 text-sm text-slate-700 hover:bg-slate-100/80 transition-colors">
+                  <button className="w-full flex items-center rounded-xl px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 transition-colors">
                     <span className="flex items-center gap-2.5">
-                      <ShieldCheck className="h-4 w-4 text-emerald-500" /> Trigger Security Audit
+                      <ShieldCheck className="h-4 w-4 text-emerald-600" /> Trigger Security Audit
                     </span>
                   </button>
-                  <button className="w-full flex items-center rounded-xl px-3 py-2 text-sm text-slate-700 hover:bg-slate-100/80 transition-colors">
+                  <button className="w-full flex items-center rounded-xl px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 transition-colors">
                     <span className="flex items-center gap-2.5">
                       <Activity className="h-4 w-4 text-orange-500" /> Export Logs
                     </span>
@@ -393,7 +396,7 @@ export function Header({ breadcrumb }: HeaderProps) {
       )}
 
       {alerts.length > 0 && (
-        <div className="shrink-0 space-y-1 border-b border-transparent px-3 py-1.5 relative z-10">
+        <div className="shrink-0 space-y-1 border-b border-slate-200 px-3 py-1.5 relative z-10 bg-slate-50/50 backdrop-blur-md">
           {alerts.map((alert) => (
             <div
               key={alert.id}
@@ -407,11 +410,11 @@ export function Header({ breadcrumb }: HeaderProps) {
                       : "var(--ws-primary)",
               }}
             >
-              <span className="flex-1">{alert.message}</span>
+              <span className="flex-1 font-medium">{alert.message}</span>
               <button
                 type="button"
                 onClick={() => dismissAlert(alert.id)}
-                className="rounded-lg p-0.5 text-slate-400 transition-colors hover:text-slate-700"
+                className="rounded-lg p-0.5 text-slate-500 transition-colors hover:text-slate-700 hover:bg-slate-200/50"
                 aria-label="Dismiss"
               >
                 <X className="h-3 w-3" />
@@ -425,31 +428,31 @@ export function Header({ breadcrumb }: HeaderProps) {
       {activeModal === "profile_details" && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-slate-900/20 backdrop-blur-sm transition-opacity" onClick={() => setActiveModal(null)} />
-          <div className="relative w-full max-w-lg overflow-hidden rounded-2xl border border-white/80 bg-white/80 p-6 shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in-95 duration-200">
+          <div className="relative w-full max-w-lg overflow-hidden rounded-3xl border border-slate-200 bg-white p-6 shadow-xl animate-in fade-in zoom-in-95 duration-200">
              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-sm font-semibold text-slate-800 flex items-center gap-2"><User className="h-4 w-4 text-blue-500" /> Profile & Credentials</h3>
-                <button onClick={() => setActiveModal(null)} className="text-slate-400 hover:text-slate-700"><X className="h-4 w-4" /></button>
+                <h3 className="text-sm font-semibold text-slate-800 flex items-center gap-2"><User className="h-4 w-4 text-[#000080]" /> Profile & Credentials</h3>
+                <button onClick={() => setActiveModal(null)} className="text-slate-400 hover:text-slate-600"><X className="h-4 w-4" /></button>
              </div>
              <div className="space-y-3 text-xs text-slate-700">
-                <div className="flex justify-between border-b border-slate-200/50 pb-2">
+                <div className="flex justify-between border-b border-slate-100 pb-2">
                     <span className="font-semibold text-slate-500">Operator Name</span>
                     <span>{user?.displayName || "Büşra Deveci"}</span>
                 </div>
-                <div className="flex justify-between border-b border-slate-200/50 pb-2">
+                <div className="flex justify-between border-b border-slate-100 pb-2">
                     <span className="font-semibold text-slate-500">Corporate Email</span>
                     <span>{user?.email || "busra.deveci@vectorvault.local"}</span>
                 </div>
-                <div className="flex justify-between border-b border-slate-200/50 pb-2">
+                <div className="flex justify-between border-b border-slate-100 pb-2">
                     <span className="font-semibold text-slate-500">Active Role</span>
                     <span>{user?.role || "Lead Systems Architect"}</span>
                 </div>
-                <div className="flex justify-between border-b border-slate-200/50 pb-2">
+                <div className="flex justify-between border-b border-slate-100 pb-2">
                     <span className="font-semibold text-slate-500">Security Tier</span>
                     <span className="text-emerald-600 font-semibold">Air-Gap Level 4</span>
                 </div>
                 <div className="flex justify-between pt-1">
                     <span className="font-semibold text-slate-500">Cryptographic Keys</span>
-                    <span className="font-mono bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200">RSA-4096 (Active)</span>
+                    <span className="font-mono bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200 text-slate-600">RSA-4096 (Active)</span>
                 </div>
              </div>
           </div>
@@ -460,16 +463,16 @@ export function Header({ breadcrumb }: HeaderProps) {
       {activeModal === "security_audit" && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-slate-900/20 backdrop-blur-sm transition-opacity" onClick={() => setActiveModal(null)} />
-          <div className="relative w-full max-w-lg overflow-hidden rounded-2xl border border-white/80 bg-white/80 p-6 shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in-95 duration-200">
+          <div className="relative w-full max-w-lg overflow-hidden rounded-3xl border border-slate-200 bg-white p-6 shadow-xl animate-in fade-in zoom-in-95 duration-200">
              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-sm font-semibold text-slate-800 flex items-center gap-2"><Shield className="h-4 w-4 text-emerald-500" /> Security Audit & Access Keys</h3>
-                <button onClick={() => setActiveModal(null)} className="text-slate-400 hover:text-slate-700"><X className="h-4 w-4" /></button>
+                <h3 className="text-sm font-semibold text-slate-800 flex items-center gap-2"><Shield className="h-4 w-4 text-emerald-600" /> Security Audit & Access Keys</h3>
+                <button onClick={() => setActiveModal(null)} className="text-slate-400 hover:text-slate-600"><X className="h-4 w-4" /></button>
              </div>
              <div className="space-y-4">
                 <div>
                    <h4 className="text-xs font-semibold text-slate-500 mb-2 uppercase tracking-wider">Active API Tokens</h4>
-                   <div className="bg-slate-50 border border-slate-200/60 rounded-xl p-3 flex justify-between items-center text-xs">
-                       <span className="font-mono text-slate-600">vv_local_9f8a...3b21</span>
+                   <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 flex justify-between items-center text-xs">
+                       <span className="font-mono text-slate-500">vv_local_9f8a...3b21</span>
                        <span className="text-emerald-600 font-semibold flex items-center gap-1"><div className="h-1.5 w-1.5 rounded-full bg-emerald-500"></div> Valid</span>
                    </div>
                 </div>
@@ -477,7 +480,7 @@ export function Header({ breadcrumb }: HeaderProps) {
                    <h4 className="text-xs font-semibold text-slate-500 mb-2 uppercase tracking-wider">Recent Security Events</h4>
                    <div className="space-y-2 max-h-[200px] overflow-y-auto pr-2">
                        {auditLogs.slice(0, 5).map((log: any, idx: number) => (
-                           <div key={idx} className="text-[11px] flex justify-between items-center border-b border-slate-200/50 pb-2 gap-4">
+                           <div key={idx} className="text-[11px] flex justify-between items-center border-b border-slate-100 pb-2 gap-4">
                                <span className="text-slate-500 shrink-0">{new Date(log.timestamp).toLocaleTimeString()}</span>
                                <span className="font-medium text-slate-700 truncate flex-1">{log.event || log.event_type + ' ' + log.message_details}</span>
                                <span className={log.status === 'SUCCESS' || log.outcome === 'SUCCESS' ? 'text-emerald-600 font-medium' : 'text-red-500 font-medium'}>{log.status || log.outcome}</span>
@@ -485,7 +488,7 @@ export function Header({ breadcrumb }: HeaderProps) {
                        ))}
                    </div>
                 </div>
-                <div className="flex justify-between items-center text-[11px] text-slate-500 pt-2 border-t border-slate-200/50">
+                <div className="flex justify-between items-center text-[11px] text-slate-500 pt-2 border-t border-slate-200">
                    <span>Session Expiration: 12h 00m</span>
                    <button className="text-red-600 hover:underline">Revoke All Tokens</button>
                 </div>
@@ -498,15 +501,15 @@ export function Header({ breadcrumb }: HeaderProps) {
       {activeModal === "workspace_prefs" && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-slate-900/20 backdrop-blur-sm transition-opacity" onClick={() => setActiveModal(null)} />
-          <div className="relative w-full max-w-lg overflow-hidden rounded-2xl border border-white/80 bg-white/80 p-6 shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in-95 duration-200">
+          <div className="relative w-full max-w-lg overflow-hidden rounded-3xl border border-slate-200 bg-white p-6 shadow-xl animate-in fade-in zoom-in-95 duration-200">
              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-sm font-semibold text-slate-800 flex items-center gap-2"><Settings className="h-4 w-4 text-slate-500" /> Workspace Preferences</h3>
-                <button onClick={() => setActiveModal(null)} className="text-slate-400 hover:text-slate-700"><X className="h-4 w-4" /></button>
+                <h3 className="text-sm font-semibold text-slate-800 flex items-center gap-2"><Settings className="h-4 w-4 text-[#000080]" /> Workspace Preferences</h3>
+                <button onClick={() => setActiveModal(null)} className="text-slate-400 hover:text-slate-600"><X className="h-4 w-4" /></button>
              </div>
              <div className="space-y-4 text-xs text-slate-700">
                 <div className="flex justify-between items-center">
                     <span className="font-semibold text-slate-500">Enterprise Density</span>
-                    <select className="bg-white border border-slate-200 rounded px-2 py-1 outline-none text-slate-700">
+                    <select className="bg-slate-50 border border-slate-200 rounded px-2 py-1 outline-none text-slate-700">
                         <option>High (Compact)</option>
                         <option>Standard</option>
                         <option>Spacious</option>
@@ -514,16 +517,16 @@ export function Header({ breadcrumb }: HeaderProps) {
                 </div>
                 <div className="flex justify-between items-center">
                     <span className="font-semibold text-slate-500">Theme</span>
-                    <select className="bg-white border border-slate-200 rounded px-2 py-1 outline-none text-slate-700">
-                        <option>VectorVault Glass (Default)</option>
-                        <option>Dark Mode</option>
+                    <select className="bg-slate-50 border border-slate-200 rounded px-2 py-1 outline-none text-slate-700">
+                        <option>Corporate Light Glass (Active)</option>
+                        <option>VectorVault Dark</option>
                         <option>High Contrast</option>
                     </select>
                 </div>
                 <div className="flex justify-between items-center">
                     <span className="font-semibold text-slate-500">Telemetry Data</span>
                     <label className="flex items-center gap-2 cursor-pointer">
-                       <input type="checkbox" defaultChecked className="accent-blue-600" />
+                       <input type="checkbox" defaultChecked className="accent-[#000080]" />
                        <span>Enable Local Analytics</span>
                     </label>
                 </div>
