@@ -120,8 +120,30 @@ def get_system_telemetry():
     disk_usage = psutil.disk_usage(os.path.abspath(os.sep))
     
     conn = get_connection(DB_PATH)
+    vector_bytes = 0
+    system_logs: list[dict] = []
     try:
         chunks_count = conn.execute("SELECT COUNT(*) FROM vector_chunks").fetchone()[0]
+        # Real on-disk footprint of the embedding vectors themselves.
+        vector_bytes = conn.execute(
+            "SELECT COALESCE(SUM(LENGTH(vector_blob)), 0) FROM vector_chunks"
+        ).fetchone()[0] or 0
+        # Recent operational events straight from the audit log (real records).
+        log_rows = conn.execute(
+            "SELECT timestamp, event_type, operator_email, status, message_details"
+            " FROM audit_logs ORDER BY timestamp DESC LIMIT 50"
+        ).fetchall()
+        for row in log_rows:
+            status_val = (row["status"] or "").upper()
+            level = "INFO" if status_val in ("SUCCESS", "OK") else "WARN"
+            system_logs.append(
+                {
+                    "timestamp": row["timestamp"],
+                    "level": level,
+                    "component": (row["event_type"] or "SYSTEM").strip("[]"),
+                    "message": row["message_details"],
+                }
+            )
     except Exception:
         chunks_count = 0
     finally:
@@ -173,7 +195,8 @@ def get_system_telemetry():
             "read_mbps": round(read_bps / (1024 * 1024), 2),
             "write_mbps": round(write_bps / (1024 * 1024), 2),
             "sqlite_size": f"{round(db_file_size, 2)} MB",
-            "vector_size": "Awaiting Backend Integration" # Need vector store specific size if separated
+            # Real embedding-vector footprint measured from the vector_blob column.
+            "vector_size": f"{round(vector_bytes / (1024 * 1024), 2)} MB",
         },
         "network": {
             "hostname": hostname,
@@ -201,7 +224,8 @@ def get_system_telemetry():
         "vector_db": {
             "chunks_count": chunks_count,
             "db_size_mb": round(db_file_size, 2)
-        }
+        },
+        "logs": system_logs,
     }
 
 
@@ -228,6 +252,12 @@ def get_security_logs():
 
 @router.get("/config")
 def get_config():
+    # Real generation parameters applied by the inference layer.
+    from backend.services.generation import _MAX_TOKENS, _TEMPERATURE, _TOP_P
+    from backend.db.vector_store import vector_index_stats
+
+    dimensions = vector_index_stats(DB_PATH).get("dimensions", 0)
+
     return {
         "models": {
             "chat_model": CHAT_MODEL,
@@ -238,11 +268,33 @@ def get_config():
             "score_threshold": SCORE_THRESHOLD,
             "relative_cutoff": RELATIVE_SCORE_CUTOFF,
             "max_context_chunks": MAX_CONTEXT_CHUNKS,
-            "top_k": TOP_K
+            "top_k": TOP_K,
+            "strategy": "Semantic vector search (cosine)",
+        },
+        "generation": {
+            "max_response_tokens": _MAX_TOKENS,
+            "temperature": _TEMPERATURE,
+            "top_p": _TOP_P,
+            "streaming": True,
+        },
+        "embedding": {
+            "model": EMBED_MODEL,
+            "dimensions": dimensions or None,
+            "distance_metric": "Cosine similarity",
+            "vector_store": "SQLite",
+            "precision": "FP32 (float32)",
         },
         "indexing": {
             "chunk_size": CHUNK_SIZE,
-            "chunk_overlap": CHUNK_OVERLAP
-        }
+            "chunk_overlap": CHUNK_OVERLAP,
+            "supported_file_types": [".txt", ".md", ".pdf", ".docx", ".xlsx", ".csv"],
+            "index_storage": "SQLite (local)",
+            "embedding_pipeline": f"Foundry Local · {EMBED_MODEL}",
+        },
+        "source": {
+            "config_file": "backend/config.py",
+            "environment_variables": "Not configured (static config)",
+            "provider": "Foundry Local Core",
+        },
     }
 

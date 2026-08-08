@@ -53,6 +53,28 @@ _chat_init_lock = asyncio.Lock()
 _router_init_lock = asyncio.Lock()
 
 
+def runtime_state() -> dict:
+    """Report the real, in-process Foundry Local runtime state.
+
+    Reflects which model clients have actually been loaded into memory and
+    whether the SDK manager has been initialised — never fabricated. Reading
+    module globals is side-effect free and never triggers a model load.
+    """
+    endpoint = None
+    if _manager is not None:
+        endpoint = getattr(_manager, "endpoint", None)
+    return {
+        "provider": "Foundry Local",
+        "sdk_initialized": _manager is not None,
+        "endpoint": endpoint,
+        "models": {
+            "chat": {"alias": CHAT_MODEL, "loaded": _chat_client is not None},
+            "embed": {"alias": EMBED_MODEL, "loaded": _embed_client is not None},
+            "router": {"alias": ROUTER_MODEL, "loaded": _router_client is not None},
+        },
+    }
+
+
 def ensure_sdk():
     """Return the FoundryLocalManager singleton (thread-safe, initialise once)."""
     global _manager

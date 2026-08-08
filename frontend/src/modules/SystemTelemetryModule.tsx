@@ -26,7 +26,7 @@ const MetricCard = ({ title, value, icon: Icon, description }: any) => (
     </div>
     <div className="mt-auto">
       <div className="text-3xl font-bold tracking-tight text-slate-800 leading-none">
-        {value != null ? value : <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest leading-none">Awaiting Backend</span>}
+        {value != null ? value : <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest leading-none">Not available</span>}
       </div>
       {description && (
         <div className="text-[11px] text-slate-500 font-medium mt-2">{description}</div>
@@ -51,7 +51,7 @@ const TimelineChart = ({ title }: { title: string }) => {
         </ResponsiveContainer>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
           <span className="text-[10px] text-slate-400 font-bold bg-white px-3 py-1.5 rounded-full shadow-sm border border-slate-200/60 uppercase tracking-wider">
-            Awaiting Backend Integration
+            No historical data
           </span>
         </div>
       </div>
@@ -216,7 +216,7 @@ export default function SystemTelemetryModule() {
                 ) : (
                   <div className="py-16 text-center flex flex-col items-center justify-center gap-3">
                     <List className="w-8 h-8 text-slate-300" />
-                    <span className="text-[11px] text-slate-400 font-bold uppercase tracking-wider">Awaiting Backend Integration</span>
+                    <span className="text-[11px] text-slate-400 font-bold uppercase tracking-wider">No data yet</span>
                   </div>
                 )}
               </div>

@@ -67,7 +67,8 @@ def _build_inventory() -> dict:
         path = DOCS_DIR / filename
         ext = Path(filename).suffix.lower().lstrip(".") or "file"
         meta = extract_document_metadata(filename)
-        mtime = path.stat().st_mtime if path.exists() else None
+        stat = path.stat() if path.exists() else None
+        mtime = stat.st_mtime if stat else None
         inventory.append(
             {
                 "filename": filename,
@@ -75,6 +76,8 @@ def _build_inventory() -> dict:
                 "chunks": doc["chunks"],
                 "embedding_dimensions": index["dimensions"],
                 "embedding_model": EMBED_MODEL,
+                # Real on-disk size of the stored source document (bytes).
+                "file_size": stat.st_size if stat else None,
                 "indexation_state": doc.get("status", "Indexed" if doc["chunks"] > 0 else "Empty"),
                 "last_updated": (
                     datetime.fromtimestamp(mtime, tz=timezone.utc).isoformat()
@@ -87,6 +90,14 @@ def _build_inventory() -> dict:
                 "file_type": meta["file_type"],
             }
         )
+
+    # Enrich the index summary with the real vector-store type and DB footprint
+    # so the Knowledge Hub does not have to hardcode or fabricate them.
+    index["engine"] = "SQLite"
+    index["vector_store"] = "SQLite (local)"
+    index["db_size_mb"] = (
+        round(DB_PATH.stat().st_size / (1024 * 1024), 2) if DB_PATH.exists() else None
+    )
     return {"documents": inventory, "index": index}
 
 

@@ -22,6 +22,14 @@ function documentTypeIcon(filename: string, type?: string) {
   return <FileText className="h-4 w-4 shrink-0 text-[#2563eb]" strokeWidth={1.9} />
 }
 
+function formatBytes(bytes: number | null | undefined): string {
+  if (bytes == null || bytes < 0) return "—"
+  if (bytes < 1024) return `${bytes} B`
+  const kb = bytes / 1024
+  if (kb < 1024) return `${kb.toFixed(1)} KB`
+  return `${(kb / 1024).toFixed(1)} MB`
+}
+
 function formatTimestamp(isoString: string) {
   const d = new Date(isoString);
   const now = new Date();
@@ -305,7 +313,7 @@ export default function DocumentsModule() {
                                 </span>
                                 <div className="flex min-w-0 flex-col">
                                   <span className="truncate text-[12.5px] font-semibold text-slate-700">{row.filename}</span>
-                                  <span className="text-[10.5px] font-medium text-slate-400">{(row.chunks * 0.12 + 0.5).toFixed(1)} MB</span>
+                                  <span className="text-[10.5px] font-medium text-slate-400">{formatBytes(row.file_size)}</span>
                                 </div>
                               </div>
                             </td>
@@ -340,7 +348,7 @@ export default function DocumentsModule() {
                             <td className="px-5 py-2.5">
                               <span className="inline-flex items-center gap-1.5 text-[11px] font-medium tabular-nums text-slate-400">
                                 <Clock className="h-3 w-3 text-slate-300" strokeWidth={2} />
-                                {row.last_updated ? formatTimestamp(row.last_updated) : "Just now"}
+                                {row.last_updated ? formatTimestamp(row.last_updated) : "—"}
                               </span>
                             </td>
                             <td className="px-5 py-2.5 text-right">

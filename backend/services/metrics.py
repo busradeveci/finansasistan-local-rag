@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import threading
 from collections import deque
-from datetime import date
+from datetime import date, datetime, timezone
 
 _LOCK = threading.Lock()
 _MAX_SAMPLES = 200  # rolling window for latency averages
@@ -23,6 +23,9 @@ class _State:
         self.generation_ms: deque[float] = deque(maxlen=_MAX_SAMPLES)
         self.embedding_ms: deque[float] = deque(maxlen=_MAX_SAMPLES)
         self.context_tokens = 0
+        # Routing counters — populated by the live semantic router.
+        self.total_routed = 0
+        self.routing_decisions: deque[dict] = deque(maxlen=25)
         # Security counters
         self.sanitized_queries = 0
         self.prompt_injections_blocked = 0
@@ -68,6 +71,26 @@ def add_context_tokens(count: int) -> None:
         _S.context_tokens += max(0, count)
 
 
+def record_routing_decision(
+    intent: str,
+    selected_model: str,
+    reason: str,
+    status: str = "Routed",
+) -> None:
+    """Record a real semantic-router decision made by the live pipeline."""
+    with _LOCK:
+        _S.total_routed += 1
+        _S.routing_decisions.appendleft(
+            {
+                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "intent": intent,
+                "selected_model": selected_model,
+                "reason": reason,
+                "status": status,
+            }
+        )
+
+
 def record_sanitized_query() -> None:
     with _LOCK:
         _S.sanitized_queries += 1
@@ -100,6 +123,8 @@ def analytics_snapshot() -> dict:
             "avg_embedding_ms": _avg(_S.embedding_ms),
             "context_tokens_accumulated": _S.context_tokens,
             "sample_count": len(_S.response_ms),
+            "total_routed": _S.total_routed,
+            "recent_routing_decisions": list(_S.routing_decisions),
         }
 
 

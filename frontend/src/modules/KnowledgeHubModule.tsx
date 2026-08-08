@@ -22,7 +22,10 @@ import { useWorkstation } from "@/context/WorkstationContext"
 import { Panel } from "@/components/workstation/overview/primitives"
 import type { ChunkIndexRow } from "@/types/workstation"
 
-const AWAITING = "Awaiting Backend Integration"
+const NOT_AVAILABLE = "Not available"
+const NO_DATA = "No data yet"
+const NOT_REPORTED = "Not reported"
+const DASH = "—"
 
 function documentTypeIcon(filename: string) {
   const ext = (filename.split(".").pop() || "").toLowerCase()
@@ -40,13 +43,13 @@ function documentTypeIcon(filename: string) {
 
 /* ── Overview KPI tile ─────────────────────────────────────────────────── */
 
-function KpiTile({ label, value, awaiting }: { label: string; value: string; awaiting?: boolean }) {
+function KpiTile({ label, value, muted }: { label: string; value: string; muted?: boolean }) {
   return (
     <div className="vv-tile vv-tile--hover flex min-w-0 flex-col justify-center px-3.5 py-3">
       <div className="vv-eyebrow mb-1.5 truncate" title={label}>{label}</div>
-      {awaiting ? (
-        <p className="truncate text-[12px] font-normal not-italic text-slate-400" title={AWAITING}>
-          {AWAITING}
+      {muted ? (
+        <p className="truncate text-[12px] font-normal not-italic text-slate-400" title={value}>
+          {value}
         </p>
       ) : (
         <p className="truncate text-[13.5px] font-semibold tabular-nums text-slate-700" title={value}>
@@ -64,13 +67,13 @@ function StatCard({
   label,
   value,
   caption,
-  awaiting,
+  placeholder = DASH,
 }: {
   icon: React.ComponentType<{ className?: string; strokeWidth?: number }>
   label: string
   value?: string
   caption?: string
-  awaiting?: boolean
+  placeholder?: string
 }) {
   return (
     <div className="vv-tile px-3.5 py-3">
@@ -78,9 +81,9 @@ function StatCard({
         <Icon className="h-3.5 w-3.5 text-slate-400" strokeWidth={1.9} />
         <span className="vv-eyebrow">{label}</span>
       </div>
-      {awaiting || value == null ? (
-        <p className="truncate text-[12px] font-normal not-italic text-slate-400" title={AWAITING}>
-          {AWAITING}
+      {value == null ? (
+        <p className="truncate text-[12px] font-normal not-italic text-slate-400" title={placeholder}>
+          {placeholder}
         </p>
       ) : (
         <p className="flex items-baseline gap-1">
@@ -130,15 +133,19 @@ export default function KnowledgeHubModule() {
     [documentInventory],
   )
 
-  const embeddingModel = documentInventory[0]?.embedding_model || AWAITING
+  const hasDocs = documentInventory.length > 0
+  const embeddingModel = documentInventory[0]?.embedding_model || (hasDocs ? NOT_AVAILABLE : NO_DATA)
   const rawDimensions = documentIndex?.dimensions
-  const vectorDimensions = rawDimensions ? rawDimensions.toLocaleString() : AWAITING
+  const vectorDimensions = rawDimensions ? rawDimensions.toLocaleString() : NO_DATA
+  const vectorStoreType = documentIndex?.vector_store ?? NOT_AVAILABLE
+  const databaseSize =
+    documentIndex?.db_size_mb != null ? `${documentIndex.db_size_mb.toLocaleString()} MB` : NOT_AVAILABLE
 
   const lastIndexDate = useMemo(() => {
     const dates = documentInventory
       .map((d) => (d.last_updated ? new Date(d.last_updated).getTime() : 0))
       .filter((t) => t > 0)
-    if (dates.length === 0) return AWAITING
+    if (dates.length === 0) return NO_DATA
     return new Date(Math.max(...dates)).toLocaleString([], {
       day: "2-digit",
       month: "2-digit",
@@ -168,14 +175,15 @@ export default function KnowledgeHubModule() {
     }
   }, [chunks])
 
-  const kpis: { label: string; value: string; awaiting?: boolean }[] = [
+  const MUTED = new Set([NOT_AVAILABLE, NO_DATA, NOT_REPORTED, DASH])
+  const kpis: { label: string; value: string; muted?: boolean }[] = [
     { label: "Indexed Documents", value: documentInventory.length.toLocaleString() },
     { label: "Total Chunks", value: totalChunks.toLocaleString() },
-    { label: "Embedding Model", value: embeddingModel, awaiting: embeddingModel === AWAITING },
-    { label: "Vector Dimensions", value: vectorDimensions, awaiting: vectorDimensions === AWAITING },
-    { label: "Vector Store Type", value: AWAITING, awaiting: true },
-    { label: "Database Size", value: AWAITING, awaiting: true },
-    { label: "Last Index Operation", value: lastIndexDate, awaiting: lastIndexDate === AWAITING },
+    { label: "Embedding Model", value: embeddingModel, muted: MUTED.has(embeddingModel) },
+    { label: "Vector Dimensions", value: vectorDimensions, muted: MUTED.has(vectorDimensions) },
+    { label: "Vector Store Type", value: vectorStoreType, muted: MUTED.has(vectorStoreType) },
+    { label: "Database Size", value: databaseSize, muted: MUTED.has(databaseSize) },
+    { label: "Last Index Operation", value: lastIndexDate, muted: MUTED.has(lastIndexDate) },
   ]
 
   return (
@@ -201,7 +209,7 @@ export default function KnowledgeHubModule() {
 
           <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-7">
             {kpis.map((kpi) => (
-              <KpiTile key={kpi.label} label={kpi.label} value={kpi.value} awaiting={kpi.awaiting} />
+              <KpiTile key={kpi.label} label={kpi.label} value={kpi.value} muted={kpi.muted} />
             ))}
           </div>
         </Panel>
@@ -241,8 +249,8 @@ export default function KnowledgeHubModule() {
                           day: "numeric",
                           year: "numeric",
                         })
-                      : AWAITING
-                    const docType = d.type || d.file_type || AWAITING
+                      : DASH
+                    const docType = d.type || d.file_type || DASH
 
                     return (
                       <li key={d.filename}>
@@ -308,10 +316,10 @@ export default function KnowledgeHubModule() {
                 </div>
 
                 <div className="grid w-full max-w-2xl grid-cols-2 gap-2.5 sm:grid-cols-4">
-                  <StatCard icon={Gauge} label="Average Chunk Size" awaiting />
-                  <StatCard icon={Layers} label="Average Tokens" awaiting />
-                  <StatCard icon={Maximize2} label="Largest Chunk" awaiting />
-                  <StatCard icon={Minimize2} label="Smallest Chunk" awaiting />
+                  <StatCard icon={Gauge} label="Average Chunk Size" placeholder={DASH} />
+                  <StatCard icon={Layers} label="Average Tokens" placeholder={NOT_REPORTED} />
+                  <StatCard icon={Maximize2} label="Largest Chunk" placeholder={DASH} />
+                  <StatCard icon={Minimize2} label="Smallest Chunk" placeholder={DASH} />
                 </div>
               </div>
             ) : (
@@ -342,22 +350,19 @@ export default function KnowledgeHubModule() {
                     label="Average Chunk Size"
                     value={chunkStats ? chunkStats.avg.toLocaleString() : undefined}
                     caption="chars"
-                    awaiting={!chunkStats}
                   />
-                  <StatCard icon={Layers} label="Average Tokens" awaiting />
+                  <StatCard icon={Layers} label="Average Tokens" placeholder={NOT_REPORTED} />
                   <StatCard
                     icon={Maximize2}
                     label="Largest Chunk"
                     value={chunkStats ? chunkStats.max.toLocaleString() : undefined}
                     caption="chars"
-                    awaiting={!chunkStats}
                   />
                   <StatCard
                     icon={Minimize2}
                     label="Smallest Chunk"
                     value={chunkStats ? chunkStats.min.toLocaleString() : undefined}
                     caption="chars"
-                    awaiting={!chunkStats}
                   />
                 </div>
 
@@ -389,8 +394,8 @@ export default function KnowledgeHubModule() {
                               </div>
                               <div className="flex min-w-0 flex-col items-end">
                                 <span className="vv-eyebrow">Tokens</span>
-                                <span className="max-w-[140px] truncate text-[11px] font-normal not-italic text-slate-400" title={AWAITING}>
-                                  {AWAITING}
+                                <span className="max-w-[140px] truncate text-[11px] font-normal not-italic text-slate-400" title={NOT_REPORTED}>
+                                  {NOT_REPORTED}
                                 </span>
                               </div>
                             </div>

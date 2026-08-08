@@ -133,6 +133,8 @@ async def api_status():
     total_chunks = sum(d["chunks"] for d in docs)
     uptime_s = time.time() - _START_TIME
 
+    from backend.services.foundry_client import runtime_state
+
     return {
         "status": "ok",
         "uptime_seconds": round(uptime_s, 1),
@@ -149,6 +151,8 @@ async def api_status():
             "embed_model": EMBED_MODEL,
             "semantic_router": "phi-4-mini (offline)",
         },
+        # Real, in-process Foundry Local runtime state (loaded models + endpoint).
+        "runtime_state": runtime_state(),
         "runtime": "local — no cloud dependency",
     }
 

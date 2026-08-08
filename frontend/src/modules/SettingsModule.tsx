@@ -13,12 +13,37 @@ interface PlatformConfig {
     relative_cutoff: number
     max_context_chunks: number
     top_k: number
+    strategy?: string
+  }
+  generation?: {
+    max_response_tokens: number
+    temperature: number
+    top_p: number
+    streaming: boolean
+  }
+  embedding?: {
+    model: string
+    dimensions: number | null
+    distance_metric: string
+    vector_store: string
+    precision: string
   }
   indexing: {
     chunk_size: number
     chunk_overlap: number
+    supported_file_types?: string[]
+    index_storage?: string
+    embedding_pipeline?: string
+  }
+  source?: {
+    config_file: string
+    environment_variables: string
+    provider: string
   }
 }
+
+const NOT_CONFIGURED = "Not configured"
+const NOT_AVAILABLE = "Not available"
 
 export default function SettingsModule() {
   const [config, setConfig] = useState<PlatformConfig | null>(null)
@@ -93,21 +118,21 @@ export default function SettingsModule() {
             <div className="flex flex-col">
               <div className={ROW_CLASS}>
                 <div className="flex flex-col">
-                  <span className={LABEL_CLASS}>{config?.models.chat_model || "Awaiting Backend Integration"}</span>
+                  <span className={LABEL_CLASS}>{config?.models.chat_model || NOT_CONFIGURED}</span>
                   <span className="text-xs text-slate-500 font-medium">Backend Config</span>
                 </div>
                 <span className={BADGE_CLASS}>Active (Chat)</span>
               </div>
               <div className={ROW_CLASS}>
                 <div className="flex flex-col">
-                  <span className={LABEL_CLASS}>{config?.models.embed_model || "Awaiting Backend Integration"}</span>
+                  <span className={LABEL_CLASS}>{config?.models.embed_model || NOT_CONFIGURED}</span>
                   <span className="text-xs text-slate-500 font-medium">Backend Config</span>
                 </div>
                 <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200/60">Active (Embed)</span>
               </div>
               <div className={ROW_CLASS}>
                 <div className="flex flex-col">
-                  <span className={LABEL_CLASS}>{config?.models.router_model || "Awaiting Backend Integration"}</span>
+                  <span className={LABEL_CLASS}>{config?.models.router_model || NOT_CONFIGURED}</span>
                   <span className="text-xs text-slate-500 font-medium">Backend Config</span>
                 </div>
                 <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-purple-50 text-purple-700 border border-purple-200/60">Active (Router)</span>
@@ -126,31 +151,31 @@ export default function SettingsModule() {
             <div className="flex flex-col">
               <div className={ROW_CLASS}>
                 <span className={LABEL_CLASS}>Score Threshold</span>
-                <span className={VALUE_CLASS}>{config?.retrieval.score_threshold ?? "Awaiting Backend Integration"}</span>
+                <span className={VALUE_CLASS}>{config?.retrieval.score_threshold ?? NOT_AVAILABLE}</span>
               </div>
               <div className={ROW_CLASS}>
                 <span className={LABEL_CLASS}>Relative Cutoff</span>
-                <span className={VALUE_CLASS}>{config?.retrieval.relative_cutoff ?? "Awaiting Backend Integration"}</span>
+                <span className={VALUE_CLASS}>{config?.retrieval.relative_cutoff ?? NOT_AVAILABLE}</span>
               </div>
               <div className={ROW_CLASS}>
                 <span className={LABEL_CLASS}>Maximum Context Chunks</span>
-                <span className={VALUE_CLASS}>{config?.retrieval.max_context_chunks ?? "Awaiting Backend Integration"}</span>
+                <span className={VALUE_CLASS}>{config?.retrieval.max_context_chunks ?? NOT_AVAILABLE}</span>
               </div>
               <div className={ROW_CLASS}>
                 <span className={LABEL_CLASS}>Chunk Size</span>
-                <span className={VALUE_CLASS}>{config?.indexing.chunk_size ? `${config.indexing.chunk_size} chars` : "Awaiting Backend Integration"}</span>
+                <span className={VALUE_CLASS}>{config?.indexing.chunk_size ? `${config.indexing.chunk_size} chars` : NOT_AVAILABLE}</span>
               </div>
               <div className={ROW_CLASS}>
                 <span className={LABEL_CLASS}>Chunk Overlap</span>
-                <span className={VALUE_CLASS}>{config?.indexing.chunk_overlap ? `${config.indexing.chunk_overlap} chars` : "Awaiting Backend Integration"}</span>
+                <span className={VALUE_CLASS}>{config?.indexing.chunk_overlap ? `${config.indexing.chunk_overlap} chars` : NOT_AVAILABLE}</span>
               </div>
               <div className={ROW_CLASS}>
                 <span className={LABEL_CLASS}>Top-K Retrieval</span>
-                <span className={VALUE_CLASS}>{config?.retrieval.top_k ?? "Awaiting Backend Integration"}</span>
+                <span className={VALUE_CLASS}>{config?.retrieval.top_k ?? NOT_AVAILABLE}</span>
               </div>
               <div className={ROW_CLASS}>
                 <span className={LABEL_CLASS}>Retrieval Strategy</span>
-                <span className={VALUE_CLASS}>Awaiting Backend Integration</span>
+                <span className={VALUE_CLASS}>{config?.retrieval.strategy ?? NOT_AVAILABLE}</span>
               </div>
             </div>
           </div>
@@ -164,12 +189,30 @@ export default function SettingsModule() {
               <p className="mt-1 text-xs text-slate-500 font-medium">Inference parameters</p>
             </div>
             <div className="flex flex-col">
-              {["Maximum Response Tokens", "Temperature", "Top P", "Frequency Penalty", "Presence Penalty", "Streaming Enabled"].map(label => (
-                <div key={label} className={ROW_CLASS}>
-                  <span className={LABEL_CLASS}>{label}</span>
-                  <span className={VALUE_CLASS}>Awaiting Backend Integration</span>
-                </div>
-              ))}
+              <div className={ROW_CLASS}>
+                <span className={LABEL_CLASS}>Maximum Response Tokens</span>
+                <span className={VALUE_CLASS}>{config?.generation?.max_response_tokens ?? NOT_AVAILABLE}</span>
+              </div>
+              <div className={ROW_CLASS}>
+                <span className={LABEL_CLASS}>Temperature</span>
+                <span className={VALUE_CLASS}>{config?.generation?.temperature ?? NOT_AVAILABLE}</span>
+              </div>
+              <div className={ROW_CLASS}>
+                <span className={LABEL_CLASS}>Top P</span>
+                <span className={VALUE_CLASS}>{config?.generation?.top_p ?? NOT_AVAILABLE}</span>
+              </div>
+              <div className={ROW_CLASS}>
+                <span className={LABEL_CLASS}>Frequency Penalty</span>
+                <span className={VALUE_CLASS}>{NOT_CONFIGURED}</span>
+              </div>
+              <div className={ROW_CLASS}>
+                <span className={LABEL_CLASS}>Presence Penalty</span>
+                <span className={VALUE_CLASS}>{NOT_CONFIGURED}</span>
+              </div>
+              <div className={ROW_CLASS}>
+                <span className={LABEL_CLASS}>Streaming Enabled</span>
+                <span className={VALUE_CLASS}>{config?.generation ? (config.generation.streaming ? "Enabled" : "Disabled") : NOT_AVAILABLE}</span>
+              </div>
             </div>
           </div>
         </section>
@@ -184,14 +227,24 @@ export default function SettingsModule() {
             <div className="flex flex-col">
               <div className={ROW_CLASS}>
                 <span className={LABEL_CLASS}>Embedding Model</span>
-                <span className={VALUE_CLASS}>{config?.models.embed_model || "Awaiting Backend Integration"}</span>
+                <span className={VALUE_CLASS}>{config?.embedding?.model || config?.models.embed_model || NOT_CONFIGURED}</span>
               </div>
-              {["Vector Dimensions", "Distance Metric", "Vector Store Type", "Embedding Precision"].map(label => (
-                <div key={label} className={ROW_CLASS}>
-                  <span className={LABEL_CLASS}>{label}</span>
-                  <span className={VALUE_CLASS}>Awaiting Backend Integration</span>
-                </div>
-              ))}
+              <div className={ROW_CLASS}>
+                <span className={LABEL_CLASS}>Vector Dimensions</span>
+                <span className={VALUE_CLASS}>{config?.embedding?.dimensions ?? "No data yet"}</span>
+              </div>
+              <div className={ROW_CLASS}>
+                <span className={LABEL_CLASS}>Distance Metric</span>
+                <span className={VALUE_CLASS}>{config?.embedding?.distance_metric ?? NOT_AVAILABLE}</span>
+              </div>
+              <div className={ROW_CLASS}>
+                <span className={LABEL_CLASS}>Vector Store Type</span>
+                <span className={VALUE_CLASS}>{config?.embedding?.vector_store ?? NOT_AVAILABLE}</span>
+              </div>
+              <div className={ROW_CLASS}>
+                <span className={LABEL_CLASS}>Embedding Precision</span>
+                <span className={VALUE_CLASS}>{config?.embedding?.precision ?? NOT_AVAILABLE}</span>
+              </div>
             </div>
           </div>
         </section>
@@ -206,18 +259,24 @@ export default function SettingsModule() {
             <div className="flex flex-col">
               <div className={ROW_CLASS}>
                 <span className={LABEL_CLASS}>Chunk Size</span>
-                <span className={VALUE_CLASS}>{config?.indexing.chunk_size ? `${config.indexing.chunk_size} chars` : "Awaiting Backend Integration"}</span>
+                <span className={VALUE_CLASS}>{config?.indexing.chunk_size ? `${config.indexing.chunk_size} chars` : NOT_AVAILABLE}</span>
               </div>
               <div className={ROW_CLASS}>
                 <span className={LABEL_CLASS}>Chunk Overlap</span>
-                <span className={VALUE_CLASS}>{config?.indexing.chunk_overlap ? `${config.indexing.chunk_overlap} chars` : "Awaiting Backend Integration"}</span>
+                <span className={VALUE_CLASS}>{config?.indexing.chunk_overlap ? `${config.indexing.chunk_overlap} chars` : NOT_AVAILABLE}</span>
               </div>
-              {["Supported File Types", "Index Storage", "Embedding Pipeline"].map(label => (
-                <div key={label} className={ROW_CLASS}>
-                  <span className={LABEL_CLASS}>{label}</span>
-                  <span className={VALUE_CLASS}>Awaiting Backend Integration</span>
-                </div>
-              ))}
+              <div className={ROW_CLASS}>
+                <span className={LABEL_CLASS}>Supported File Types</span>
+                <span className={VALUE_CLASS}>{config?.indexing.supported_file_types?.join(", ") ?? NOT_AVAILABLE}</span>
+              </div>
+              <div className={ROW_CLASS}>
+                <span className={LABEL_CLASS}>Index Storage</span>
+                <span className={VALUE_CLASS}>{config?.indexing.index_storage ?? NOT_AVAILABLE}</span>
+              </div>
+              <div className={ROW_CLASS}>
+                <span className={LABEL_CLASS}>Embedding Pipeline</span>
+                <span className={VALUE_CLASS}>{config?.indexing.embedding_pipeline ?? NOT_AVAILABLE}</span>
+              </div>
             </div>
           </div>
         </section>
@@ -232,11 +291,11 @@ export default function SettingsModule() {
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
               <div className="bg-white rounded-xl p-4 border border-slate-200/60 shadow-sm text-center">
                 <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Configuration File</p>
-                <p className="mt-1.5 text-xs font-semibold text-slate-400 italic">Awaiting Backend Integration</p>
+                <p className="mt-1.5 text-xs font-semibold text-slate-600 font-mono">{config?.source?.config_file ?? NOT_AVAILABLE}</p>
               </div>
               <div className="bg-white rounded-xl p-4 border border-slate-200/60 shadow-sm text-center">
                 <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Environment Variables</p>
-                <p className="mt-1.5 text-xs font-semibold text-slate-400 italic">Awaiting Backend Integration</p>
+                <p className="mt-1.5 text-xs font-semibold text-slate-400 italic">{config?.source?.environment_variables ?? NOT_AVAILABLE}</p>
               </div>
               <div className="bg-[#000080]/5 rounded-xl p-4 border border-[#000080]/20 shadow-sm text-center">
                 <p className="text-[10px] font-bold uppercase tracking-wider text-[#000080]/60">Backend Config</p>

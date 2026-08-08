@@ -1,9 +1,30 @@
 import React from 'react';
 import { useWorkstation } from "@/context/WorkstationContext";
+import { useWorkstationData } from "@/components/workstation/use-workstation-data";
 import { Activity, Cpu, Server, Database, Clock, Zap, MessageSquare, PlayCircle, Settings, LayoutList, TerminalSquare, List, User, FileText, Layers, Search, Inbox, BarChart3 } from "lucide-react";
+
+const NOT_REPORTED = "Not reported";
+const NOT_AVAILABLE = "Not available";
+const DASH = "—";
 
 export default function InferenceRuntimeModule() {
   const { isGenerating } = useWorkstation();
+  const { status, loading } = useWorkstationData();
+
+  const runtime = status?.runtime_state ?? null;
+  const online = status != null;
+  const provider = runtime?.provider ?? (online ? "Foundry Local" : (loading ? "Loading…" : NOT_AVAILABLE));
+
+  const chatModel = status?.models?.chat_model ?? (loading ? "Loading…" : NOT_AVAILABLE);
+  const embedModel = status?.models?.embed_model ?? (loading ? "Loading…" : NOT_AVAILABLE);
+  const chatLoaded = runtime?.models?.chat?.loaded;
+  const embedLoaded = runtime?.models?.embed?.loaded;
+
+  const loadedLabel = (loaded?: boolean) =>
+    loaded === true ? "Loaded" : loaded === false ? "Idle" : NOT_REPORTED;
+
+  // The active stream count is known for this operator session only.
+  const activeStreams = isGenerating ? 1 : 0;
 
   return (
     <div className="flex flex-col h-full w-full overflow-y-auto bg-transparent p-4 sm:p-6 lg:p-8">
@@ -20,27 +41,33 @@ export default function InferenceRuntimeModule() {
               <p className="text-[13px] font-medium text-slate-500">Dedicated operational center for the Enterprise Local RAG runtime.</p>
             </div>
           </div>
-          <div className="bg-emerald-50 text-emerald-700 border border-emerald-200/60 px-4 py-2 rounded-full text-xs font-bold flex items-center gap-2 uppercase tracking-wide shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
-             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" /> Operational
-          </div>
+          {online ? (
+            <div className="bg-emerald-50 text-emerald-700 border border-emerald-200/60 px-4 py-2 rounded-full text-xs font-bold flex items-center gap-2 uppercase tracking-wide shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
+               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" /> Operational
+            </div>
+          ) : (
+            <div className="bg-amber-50 text-amber-700 border border-amber-200/60 px-4 py-2 rounded-full text-xs font-bold flex items-center gap-2 uppercase tracking-wide shadow-sm">
+               <span className="w-2 h-2 rounded-full bg-amber-500" /> {loading ? "Connecting…" : "Offline"}
+            </div>
+          )}
         </div>
 
         {/* Section 1: Runtime Status */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5">
-          <GlassMetricCard title="Runtime Provider" value="-" icon={<Settings size={18} />} status="Awaiting Backend" statusColor="text-slate-400" />
-          <GlassMetricCard title="Active Chat Model" value="-" icon={<MessageSquare size={18} />} status="Awaiting Backend" statusColor="text-slate-400" />
-          <GlassMetricCard title="Embedding Model" value="-" icon={<Server size={18} />} status="Awaiting Backend" statusColor="text-slate-400" />
-          <GlassMetricCard title="Active Streams" value="-" icon={<Zap size={18} />} status="Awaiting Backend" statusColor="text-slate-400" />
-          <GlassMetricCard title="Queue Size" value="-" icon={<List size={18} />} status="Awaiting Backend" statusColor="text-slate-400" />
+          <GlassMetricCard title="Runtime Provider" value={provider} icon={<Settings size={18} />} status={online ? "Operational" : NOT_AVAILABLE} statusColor={online ? "text-emerald-600" : "text-slate-400"} />
+          <GlassMetricCard title="Active Chat Model" value={chatModel} icon={<MessageSquare size={18} />} status={loadedLabel(chatLoaded)} statusColor={chatLoaded ? "text-emerald-600" : "text-slate-400"} />
+          <GlassMetricCard title="Embedding Model" value={embedModel} icon={<Server size={18} />} status={loadedLabel(embedLoaded)} statusColor={embedLoaded ? "text-emerald-600" : "text-slate-400"} />
+          <GlassMetricCard title="Active Streams" value={online ? String(activeStreams) : DASH} icon={<Zap size={18} />} status={isGenerating ? "Streaming" : "Idle"} statusColor={isGenerating ? "text-emerald-600" : "text-slate-400"} />
+          <GlassMetricCard title="Queue Size" value={DASH} icon={<List size={18} />} status={NOT_REPORTED} statusColor="text-slate-400" />
         </div>
 
         {/* Section 2: Inference Performance */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5">
-           <GlassMetricCard title="Tokens / Sec" value="-" icon={<Activity size={18} />} status="Awaiting Backend" statusColor="text-slate-400" hasSparkline />
-           <GlassMetricCard title="TTFT" value="-" icon={<Clock size={18} />} status="Awaiting Backend" statusColor="text-slate-400" hasSparkline />
-           <GlassMetricCard title="Prompt Tokens" value="-" icon={<Database size={18} />} status="Awaiting Backend" statusColor="text-slate-400" hasSparkline />
-           <GlassMetricCard title="Completion Tokens" value="-" icon={<BarChart3 size={18} />} status="Awaiting Backend" statusColor="text-slate-400" hasSparkline />
-           <GlassMetricCard title="Context Window" value="-" icon={<LayoutList size={18} />} status="Awaiting Backend" statusColor="text-slate-400" hasSparkline />
+           <GlassMetricCard title="Tokens / Sec" value={DASH} icon={<Activity size={18} />} status={NOT_REPORTED} statusColor="text-slate-400" />
+           <GlassMetricCard title="TTFT" value={DASH} icon={<Clock size={18} />} status={NOT_REPORTED} statusColor="text-slate-400" />
+           <GlassMetricCard title="Prompt Tokens" value={DASH} icon={<Database size={18} />} status={NOT_REPORTED} statusColor="text-slate-400" />
+           <GlassMetricCard title="Completion Tokens" value={DASH} icon={<BarChart3 size={18} />} status={NOT_REPORTED} statusColor="text-slate-400" />
+           <GlassMetricCard title="Context Window" value={DASH} icon={<LayoutList size={18} />} status={NOT_REPORTED} statusColor="text-slate-400" />
         </div>
 
         {/* Section 3: Inference Pipeline */}
@@ -78,7 +105,7 @@ export default function InferenceRuntimeModule() {
                    </div>
                    <p className="text-[13px] font-bold text-slate-800 mb-1">No Active Sessions</p>
                    <p className="text-xs text-slate-500 max-w-xs font-medium leading-relaxed">
-                     Awaiting backend metrics.<br/>Runtime sessions will appear here automatically.
+                     No data yet.<br/>Per-session runtime tracking is not reported.
                    </p>
                  </div>
               </div>
@@ -102,7 +129,7 @@ export default function InferenceRuntimeModule() {
                    </div>
                    <p className="text-[13px] font-bold text-slate-800 mb-1">Event Log Empty</p>
                    <p className="text-xs text-slate-500 max-w-xs font-medium leading-relaxed">
-                     Awaiting backend integration.<br/>Runtime events will be streamed in real-time.
+                     No data yet.<br/>Runtime event history is not recorded.
                    </p>
                  </div>
               </div>
@@ -136,7 +163,7 @@ function GlassMetricCard({ title, value, icon, status, statusColor = "text-emera
       {hasSparkline && (
         <div className="h-10 w-full mt-1 mb-1 relative flex items-center justify-center rounded-lg border border-dashed border-slate-200 bg-slate-50 group-hover:bg-slate-100 transition-colors">
           <div className="absolute inset-0 flex items-center justify-center">
-             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Awaiting Metrics</span>
+             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">No data yet</span>
           </div>
           <svg className="w-full h-full opacity-30" preserveAspectRatio="none" viewBox="0 0 100 20">
              <path d="M0,10 Q25,12 50,10 T100,10" fill="none" stroke="currentColor" strokeWidth="1" strokeDasharray="2 2" className="text-slate-400" />
@@ -145,11 +172,11 @@ function GlassMetricCard({ title, value, icon, status, statusColor = "text-emera
       )}
 
       <div className={`text-[11px] font-bold uppercase flex items-center gap-2 pt-3 border-t border-slate-100/80 mt-auto ${statusColor}`}>
-        {status.includes("Awaiting") ? (
+        {/not reported|not available|awaiting/i.test(status) ? (
            <span className="opacity-80 text-slate-400 truncate">{status}</span>
         ) : (
            <>
-              {(status === "Processing" || status === "Active") && <span className={`w-2 h-2 rounded-full animate-pulse shrink-0 ${statusDotColor || "bg-emerald-500"}`} />}
+              {(status === "Processing" || status === "Active" || status === "Streaming" || status === "Operational" || status === "Loaded") && <span className={`w-2 h-2 rounded-full animate-pulse shrink-0 ${statusDotColor || "bg-emerald-500"}`} />}
               <span className="truncate">{status}</span>
            </>
         )}

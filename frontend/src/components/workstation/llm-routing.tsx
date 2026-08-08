@@ -7,16 +7,51 @@ const GLASS_CARD =
 const HYPER_GLASS =
   "bg-white/60 backdrop-blur-md border border-slate-200/50 shadow-sm rounded-2xl hover:bg-white/90 transition-all duration-300"
 
-export function LlmRouting() {
-  const { status, analytics } = useWorkstationData()
+const LOADING = "Loading…"
+const NOT_AVAILABLE = "Not available"
+const NOT_REPORTED = "Not reported"
 
-  const routerModel = status?.models?.router_model ?? "Awaiting Backend Integration"
-  const chatModel = status?.models?.chat_model ?? "Awaiting Backend Integration"
-  const embedModel = status?.models?.embed_model ?? "Awaiting Backend Integration"
-  
-  const totalRequests = analytics?.queries_processed_today 
-    ? analytics.queries_processed_today.toLocaleString()
-    : "Awaiting Backend Integration"
+function formatDecisionTime(iso: string): string {
+  const d = new Date(iso)
+  if (Number.isNaN(d.getTime())) return iso
+  return d.toLocaleString([], {
+    month: "short",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  })
+}
+
+export function LlmRouting() {
+  const { status, analytics, loading } = useWorkstationData()
+
+  const runtime = status?.runtime_state ?? null
+  const routerModel = status?.models?.router_model ?? (loading ? LOADING : NOT_AVAILABLE)
+  const chatModel = status?.models?.chat_model ?? (loading ? LOADING : NOT_AVAILABLE)
+  const embedModel = status?.models?.embed_model ?? (loading ? LOADING : NOT_AVAILABLE)
+
+  const endpoint = runtime?.endpoint ?? null
+  const routerLoaded = runtime?.models?.router?.loaded ?? false
+
+  // Router status reflects the real, in-process runtime — never a static badge.
+  const routerOnline = status != null
+  const routerStatusLabel = !status
+    ? (loading ? LOADING : NOT_AVAILABLE)
+    : routerLoaded
+      ? "Active"
+      : "Warming up"
+
+  const totalRouted =
+    analytics?.total_routed != null ? analytics.total_routed.toLocaleString() : (loading ? LOADING : "0")
+
+  const decisions = analytics?.recent_routing_decisions ?? []
+
+  const models = [
+    { role: "Router Engine", name: routerModel, purpose: "Intent Classification", loaded: runtime?.models?.router?.loaded },
+    { role: "Chat Engine", name: chatModel, purpose: "General Conversation & RAG", loaded: runtime?.models?.chat?.loaded },
+    { role: "Embedding Engine", name: embedModel, purpose: "Vector Generation", loaded: runtime?.models?.embed?.loaded },
+  ]
 
   return (
     <div className="flex flex-col gap-6 pb-12">
@@ -38,11 +73,13 @@ export function LlmRouting() {
             <h3 className="text-xs font-semibold uppercase tracking-wider">Router Status</h3>
           </div>
           <div className="flex items-center gap-2">
-            <span className="relative flex h-3 w-3">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
-              <span className="relative inline-flex h-3 w-3 rounded-full bg-emerald-500"></span>
-            </span>
-            <span className="font-mono text-lg font-medium text-slate-800">Active</span>
+            {routerOnline && (
+              <span className="relative flex h-3 w-3">
+                <span className={`absolute inline-flex h-full w-full rounded-full opacity-75 ${routerLoaded ? "animate-ping bg-emerald-400" : "bg-amber-400"}`}></span>
+                <span className={`relative inline-flex h-3 w-3 rounded-full ${routerLoaded ? "bg-emerald-500" : "bg-amber-500"}`}></span>
+              </span>
+            )}
+            <span className="font-mono text-lg font-medium text-slate-800">{routerStatusLabel}</span>
           </div>
         </div>
         <div className={`p-5 ${GLASS_CARD}`}>
@@ -57,14 +94,14 @@ export function LlmRouting() {
             <Shield className="h-4 w-4" />
             <h3 className="text-xs font-semibold uppercase tracking-wider">Routing Policy</h3>
           </div>
-          <div className="text-sm font-medium text-slate-500">Awaiting Backend Integration</div>
+          <div className="text-sm font-medium text-slate-700">Semantic Intent Classification</div>
         </div>
         <div className={`p-5 ${GLASS_CARD}`}>
           <div className="mb-2 flex items-center gap-2 text-slate-500">
             <Route className="h-4 w-4" />
             <h3 className="text-xs font-semibold uppercase tracking-wider">Total Routed</h3>
           </div>
-          <div className="font-mono text-lg font-medium text-slate-800">{totalRequests}</div>
+          <div className="font-mono text-lg font-medium text-slate-800">{totalRouted}</div>
         </div>
       </div>
 
@@ -96,7 +133,9 @@ export function LlmRouting() {
               <Route className="h-6 w-6" />
             </div>
             <span className="text-[11px] font-bold text-slate-800">Semantic Router</span>
-            <span className="text-[9px] uppercase tracking-wider text-emerald-600">Active</span>
+            <span className={`text-[9px] uppercase tracking-wider ${routerOnline ? "text-emerald-600" : "text-slate-400"}`}>
+              {routerOnline ? routerStatusLabel : NOT_AVAILABLE}
+            </span>
           </div>
 
           <ArrowRight className="text-slate-300 hidden md:block" />
@@ -124,17 +163,23 @@ export function LlmRouting() {
       <section>
         <h3 className="mb-4 text-sm font-semibold text-slate-800">Registered Model Registry</h3>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-          {[
-            { role: "Router Engine", name: routerModel, purpose: "Intent Classification" },
-            { role: "Chat Engine", name: chatModel, purpose: "General Conversation & RAG" },
-            { role: "Embedding Engine", name: embedModel, purpose: "Vector Generation" },
-          ].map((m) => (
+          {models.map((m) => (
             <div key={m.role} className={`flex flex-col p-5 ${GLASS_CARD}`}>
               <div className="mb-4 flex items-center justify-between">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">{m.role}</span>
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold text-emerald-700 border border-emerald-200/60">
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500"></span> Active
-                </span>
+                {m.loaded === true ? (
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold text-emerald-700 border border-emerald-200/60">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500"></span> Loaded
+                  </span>
+                ) : m.loaded === false ? (
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-50 px-2 py-0.5 text-[10px] font-semibold text-slate-500 border border-slate-200/60">
+                    <span className="h-1.5 w-1.5 rounded-full bg-slate-400"></span> Idle
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-50 px-2 py-0.5 text-[10px] font-semibold text-slate-400 border border-slate-200/60">
+                    {NOT_AVAILABLE}
+                  </span>
+                )}
               </div>
               <div className="mb-4 truncate font-mono text-lg font-medium text-slate-800">{m.name}</div>
               
@@ -145,15 +190,17 @@ export function LlmRouting() {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-500">Context Window</span>
-                  <span className="text-slate-400">Awaiting Backend Integration</span>
+                  <span className="text-slate-400">{NOT_REPORTED}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-500">Quantization</span>
-                  <span className="text-slate-400">Awaiting Backend Integration</span>
+                  <span className="text-slate-400">{NOT_REPORTED}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-500">Endpoint</span>
-                  <span className="text-slate-400">Awaiting Backend Integration</span>
+                  <span className="max-w-[150px] truncate font-mono text-slate-500" title={endpoint ?? NOT_AVAILABLE}>
+                    {endpoint ?? NOT_AVAILABLE}
+                  </span>
                 </div>
               </div>
             </div>
@@ -166,9 +213,9 @@ export function LlmRouting() {
         <h3 className="mb-4 text-sm font-semibold text-slate-800">Routing Policies</h3>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
           {[
-            { rule: "Semantic Search", target: "Local RAG", reason: "Document retrieval required" },
+            { rule: "Numerical Query", target: "Local Agent (phi-4-mini)", reason: "Numerical computation detected" },
+            { rule: "Document Question", target: "Local RAG", reason: "Document retrieval required" },
             { rule: "General Conversation", target: "Chat Model", reason: "No retrieval required" },
-            { rule: "Embedding Request", target: "Embedding Model", reason: "Vector generation" }
           ].map((policy) => (
             <div key={policy.rule} className={`p-5 ${GLASS_CARD}`}>
               <div className="mb-2 text-sm font-semibold text-slate-800">{policy.rule}</div>
@@ -180,7 +227,7 @@ export function LlmRouting() {
                 <span className="font-medium text-slate-600">Reason:</span> {policy.reason}
               </div>
               <div className="mt-3 border-t border-slate-200/60 pt-3 text-[10px] text-slate-400">
-                Source: Awaiting Backend Integration
+                Source: Semantic Router · {routerModel}
               </div>
             </div>
           ))}
@@ -202,11 +249,32 @@ export function LlmRouting() {
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td colSpan={5} className="px-4 py-12 text-center text-sm text-slate-500">
-                  Awaiting Backend Integration
-                </td>
-              </tr>
+              {decisions.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="px-4 py-12 text-center text-sm text-slate-500">
+                    {loading ? LOADING : "No routing decisions yet"}
+                  </td>
+                </tr>
+              ) : (
+                decisions.map((d, i) => (
+                  <tr key={`${d.timestamp}-${i}`} className="border-b border-slate-100 last:border-transparent">
+                    <td className="px-4 py-3 font-mono text-xs text-slate-500">{formatDecisionTime(d.timestamp)}</td>
+                    <td className="px-4 py-3">
+                      <span className="rounded-md border border-slate-200/60 bg-slate-50 px-2 py-0.5 font-mono text-[11px] font-medium text-slate-600">
+                        {d.intent}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 font-mono text-xs text-slate-700">{d.selected_model}</td>
+                    <td className="px-4 py-3 text-xs text-slate-500">{d.reason}</td>
+                    <td className="px-4 py-3">
+                      <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-emerald-600">
+                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+                        {d.status}
+                      </span>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>

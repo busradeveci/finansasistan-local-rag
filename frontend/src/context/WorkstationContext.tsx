@@ -25,6 +25,7 @@ import type {
   TargetSource,
   SessionEvidenceState,
   UploadQueueItem,
+  VectorIndexInfo,
   WorkstationAlert,
 } from "@/types/workstation"
 
@@ -82,7 +83,7 @@ interface WorkstationContextValue {
   recentDocuments: string[]
   addRecentDocument: (name: string) => void
   documentInventory: DocumentInventoryRow[]
-  documentIndex: { vectors: number; dimensions: number } | null
+  documentIndex: VectorIndexInfo | null
   documentInventoryLoading: boolean
   documentInventoryError: string | null
   refreshDocumentInventory: () => Promise<void>
@@ -126,7 +127,7 @@ export function WorkstationProvider({ children }: { children: ReactNode }) {
   const [recentDocuments, setRecentDocuments] = useState<string[]>([])
 
   const [documentInventory, setDocumentInventory] = useState<DocumentInventoryRow[]>([])
-  const [documentIndex, setDocumentIndex] = useState<{ vectors: number; dimensions: number } | null>(null)
+  const [documentIndex, setDocumentIndex] = useState<VectorIndexInfo | null>(null)
   const [documentInventoryLoading, setDocumentInventoryLoading] = useState(false)
   const [documentInventoryError, setDocumentInventoryError] = useState<string | null>(null)
   const [targetSource, setTargetSource] = useState<TargetSource>(DEFAULT_TARGET_SOURCE)

@@ -24,6 +24,14 @@ export interface TelemetryPacket {
   }
 }
 
+export interface RoutingDecision {
+  timestamp: string
+  intent: string
+  selected_model: string
+  reason: string
+  status: string
+}
+
 export interface AnalyticsPacket {
   queries_processed_today: number
   avg_response_ms: number
@@ -32,6 +40,32 @@ export interface AnalyticsPacket {
   avg_embedding_ms: number
   context_tokens_accumulated: number
   sample_count: number
+  total_routed?: number
+  recent_routing_decisions?: RoutingDecision[]
+}
+
+export interface RuntimeModelState {
+  alias: string
+  loaded: boolean
+}
+
+export interface RuntimeState {
+  provider: string
+  sdk_initialized: boolean
+  endpoint: string | null
+  models: {
+    chat: RuntimeModelState
+    embed: RuntimeModelState
+    router: RuntimeModelState
+  }
+}
+
+export interface VectorIndexInfo {
+  vectors: number
+  dimensions: number
+  engine?: string
+  vector_store?: string
+  db_size_mb?: number | null
 }
 
 export interface SecurityPacket {
@@ -73,6 +107,7 @@ export interface DocumentInventoryRow {
   chunks: number
   embedding_dimensions: number
   embedding_model: string
+  file_size?: number | null
   indexation_state: string
   last_updated: string | null
   path: string

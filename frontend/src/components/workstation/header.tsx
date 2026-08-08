@@ -140,7 +140,7 @@ export function Header({ breadcrumb }: HeaderProps) {
             </span>
           ) : (
             <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold text-slate-500 ${HYPER_GLASS}`}>
-              Awaiting Backend Integration
+              Not available
             </span>
           )}
           {telemetry?.network?.zero_outbound != null ? (
@@ -150,7 +150,7 @@ export function Header({ breadcrumb }: HeaderProps) {
             </span>
           ) : (
             <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold text-slate-500 ${HYPER_GLASS}`}>
-              Awaiting Backend Integration
+              Not available
             </span>
           )}
         </div>

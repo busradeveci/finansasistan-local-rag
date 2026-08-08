@@ -5,6 +5,7 @@ import type {
   EvidenceChunk,
   SecurityPacket,
   TelemetryPacket,
+  VectorIndexInfo,
 } from "@/types/workstation"
 
 /**
@@ -43,7 +44,7 @@ api.interceptors.request.use((config) => {
 export const getDocumentInventory = () =>
   api.get("/api/v1/documents", { timeout: 15_000 }).then((r) => ({
     documents: r.data.documents as DocumentInventoryRow[],
-    index: r.data.index as { vectors: number; dimensions: number },
+    index: r.data.index as VectorIndexInfo,
   }))
 
 export const getDocumentChunks = (filename: string) =>

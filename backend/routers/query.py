@@ -11,8 +11,11 @@ from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 
 from backend.config import (
+    CHAT_MODEL,
+    EMBED_MODEL,
     MAX_CONTEXT_CHUNKS,
     NO_CONTEXT_ANSWER,
+    ROUTER_MODEL,
     SCORE_THRESHOLD,
     TOP_K,
 )
@@ -89,11 +92,39 @@ async def _resolve_track(question: str) -> ExecutionTrack:
     return await classify_track(question)
 
 
+# Real model + rationale for each execution track — mirrors the actual
+# handler dispatched below.  Used to record genuine routing decisions.
+_TRACK_MODEL: dict[ExecutionTrack, str] = {
+    ExecutionTrack.LOCAL_MATH: ROUTER_MODEL,
+    ExecutionTrack.LOCAL_RAG: CHAT_MODEL,
+    ExecutionTrack.LOCAL_CHAT: CHAT_MODEL,
+}
+
+_TRACK_REASON: dict[ExecutionTrack, str] = {
+    ExecutionTrack.LOCAL_MATH: "Numerical computation detected",
+    ExecutionTrack.LOCAL_RAG: "Document retrieval required",
+    ExecutionTrack.LOCAL_CHAT: "General conversation — no retrieval",
+}
+
+
+def _record_routing_decision(track: ExecutionTrack) -> None:
+    """Log the real router decision for the Model Routing module."""
+    model = _TRACK_MODEL.get(track, CHAT_MODEL)
+    if track is ExecutionTrack.LOCAL_RAG:
+        model = f"{CHAT_MODEL} + {EMBED_MODEL}"
+    metrics.record_routing_decision(
+        intent=track.value,
+        selected_model=model,
+        reason=_TRACK_REASON.get(track, ""),
+    )
+
+
 @router.post("")
 async def query(body: QueryRequest):
     """Answer a question via the offline semantic router (blocking)."""
     t0 = time.perf_counter()
     track = await _resolve_track(body.question)
+    _record_routing_decision(track)
 
     if track is ExecutionTrack.LOCAL_CHAT:
         logger.info("Router: LOCAL_CHAT — phi-3.5 straight-through.")
@@ -164,6 +195,7 @@ async def query_stream(
             f"{_STATUS_PREFIX}Step 0: Phi-4-mini semantic router classifying intent…"
         )
         track = await _resolve_track(question)
+        _record_routing_decision(track)
         badge = TRACK_BADGE[track]
         yield _format_sse_data(f"{_AGENT_PREFIX}{badge}")
 

@@ -100,7 +100,7 @@ function MetricCard({ label, value }: { label: string; value: number | null }) {
         </span>
       ) : (
         <span className="text-[11px] font-medium text-slate-400 italic mt-2">
-          Awaiting Backend Integration
+          Not available
         </span>
       )}
     </div>
@@ -117,7 +117,7 @@ function CompactMetricGridItem({ label, value }: { label: string; value: number 
         </span>
       ) : (
         <span className="text-[11px] text-slate-400 italic">
-          Awaiting Backend Integration
+          Not available
         </span>
       )}
     </div>
@@ -175,7 +175,7 @@ export default function SecurityCenterModule() {
                 <div className="bg-white/90 backdrop-blur-md border border-slate-200/60 shadow-sm rounded-2xl p-5 flex items-center justify-between hover:shadow-md transition-shadow">
                   <div>
                     <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Total Security Risk Tier</p>
-                    <p className="mt-1.5 text-xl font-bold text-[#000080]">{data.risk_tier ?? "Awaiting Backend Integration"}</p>
+                    <p className="mt-1.5 text-xl font-bold text-[#000080]">{data.risk_tier ?? "Not available"}</p>
                   </div>
                   <ShieldAlert className="h-10 w-10 text-[#000080] opacity-80" />
                 </div>
@@ -232,12 +232,12 @@ export default function SecurityCenterModule() {
                         }}
                       />
                       <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: enabled === null ? "#94a3b8" : enabled ? "#059669" : "#dc2626" }}>
-                        {enabled === null ? "Awaiting Integration" : enabled ? "Active" : "Inactive"}
+                        {enabled === null ? "Not reported" : enabled ? "Active" : "Inactive"}
                       </span>
                     </div>
                     {layer.countKey && (
                       <span className="text-[11px] font-bold text-slate-700 tabular-nums">
-                        {count !== null ? count.toLocaleString() : <span className="text-[10px] text-slate-400 italic font-medium normal-case">Awaiting Integration</span>}
+                        {count !== null ? count.toLocaleString() : <span className="text-[10px] text-slate-400 italic font-medium normal-case">Not reported</span>}
                       </span>
                     )}
                   </div>

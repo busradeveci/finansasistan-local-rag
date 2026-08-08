@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react"
 import { getAnalytics, getDocumentInventory, getSecurity, getStatus, getTelemetry } from "@/api/client"
-import type { AnalyticsPacket, SecurityPacket, TelemetryPacket } from "@/types/workstation"
+import type { AnalyticsPacket, RuntimeState, SecurityPacket, TelemetryPacket } from "@/types/workstation"
 
 export type StatusPacket = {
   vector_store: { document_count: number; total_chunks: number }
   models: { chat_model: string; embed_model: string; router_model?: string }
+  runtime_state?: RuntimeState
 }
 
 export type WorkstationData = {
