@@ -1,6 +1,21 @@
-import { useState, useEffect } from "react"
+import React, { useState, useEffect } from "react"
 import { getConfig } from "@/api/client"
-import { AlertCircle, RefreshCw } from "lucide-react"
+import {
+  AlertCircle,
+  RefreshCw,
+  SlidersHorizontal,
+  Boxes,
+  Search,
+  Sparkles,
+  Layers,
+  FileStack,
+  FileCog,
+  MessageSquareText,
+  Binary,
+  Waypoints,
+} from "lucide-react"
+
+import { CardHeading, LiveDot, Panel } from "@/components/workstation/overview/primitives"
 
 interface PlatformConfig {
   models: {
@@ -44,6 +59,90 @@ interface PlatformConfig {
 
 const NOT_CONFIGURED = "Not configured"
 const NOT_AVAILABLE = "Not available"
+
+/* ── Status badge ─────────────────────────────────────────────────────── */
+
+function StateBadge({
+  tone,
+  label,
+  live,
+}: {
+  tone: "emerald" | "amber"
+  label: string
+  live?: boolean
+}) {
+  if (tone === "emerald") {
+    return (
+      <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-emerald-200/70 bg-emerald-50/80 px-2.5 py-1 text-[10.5px] font-semibold text-emerald-700">
+        {live ? <LiveDot className="text-emerald-500" /> : <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />}
+        {label}
+      </span>
+    )
+  }
+  return (
+    <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-amber-200/70 bg-amber-50/80 px-2.5 py-1 text-[10.5px] font-semibold text-amber-700">
+      <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
+      {label}
+    </span>
+  )
+}
+
+/* ── Role pill (AI Models) ────────────────────────────────────────────── */
+
+type RoleTone = "accent" | "emerald" | "violet"
+
+function RolePill({ tone, label }: { tone: RoleTone; label: string }) {
+  const cls =
+    tone === "emerald"
+      ? "border-emerald-200/70 bg-emerald-50/80 text-emerald-700"
+      : tone === "violet"
+        ? "border-violet-200/70 bg-violet-50/80 text-violet-700"
+        : "border-[var(--vv-accent-ring)] bg-[var(--vv-accent-tint)] text-[var(--vv-accent-deep)]"
+  return (
+    <span className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-[11px] font-semibold ${cls}`}>
+      {label}
+    </span>
+  )
+}
+
+/* ── Key / value configuration row ────────────────────────────────────── */
+
+function KV({
+  label,
+  value,
+  mono,
+  muted,
+}: {
+  label: string
+  value: React.ReactNode
+  mono?: boolean
+  muted?: boolean
+}) {
+  const hasValue = value != null && value !== ""
+  return (
+    <div className="flex items-start justify-between gap-6 py-2.5 first:pt-0 last:pb-0">
+      <span className="vv-eyebrow shrink-0 pt-px">{label}</span>
+      {hasValue && !muted ? (
+        <span
+          className={`min-w-0 text-right font-semibold text-slate-700 ${
+            mono ? "break-all font-mono text-[11.5px]" : "text-[12.5px] tabular-nums"
+          }`}
+        >
+          {value}
+        </span>
+      ) : (
+        <span className="min-w-0 text-right text-[12px] font-normal text-slate-400">
+          {hasValue ? value : NOT_AVAILABLE}
+        </span>
+      )}
+    </div>
+  )
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   Settings — enterprise configuration console for the local RAG platform.
+   Read-only surface reflecting the active backend configuration.
+   ═══════════════════════════════════════════════════════════════════════ */
 
 export default function SettingsModule() {
   const [config, setConfig] = useState<PlatformConfig | null>(null)
@@ -91,220 +190,179 @@ export default function SettingsModule() {
     )
   }
 
-  const CARD_CLASS = "relative p-6 rounded-2xl bg-white/90 backdrop-blur-md border border-slate-200/60 shadow-sm flex flex-col justify-between"
-  const ROW_CLASS = "flex items-center justify-between py-3 border-b border-slate-100/70 last:border-none"
-  const LABEL_CLASS = "text-sm font-medium text-slate-700"
-  const VALUE_CLASS = "text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-50 text-slate-700 border border-slate-200/60"
-  const BADGE_CLASS = "text-xs font-semibold px-2.5 py-1 rounded-full bg-[#000080]/5 text-[#000080] border border-[#000080]/10"
+  const models: { name: string; role: string; tone: RoleTone; icon: React.ComponentType<{ className?: string; strokeWidth?: number }> }[] = [
+    { name: config?.models.chat_model || NOT_CONFIGURED, role: "Chat", tone: "accent", icon: MessageSquareText },
+    { name: config?.models.embed_model || NOT_CONFIGURED, role: "Embed", tone: "emerald", icon: Binary },
+    { name: config?.models.router_model || NOT_CONFIGURED, role: "Router", tone: "violet", icon: Waypoints },
+  ]
+
+  const chunkSize = config?.indexing.chunk_size ? `${config.indexing.chunk_size} chars` : null
+  const chunkOverlap = config?.indexing.chunk_overlap ? `${config.indexing.chunk_overlap} chars` : null
 
   return (
-    <div className="flex h-full min-h-0 flex-col overflow-hidden ws-module-shell bg-transparent p-4 sm:p-6 lg:p-8">
-      <header className="mb-6 shrink-0">
-        <h1 className="text-xl font-bold text-slate-800 tracking-tight">Settings</h1>
-        <p className="mt-1 truncate text-sm font-medium text-slate-500">
-          Platform configuration center for retrieval, model orchestration, and RAG behavior
-        </p>
-      </header>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 overflow-y-auto fluent-scrollbar p-1">
-        
-        {/* 1. AI Models */}
-        <section className={CARD_CLASS}>
-          <div>
-            <div className="mb-4 pb-2 border-b border-slate-100">
-              <h2 className="text-lg font-semibold text-slate-800 tracking-tight">AI Models</h2>
-              <p className="mt-1 text-xs text-slate-500 font-medium">Configured local orchestration models</p>
+    <div className="flex h-full min-h-0 w-full flex-col overflow-hidden p-4 sm:p-5 lg:p-6">
+      <div className="mx-auto flex h-full min-h-0 w-full max-w-[1680px] flex-col gap-5">
+        {/* Header ─────────────────────────────────────────────────────── */}
+        <header className="flex flex-none flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5">
+            <span className="vv-plate h-8 w-8">
+              <SlidersHorizontal className="h-[16px] w-[16px]" strokeWidth={1.9} />
+            </span>
+            <div className="min-w-0">
+              <h1 className="vv-title-section">Settings</h1>
+              <p className="vv-caption mt-0.5">
+                Platform configuration center for retrieval, model orchestration, and RAG behavior.
+              </p>
             </div>
-            <div className="flex flex-col">
-              <div className={ROW_CLASS}>
-                <div className="flex flex-col">
-                  <span className={LABEL_CLASS}>{config?.models.chat_model || NOT_CONFIGURED}</span>
-                  <span className="text-xs text-slate-500 font-medium">Backend Config</span>
+          </div>
+          {config ? (
+            <StateBadge tone="emerald" label="Backend Config Loaded" live />
+          ) : (
+            <StateBadge tone="amber" label="Backend Pending" />
+          )}
+        </header>
+
+        <div className="fluent-scrollbar min-h-0 flex-1 overflow-y-auto pb-6">
+          <div className="flex flex-col gap-5">
+            {/* 1. AI Models ───────────────────────────────────────────── */}
+            <Panel className="p-5 sm:p-6" delay={0}>
+              <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+                <CardHeading icon={Boxes} title="AI Models" />
+                <span className="text-[11px] font-medium text-slate-400">Configured local orchestration models</span>
+              </div>
+
+              {/* Column header (sm+) */}
+              <div className="hidden gap-4 border-b border-white/60 pb-2 sm:grid sm:grid-cols-[minmax(0,1.7fr)_minmax(0,0.8fr)_minmax(0,1fr)_auto]">
+                <span className="vv-eyebrow">Model</span>
+                <span className="vv-eyebrow">Role</span>
+                <span className="vv-eyebrow">Source</span>
+                <span className="vv-eyebrow text-right">Status</span>
+              </div>
+
+              <div className="divide-y divide-white/50">
+                {models.map((m) => {
+                  const Icon = m.icon
+                  return (
+                    <div
+                      key={m.role}
+                      className="grid grid-cols-1 gap-2 py-3 first:pt-3 last:pb-0 sm:grid-cols-[minmax(0,1.7fr)_minmax(0,0.8fr)_minmax(0,1fr)_auto] sm:items-center sm:gap-4"
+                    >
+                      <div className="flex min-w-0 items-center gap-2.5">
+                        <span className="vv-plate h-7 w-7">
+                          <Icon className="h-[15px] w-[15px]" strokeWidth={1.9} />
+                        </span>
+                        <span className="truncate font-mono text-[12.5px] font-semibold text-slate-700" title={m.name}>
+                          {m.name}
+                        </span>
+                      </div>
+                      <div className="pl-9 sm:pl-0">
+                        <RolePill tone={m.tone} label={m.role} />
+                      </div>
+                      <div className="pl-9 text-[12px] font-medium text-slate-500 sm:pl-0">Backend Config</div>
+                      <div className="pl-9 sm:justify-self-end sm:pl-0">
+                        <StateBadge tone="emerald" label="Active" />
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            </Panel>
+
+            {/* 2. Retrieval + Generation ──────────────────────────────── */}
+            <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
+              <Panel className="p-5 sm:p-6" delay={70}>
+                <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
+                  <CardHeading icon={Search} title="Retrieval Configuration" />
+                  <span className="text-[11px] font-medium text-slate-400">Vector search parameters</span>
                 </div>
-                <span className={BADGE_CLASS}>Active (Chat)</span>
-              </div>
-              <div className={ROW_CLASS}>
-                <div className="flex flex-col">
-                  <span className={LABEL_CLASS}>{config?.models.embed_model || NOT_CONFIGURED}</span>
-                  <span className="text-xs text-slate-500 font-medium">Backend Config</span>
+                <div className="divide-y divide-white/50">
+                  <KV label="Score Threshold" value={config?.retrieval.score_threshold} />
+                  <KV label="Relative Cutoff" value={config?.retrieval.relative_cutoff} />
+                  <KV label="Maximum Context Chunks" value={config?.retrieval.max_context_chunks} />
+                  <KV label="Chunk Size" value={chunkSize} />
+                  <KV label="Chunk Overlap" value={chunkOverlap} />
+                  <KV label="Top-K Retrieval" value={config?.retrieval.top_k} />
+                  <KV label="Retrieval Strategy" value={config?.retrieval.strategy} />
                 </div>
-                <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200/60">Active (Embed)</span>
-              </div>
-              <div className={ROW_CLASS}>
-                <div className="flex flex-col">
-                  <span className={LABEL_CLASS}>{config?.models.router_model || NOT_CONFIGURED}</span>
-                  <span className="text-xs text-slate-500 font-medium">Backend Config</span>
+              </Panel>
+
+              <Panel className="p-5 sm:p-6" delay={140}>
+                <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
+                  <CardHeading icon={Sparkles} title="Generation Configuration" />
+                  <span className="text-[11px] font-medium text-slate-400">Inference parameters</span>
                 </div>
-                <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-purple-50 text-purple-700 border border-purple-200/60">Active (Router)</span>
-              </div>
+                <div className="divide-y divide-white/50">
+                  <KV label="Maximum Response Tokens" value={config?.generation?.max_response_tokens} />
+                  <KV label="Temperature" value={config?.generation?.temperature} />
+                  <KV label="Top P" value={config?.generation?.top_p} />
+                  <KV label="Frequency Penalty" value={NOT_CONFIGURED} muted />
+                  <KV label="Presence Penalty" value={NOT_CONFIGURED} muted />
+                  <KV
+                    label="Streaming"
+                    value={config?.generation ? (config.generation.streaming ? "Enabled" : "Disabled") : null}
+                  />
+                </div>
+              </Panel>
             </div>
-          </div>
-        </section>
 
-        {/* 2. Retrieval Configuration */}
-        <section className={CARD_CLASS}>
-          <div>
-            <div className="mb-4 pb-2 border-b border-slate-100">
-              <h2 className="text-lg font-semibold text-slate-800 tracking-tight">Retrieval Configuration</h2>
-              <p className="mt-1 text-xs text-slate-500 font-medium">Vector search backend parameters</p>
-            </div>
-            <div className="flex flex-col">
-              <div className={ROW_CLASS}>
-                <span className={LABEL_CLASS}>Score Threshold</span>
-                <span className={VALUE_CLASS}>{config?.retrieval.score_threshold ?? NOT_AVAILABLE}</span>
-              </div>
-              <div className={ROW_CLASS}>
-                <span className={LABEL_CLASS}>Relative Cutoff</span>
-                <span className={VALUE_CLASS}>{config?.retrieval.relative_cutoff ?? NOT_AVAILABLE}</span>
-              </div>
-              <div className={ROW_CLASS}>
-                <span className={LABEL_CLASS}>Maximum Context Chunks</span>
-                <span className={VALUE_CLASS}>{config?.retrieval.max_context_chunks ?? NOT_AVAILABLE}</span>
-              </div>
-              <div className={ROW_CLASS}>
-                <span className={LABEL_CLASS}>Chunk Size</span>
-                <span className={VALUE_CLASS}>{config?.indexing.chunk_size ? `${config.indexing.chunk_size} chars` : NOT_AVAILABLE}</span>
-              </div>
-              <div className={ROW_CLASS}>
-                <span className={LABEL_CLASS}>Chunk Overlap</span>
-                <span className={VALUE_CLASS}>{config?.indexing.chunk_overlap ? `${config.indexing.chunk_overlap} chars` : NOT_AVAILABLE}</span>
-              </div>
-              <div className={ROW_CLASS}>
-                <span className={LABEL_CLASS}>Top-K Retrieval</span>
-                <span className={VALUE_CLASS}>{config?.retrieval.top_k ?? NOT_AVAILABLE}</span>
-              </div>
-              <div className={ROW_CLASS}>
-                <span className={LABEL_CLASS}>Retrieval Strategy</span>
-                <span className={VALUE_CLASS}>{config?.retrieval.strategy ?? NOT_AVAILABLE}</span>
-              </div>
-            </div>
-          </div>
-        </section>
+            {/* 3. Embedding + Indexing ────────────────────────────────── */}
+            <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
+              <Panel className="p-5 sm:p-6" delay={210}>
+                <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
+                  <CardHeading icon={Layers} title="Embedding Configuration" />
+                  <span className="text-[11px] font-medium text-slate-400">Vector generation settings</span>
+                </div>
+                <div className="divide-y divide-white/50">
+                  <KV
+                    label="Embedding Model"
+                    value={config?.embedding?.model || config?.models.embed_model || NOT_CONFIGURED}
+                    mono
+                  />
+                  <KV label="Vector Dimensions" value={config?.embedding?.dimensions} />
+                  <KV label="Distance Metric" value={config?.embedding?.distance_metric} />
+                  <KV label="Vector Store Type" value={config?.embedding?.vector_store} />
+                  <KV label="Embedding Precision" value={config?.embedding?.precision} />
+                </div>
+              </Panel>
 
-        {/* 3. Generation Configuration */}
-        <section className={CARD_CLASS}>
-          <div>
-            <div className="mb-4 pb-2 border-b border-slate-100">
-              <h2 className="text-lg font-semibold text-slate-800 tracking-tight">Generation Configuration</h2>
-              <p className="mt-1 text-xs text-slate-500 font-medium">Inference parameters</p>
+              <Panel className="p-5 sm:p-6" delay={280}>
+                <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
+                  <CardHeading icon={FileStack} title="Indexing Configuration" />
+                  <span className="text-[11px] font-medium text-slate-400">Document processing pipeline</span>
+                </div>
+                <div className="divide-y divide-white/50">
+                  <KV label="Chunk Size" value={chunkSize} />
+                  <KV label="Chunk Overlap" value={chunkOverlap} />
+                  <KV label="Supported File Types" value={config?.indexing.supported_file_types?.join(", ")} />
+                  <KV label="Index Storage" value={config?.indexing.index_storage} />
+                  <KV label="Embedding Pipeline" value={config?.indexing.embedding_pipeline} mono />
+                </div>
+              </Panel>
             </div>
-            <div className="flex flex-col">
-              <div className={ROW_CLASS}>
-                <span className={LABEL_CLASS}>Maximum Response Tokens</span>
-                <span className={VALUE_CLASS}>{config?.generation?.max_response_tokens ?? NOT_AVAILABLE}</span>
-              </div>
-              <div className={ROW_CLASS}>
-                <span className={LABEL_CLASS}>Temperature</span>
-                <span className={VALUE_CLASS}>{config?.generation?.temperature ?? NOT_AVAILABLE}</span>
-              </div>
-              <div className={ROW_CLASS}>
-                <span className={LABEL_CLASS}>Top P</span>
-                <span className={VALUE_CLASS}>{config?.generation?.top_p ?? NOT_AVAILABLE}</span>
-              </div>
-              <div className={ROW_CLASS}>
-                <span className={LABEL_CLASS}>Frequency Penalty</span>
-                <span className={VALUE_CLASS}>{NOT_CONFIGURED}</span>
-              </div>
-              <div className={ROW_CLASS}>
-                <span className={LABEL_CLASS}>Presence Penalty</span>
-                <span className={VALUE_CLASS}>{NOT_CONFIGURED}</span>
-              </div>
-              <div className={ROW_CLASS}>
-                <span className={LABEL_CLASS}>Streaming Enabled</span>
-                <span className={VALUE_CLASS}>{config?.generation ? (config.generation.streaming ? "Enabled" : "Disabled") : NOT_AVAILABLE}</span>
-              </div>
-            </div>
-          </div>
-        </section>
 
-        {/* 4. Embedding Configuration */}
-        <section className={CARD_CLASS}>
-          <div>
-            <div className="mb-4 pb-2 border-b border-slate-100">
-              <h2 className="text-lg font-semibold text-slate-800 tracking-tight">Embedding Configuration</h2>
-              <p className="mt-1 text-xs text-slate-500 font-medium">Vector generation settings</p>
-            </div>
-            <div className="flex flex-col">
-              <div className={ROW_CLASS}>
-                <span className={LABEL_CLASS}>Embedding Model</span>
-                <span className={VALUE_CLASS}>{config?.embedding?.model || config?.models.embed_model || NOT_CONFIGURED}</span>
+            {/* 4. Configuration Source ────────────────────────────────── */}
+            <Panel className="p-5 sm:p-6" delay={350}>
+              <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
+                <CardHeading icon={FileCog} title="Configuration Source" />
+                <span className="text-[11px] font-medium text-slate-400">Origin of active platform settings</span>
               </div>
-              <div className={ROW_CLASS}>
-                <span className={LABEL_CLASS}>Vector Dimensions</span>
-                <span className={VALUE_CLASS}>{config?.embedding?.dimensions ?? "No data yet"}</span>
+              <div className="grid grid-cols-1 gap-x-10 md:grid-cols-2">
+                <div className="divide-y divide-white/50">
+                  <KV label="Configuration File" value={config?.source?.config_file} mono />
+                  <KV
+                    label="Environment Variables"
+                    value={config?.source?.environment_variables ?? "Not configured (static config)"}
+                    muted
+                  />
+                </div>
+                <div className="flex items-center justify-between gap-6 py-2.5 md:py-0">
+                  <span className="vv-eyebrow shrink-0">Backend Config</span>
+                  <StateBadge tone="emerald" label="Loaded Successfully" />
+                </div>
               </div>
-              <div className={ROW_CLASS}>
-                <span className={LABEL_CLASS}>Distance Metric</span>
-                <span className={VALUE_CLASS}>{config?.embedding?.distance_metric ?? NOT_AVAILABLE}</span>
-              </div>
-              <div className={ROW_CLASS}>
-                <span className={LABEL_CLASS}>Vector Store Type</span>
-                <span className={VALUE_CLASS}>{config?.embedding?.vector_store ?? NOT_AVAILABLE}</span>
-              </div>
-              <div className={ROW_CLASS}>
-                <span className={LABEL_CLASS}>Embedding Precision</span>
-                <span className={VALUE_CLASS}>{config?.embedding?.precision ?? NOT_AVAILABLE}</span>
-              </div>
-            </div>
+            </Panel>
           </div>
-        </section>
-
-        {/* 5. Indexing Configuration */}
-        <section className={CARD_CLASS}>
-          <div>
-            <div className="mb-4 pb-2 border-b border-slate-100">
-              <h2 className="text-lg font-semibold text-slate-800 tracking-tight">Indexing Configuration</h2>
-              <p className="mt-1 text-xs text-slate-500 font-medium">Document processing pipeline</p>
-            </div>
-            <div className="flex flex-col">
-              <div className={ROW_CLASS}>
-                <span className={LABEL_CLASS}>Chunk Size</span>
-                <span className={VALUE_CLASS}>{config?.indexing.chunk_size ? `${config.indexing.chunk_size} chars` : NOT_AVAILABLE}</span>
-              </div>
-              <div className={ROW_CLASS}>
-                <span className={LABEL_CLASS}>Chunk Overlap</span>
-                <span className={VALUE_CLASS}>{config?.indexing.chunk_overlap ? `${config.indexing.chunk_overlap} chars` : NOT_AVAILABLE}</span>
-              </div>
-              <div className={ROW_CLASS}>
-                <span className={LABEL_CLASS}>Supported File Types</span>
-                <span className={VALUE_CLASS}>{config?.indexing.supported_file_types?.join(", ") ?? NOT_AVAILABLE}</span>
-              </div>
-              <div className={ROW_CLASS}>
-                <span className={LABEL_CLASS}>Index Storage</span>
-                <span className={VALUE_CLASS}>{config?.indexing.index_storage ?? NOT_AVAILABLE}</span>
-              </div>
-              <div className={ROW_CLASS}>
-                <span className={LABEL_CLASS}>Embedding Pipeline</span>
-                <span className={VALUE_CLASS}>{config?.indexing.embedding_pipeline ?? NOT_AVAILABLE}</span>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* 6. Configuration Source */}
-        <section className={`${CARD_CLASS} lg:col-span-2`}>
-          <div>
-            <div className="mb-4 pb-2 border-b border-slate-100">
-              <h2 className="text-lg font-semibold text-slate-800 tracking-tight">Configuration Source</h2>
-              <p className="mt-1 text-xs text-slate-500 font-medium">Origin of active platform settings</p>
-            </div>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-              <div className="bg-white rounded-xl p-4 border border-slate-200/60 shadow-sm text-center">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Configuration File</p>
-                <p className="mt-1.5 text-xs font-semibold text-slate-600 font-mono">{config?.source?.config_file ?? NOT_AVAILABLE}</p>
-              </div>
-              <div className="bg-white rounded-xl p-4 border border-slate-200/60 shadow-sm text-center">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Environment Variables</p>
-                <p className="mt-1.5 text-xs font-semibold text-slate-400 italic">{config?.source?.environment_variables ?? NOT_AVAILABLE}</p>
-              </div>
-              <div className="bg-[#000080]/5 rounded-xl p-4 border border-[#000080]/20 shadow-sm text-center">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-[#000080]/60">Backend Config</p>
-                <p className="mt-1.5 text-sm font-bold text-[#000080]">Loaded Successfully</p>
-              </div>
-            </div>
-          </div>
-        </section>
-
+        </div>
       </div>
     </div>
   )
