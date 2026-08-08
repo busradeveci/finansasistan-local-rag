@@ -200,7 +200,7 @@ async def export_executive_pdf(body: ExportPdfRequest):
         raise HTTPException(status_code=500, detail=detail) from exc
 
     timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
-    filename = f"Foundry_Local_Executive_Report_{timestamp}.pdf"
+    filename = f"VectorVault_Intelligence_Report_{timestamp}.pdf"
     return Response(
         content=pdf_bytes,
         media_type="application/pdf",

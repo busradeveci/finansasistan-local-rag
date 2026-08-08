@@ -124,7 +124,7 @@ export const exportExecutivePdf = async (payload: ExportPdfPayload): Promise<voi
     .replace(/[-:]/g, "")
     .replace(/\..+/, "")
     .slice(0, 15)
-  const filename = `Foundry_Local_Executive_Report_${timestamp}.pdf`
+  const filename = `VectorVault_Intelligence_Report_${timestamp}.pdf`
   const blob = new Blob([response.data], { type: "application/pdf" })
   const url = URL.createObjectURL(blob)
   const anchor = document.createElement("a")
