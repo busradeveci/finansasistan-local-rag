@@ -1,253 +1,453 @@
-import React from 'react';
-import { useWorkstation } from "@/context/WorkstationContext";
-import { useWorkstationData } from "@/components/workstation/use-workstation-data";
-import { Activity, Cpu, Server, Database, Clock, Zap, MessageSquare, PlayCircle, Settings, LayoutList, TerminalSquare, List, User, FileText, Layers, Search, Inbox, BarChart3 } from "lucide-react";
+import { Fragment, type CSSProperties } from "react"
+import {
+  Activity,
+  BarChart3,
+  Boxes,
+  Clock,
+  Cpu,
+  Database,
+  FileText,
+  Gauge,
+  Inbox,
+  Layers,
+  List,
+  ListChecks,
+  MessagesSquare,
+  Search,
+  Server,
+  Settings,
+  TerminalSquare,
+  User,
+  Waypoints,
+  Zap,
+} from "lucide-react"
 
-const NOT_REPORTED = "Not reported";
-const NOT_AVAILABLE = "Not available";
-const DASH = "—";
+import { useWorkstation } from "@/context/WorkstationContext"
+import { useWorkstationData } from "@/components/workstation/use-workstation-data"
+import { CardHeading, LiveDot, Panel, tint } from "@/components/workstation/overview/primitives"
 
-export default function InferenceRuntimeModule() {
-  const { isGenerating } = useWorkstation();
-  const { status, loading } = useWorkstationData();
+const NOT_REPORTED = "Not reported"
+const NOT_AVAILABLE = "Not available"
+const LOADING = "Loading…"
+const DASH = "—"
 
-  const runtime = status?.runtime_state ?? null;
-  const online = status != null;
-  const provider = runtime?.provider ?? (online ? "Foundry Local" : (loading ? "Loading…" : NOT_AVAILABLE));
+/* ── Status badge ─────────────────────────────────────────────────────── */
 
-  const chatModel = status?.models?.chat_model ?? (loading ? "Loading…" : NOT_AVAILABLE);
-  const embedModel = status?.models?.embed_model ?? (loading ? "Loading…" : NOT_AVAILABLE);
-  const chatLoaded = runtime?.models?.chat?.loaded;
-  const embedLoaded = runtime?.models?.embed?.loaded;
+function StateBadge({
+  tone,
+  label,
+  live,
+}: {
+  tone: "emerald" | "amber" | "neutral"
+  label: string
+  live?: boolean
+}) {
+  if (tone === "emerald") {
+    return (
+      <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-emerald-200/70 bg-emerald-50/80 px-2.5 py-1 text-[10.5px] font-semibold text-emerald-700">
+        {live ? (
+          <LiveDot className="text-emerald-500" />
+        ) : (
+          <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+        )}
+        {label}
+      </span>
+    )
+  }
+  if (tone === "amber") {
+    return (
+      <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-amber-200/70 bg-amber-50/80 px-2.5 py-1 text-[10.5px] font-semibold text-amber-700">
+        <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
+        {label}
+      </span>
+    )
+  }
+  return (
+    <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-white/80 bg-white/70 px-2.5 py-1 text-[10.5px] font-semibold text-slate-400">
+      {label}
+    </span>
+  )
+}
 
-  const loadedLabel = (loaded?: boolean) =>
-    loaded === true ? "Loaded" : loaded === false ? "Idle" : NOT_REPORTED;
+/* ── Runtime identity tile ────────────────────────────────────────────── */
 
-  // The active stream count is known for this operator session only.
-  const activeStreams = isGenerating ? 1 : 0;
+function IdentityTile({
+  icon: Icon,
+  label,
+  value,
+  badge,
+}: {
+  icon: React.ComponentType<{ className?: string; strokeWidth?: number }>
+  label: string
+  value: string
+  badge: React.ReactNode
+}) {
+  return (
+    <div className="vv-tile vv-tile--hover flex min-w-0 flex-col gap-2.5 px-3.5 py-3">
+      <div className="flex items-center gap-1.5">
+        <Icon className="h-3.5 w-3.5 shrink-0 text-slate-400" strokeWidth={1.9} />
+        <span className="vv-eyebrow truncate">{label}</span>
+      </div>
+      <div className="flex items-center justify-between gap-2">
+        <span className="truncate text-[13.5px] font-semibold text-slate-700" title={value}>
+          {value}
+        </span>
+        {badge}
+      </div>
+    </div>
+  )
+}
+
+/* ── Metric tile ──────────────────────────────────────────────────────── */
+
+function MetricTile({
+  icon: Icon,
+  label,
+  value,
+  status,
+  muted,
+  live,
+}: {
+  icon: React.ComponentType<{ className?: string; strokeWidth?: number }>
+  label: string
+  value: string
+  status: string
+  muted?: boolean
+  live?: boolean
+}) {
+  return (
+    <div className="vv-tile vv-tile--hover flex min-w-0 flex-col gap-1.5 px-3.5 py-3">
+      <div className="flex items-center gap-1.5">
+        <Icon className="h-3.5 w-3.5 shrink-0 text-slate-400" strokeWidth={1.9} />
+        <span className="vv-eyebrow truncate">{label}</span>
+      </div>
+      <span
+        className={`text-[17px] leading-none tabular-nums ${
+          muted ? "font-normal text-slate-400" : "font-semibold text-slate-700"
+        }`}
+      >
+        {value}
+      </span>
+      <span className="flex items-center gap-1.5 text-[10.5px] font-medium text-slate-400">
+        {live && <LiveDot className="text-emerald-500" />}
+        <span className="truncate">{status}</span>
+      </span>
+    </div>
+  )
+}
+
+/* ── Inference pipeline ───────────────────────────────────────────────── */
+
+const FLOW_CYCLE = 6.3
+const FLOW_SLOT = FLOW_CYCLE / 7
+
+type FlowVars = CSSProperties & {
+  "--vv-delay"?: string
+  "--vv-stage-glow"?: string
+}
+
+type Stage = {
+  id: string
+  name: string
+  icon: React.ComponentType<{ className?: string; strokeWidth?: number }>
+  color: string
+}
+
+const PIPELINE: Stage[] = [
+  { id: "query", name: "User Query", icon: User, color: "#64748b" },
+  { id: "prompt", name: "Prompt Processing", icon: FileText, color: "#6366f1" },
+  { id: "embed", name: "Embedding Generation", icon: Layers, color: "#4f46e5" },
+  { id: "search", name: "Vector Search", icon: Search, color: "#2563eb" },
+  { id: "context", name: "Context Assembly", icon: Database, color: "#0d9488" },
+  { id: "llm", name: "LLM Inference", icon: Cpu, color: "#0891b2" },
+  { id: "stream", name: "Streaming Response", icon: Zap, color: "#059669" },
+]
+
+function PipelineStage({ stage, index }: { stage: Stage; index: number }) {
+  const Icon = stage.icon
+  const delay = `${(index * FLOW_SLOT).toFixed(3)}s`
 
   return (
-    <div className="flex flex-col h-full w-full overflow-y-auto bg-transparent p-4 sm:p-6 lg:p-8">
-      <div className="flex flex-col gap-6 max-w-7xl mx-auto w-full">
-        
-        {/* Header */}
-        <div className="bg-white/90 backdrop-blur-md border border-slate-200/60 shadow-sm rounded-2xl p-6 flex justify-between items-center flex-wrap gap-4 group">
-          <div className="flex items-center gap-5">
-            <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-white border border-slate-200/60 shadow-sm group-hover:shadow-md transition-shadow duration-300">
-              <Cpu className="text-[#000080] group-hover:scale-110 transition-transform duration-300" size={24} />
-            </div>
-            <div>
-              <h1 className="text-xl font-bold text-slate-800 tracking-tight mb-1">Inference Runtime</h1>
-              <p className="text-[13px] font-medium text-slate-500">Dedicated operational center for the Enterprise Local RAG runtime.</p>
+    <div
+      className="vv-stage group"
+      style={{ "--vv-delay": delay, "--vv-stage-glow": tint(stage.color, 0.22) } as FlowVars}
+    >
+      <span className="vv-stage__glow" style={{ "--vv-delay": delay } as FlowVars} />
+      <span
+        className="vv-stage__icon"
+        style={
+          {
+            "--vv-delay": delay,
+            color: stage.color,
+            background: tint(stage.color, 0.11),
+            boxShadow: `inset 0 0 0 1px ${tint(stage.color, 0.2)}`,
+          } as FlowVars
+        }
+      >
+        <Icon className="h-4 w-4" strokeWidth={1.9} />
+      </span>
+      <span className="relative z-10 px-0.5 text-center text-[9.5px] font-medium uppercase leading-[1.25] tracking-[0.055em] text-slate-500">
+        {stage.name}
+      </span>
+    </div>
+  )
+}
+
+function PipelineConnector({ index }: { index: number }) {
+  const delay = `${(index * FLOW_SLOT).toFixed(3)}s`
+  return (
+    <div className="vv-flow" aria-hidden="true">
+      <span className="vv-flow__line" />
+      <span className="vv-flow__runner" style={{ "--vv-delay": delay } as FlowVars}>
+        <span className="vv-flow__comet" />
+      </span>
+    </div>
+  )
+}
+
+/* ── Empty state ──────────────────────────────────────────────────────── */
+
+function EmptyState({
+  icon: Icon,
+  title,
+  detail,
+  colSpan,
+}: {
+  icon: React.ComponentType<{ className?: string; strokeWidth?: number }>
+  title: string
+  detail: string
+  colSpan: number
+}) {
+  return (
+    <tr>
+      <td colSpan={colSpan} className="py-14 text-center">
+        <div className="mx-auto flex max-w-xs flex-col items-center justify-center text-slate-400">
+          <span
+            className="vv-plate mb-3 h-11 w-11"
+            style={{
+              color: "#94a3b8",
+              background: "rgba(148,163,184,0.12)",
+              boxShadow: "inset 0 0 0 1px rgba(148,163,184,0.2)",
+            }}
+          >
+            <Icon className="h-5 w-5" strokeWidth={1.7} />
+          </span>
+          <p className="text-[12.5px] font-medium text-slate-500">{title}</p>
+          <p className="mt-1 text-[11px] font-normal leading-relaxed text-slate-400">
+            No data yet. {detail}
+          </p>
+        </div>
+      </td>
+    </tr>
+  )
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   Inference Runtime — enterprise runtime control surface on the vv system.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+export default function InferenceRuntimeModule() {
+  const { isGenerating } = useWorkstation()
+  const { status, loading } = useWorkstationData()
+
+  const runtime = status?.runtime_state ?? null
+  const online = status != null
+  const provider = runtime?.provider ?? (online ? "Foundry Local" : loading ? LOADING : NOT_AVAILABLE)
+
+  const chatModel = status?.models?.chat_model ?? (loading ? LOADING : NOT_AVAILABLE)
+  const embedModel = status?.models?.embed_model ?? (loading ? LOADING : NOT_AVAILABLE)
+  const chatLoaded = runtime?.models?.chat?.loaded
+  const embedLoaded = runtime?.models?.embed?.loaded
+
+  // The active stream count is known for this operator session only.
+  const activeStreams = isGenerating ? 1 : 0
+
+  const loadedBadge = (loaded?: boolean) =>
+    loaded === true ? (
+      <StateBadge tone="emerald" label="Loaded" />
+    ) : loaded === false ? (
+      <StateBadge tone="neutral" label="Idle" />
+    ) : (
+      <StateBadge tone="neutral" label={NOT_REPORTED} />
+    )
+
+  return (
+    <div className="flex h-full min-h-0 w-full flex-col overflow-hidden p-4 sm:p-5 lg:p-6">
+      <div className="mx-auto flex h-full min-h-0 w-full max-w-[1680px] flex-col gap-5">
+        {/* Header ─────────────────────────────────────────────────────── */}
+        <header className="flex flex-none flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5">
+            <span className="vv-plate h-8 w-8">
+              <Cpu className="h-[16px] w-[16px]" strokeWidth={1.9} />
+            </span>
+            <div className="min-w-0">
+              <h1 className="vv-title-section">Inference Runtime</h1>
+              <p className="vv-caption mt-0.5">
+                Dedicated operational center for the Enterprise Local RAG runtime.
+              </p>
             </div>
           </div>
           {online ? (
-            <div className="bg-emerald-50 text-emerald-700 border border-emerald-200/60 px-4 py-2 rounded-full text-xs font-bold flex items-center gap-2 uppercase tracking-wide shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
-               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" /> Operational
-            </div>
+            <StateBadge tone="emerald" label="Operational" live />
           ) : (
-            <div className="bg-amber-50 text-amber-700 border border-amber-200/60 px-4 py-2 rounded-full text-xs font-bold flex items-center gap-2 uppercase tracking-wide shadow-sm">
-               <span className="w-2 h-2 rounded-full bg-amber-500" /> {loading ? "Connecting…" : "Offline"}
-            </div>
+            <StateBadge tone="amber" label={loading ? "Connecting…" : "Offline"} />
           )}
-        </div>
+        </header>
 
-        {/* Section 1: Runtime Status */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5">
-          <GlassMetricCard title="Runtime Provider" value={provider} icon={<Settings size={18} />} status={online ? "Operational" : NOT_AVAILABLE} statusColor={online ? "text-emerald-600" : "text-slate-400"} />
-          <GlassMetricCard title="Active Chat Model" value={chatModel} icon={<MessageSquare size={18} />} status={loadedLabel(chatLoaded)} statusColor={chatLoaded ? "text-emerald-600" : "text-slate-400"} />
-          <GlassMetricCard title="Embedding Model" value={embedModel} icon={<Server size={18} />} status={loadedLabel(embedLoaded)} statusColor={embedLoaded ? "text-emerald-600" : "text-slate-400"} />
-          <GlassMetricCard title="Active Streams" value={online ? String(activeStreams) : DASH} icon={<Zap size={18} />} status={isGenerating ? "Streaming" : "Idle"} statusColor={isGenerating ? "text-emerald-600" : "text-slate-400"} />
-          <GlassMetricCard title="Queue Size" value={DASH} icon={<List size={18} />} status={NOT_REPORTED} statusColor="text-slate-400" />
-        </div>
-
-        {/* Section 2: Inference Performance */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5">
-           <GlassMetricCard title="Tokens / Sec" value={DASH} icon={<Activity size={18} />} status={NOT_REPORTED} statusColor="text-slate-400" />
-           <GlassMetricCard title="TTFT" value={DASH} icon={<Clock size={18} />} status={NOT_REPORTED} statusColor="text-slate-400" />
-           <GlassMetricCard title="Prompt Tokens" value={DASH} icon={<Database size={18} />} status={NOT_REPORTED} statusColor="text-slate-400" />
-           <GlassMetricCard title="Completion Tokens" value={DASH} icon={<BarChart3 size={18} />} status={NOT_REPORTED} statusColor="text-slate-400" />
-           <GlassMetricCard title="Context Window" value={DASH} icon={<LayoutList size={18} />} status={NOT_REPORTED} statusColor="text-slate-400" />
-        </div>
-
-        {/* Section 3: Inference Pipeline */}
-        <GlassPanel title="Inference Pipeline" icon={<PlayCircle size={18} className="text-[#000080]" />}>
-           <div className="flex items-center w-full overflow-x-auto py-4 px-2 pb-6 scrollbar-hide">
-              <PipelineStage name="User Query" icon={<User size={18} />} status="idle" />
-              <PipelineStage name="Prompt Processing" icon={<FileText size={18} />} status="idle" />
-              <PipelineStage name="Embedding Generation" icon={<Layers size={18} />} status="idle" />
-              <PipelineStage name="Vector Search" icon={<Search size={18} />} status="idle" />
-              <PipelineStage name="Context Assembly" icon={<Database size={18} />} status="idle" />
-              <PipelineStage name="LLM Inference" icon={<Cpu size={18} />} status="idle" />
-              <PipelineStage name="Streaming Response" icon={<Zap size={18} />} status="idle" isLast />
-           </div>
-        </GlassPanel>
-
-        {/* Bottom Section: Active Sessions & Events */}
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
-           {/* Section 4: Active Runtime Sessions */}
-           <GlassPanel title="Active Runtime Sessions" icon={<Activity size={18} className="text-[#000080]" />}>
-              <div className="overflow-x-auto w-full h-full flex flex-col">
-                 <table className="w-full text-left text-sm text-slate-600 border-collapse min-w-[600px] mb-6">
-                    <thead className="text-[11px] uppercase tracking-wider text-slate-500 bg-slate-50 border-b border-slate-200/60">
-                       <tr>
-                          <th className="px-4 py-3 font-semibold rounded-tl-xl">Session ID</th>
-                          <th className="px-4 py-3 font-semibold">Current Model</th>
-                          <th className="px-4 py-3 font-semibold">Started At</th>
-                          <th className="px-4 py-3 font-semibold">Status</th>
-                          <th className="px-4 py-3 font-semibold rounded-tr-xl">Tokens</th>
-                       </tr>
-                    </thead>
-                 </table>
-                 <div className="flex-1 flex flex-col items-center justify-center py-10 px-4 text-center bg-slate-50/50 rounded-xl border border-dashed border-slate-300 shadow-sm group">
-                   <div className="w-12 h-12 bg-white rounded-xl shadow-sm border border-slate-200/60 flex items-center justify-center mb-4 group-hover:scale-110 group-hover:shadow-md transition-all duration-300">
-                     <Inbox className="text-slate-400 group-hover:text-[#000080] transition-colors duration-300" size={24} />
-                   </div>
-                   <p className="text-[13px] font-bold text-slate-800 mb-1">No Active Sessions</p>
-                   <p className="text-xs text-slate-500 max-w-xs font-medium leading-relaxed">
-                     No data yet.<br/>Per-session runtime tracking is not reported.
-                   </p>
-                 </div>
+        <div className="fluent-scrollbar min-h-0 flex-1 overflow-y-auto pb-6">
+          <div className="flex flex-col gap-5">
+            {/* 1. Runtime Overview ────────────────────────────────────── */}
+            <Panel className="p-5 sm:p-6" delay={0}>
+              <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+                <CardHeading icon={Gauge} title="Runtime Overview" />
+                <span className="text-[11px] font-medium text-slate-400">
+                  {online ? "Foundry Local runtime" : loading ? LOADING : NOT_AVAILABLE}
+                </span>
               </div>
-           </GlassPanel>
 
-           {/* Section 5: Recent Runtime Events */}
-           <GlassPanel title="Recent Runtime Events" icon={<TerminalSquare size={18} className="text-[#000080]" />}>
-              <div className="overflow-x-auto w-full h-full flex flex-col">
-                 <table className="w-full text-left text-sm text-slate-600 border-collapse min-w-[500px] mb-6">
-                    <thead className="text-[11px] uppercase tracking-wider text-slate-500 bg-slate-50 border-b border-slate-200/60">
-                       <tr>
-                          <th className="px-4 py-3 font-semibold rounded-tl-xl w-32">Timestamp</th>
-                          <th className="px-4 py-3 font-semibold w-48">Event Type</th>
-                          <th className="px-4 py-3 font-semibold rounded-tr-xl">Details</th>
-                       </tr>
-                    </thead>
-                 </table>
-                 <div className="flex-1 flex flex-col items-center justify-center py-10 px-4 text-center bg-slate-50/50 rounded-xl border border-dashed border-slate-300 shadow-sm group">
-                   <div className="w-12 h-12 bg-white rounded-xl shadow-sm border border-slate-200/60 flex items-center justify-center mb-4 group-hover:scale-110 group-hover:shadow-md transition-all duration-300">
-                     <Activity className="text-slate-400 group-hover:text-[#000080] transition-colors duration-300" size={24} />
-                   </div>
-                   <p className="text-[13px] font-bold text-slate-800 mb-1">Event Log Empty</p>
-                   <p className="text-xs text-slate-500 max-w-xs font-medium leading-relaxed">
-                     No data yet.<br/>Runtime event history is not recorded.
-                   </p>
-                 </div>
+              {/* Runtime identity */}
+              <div className="mb-2 flex items-center gap-2">
+                <span className="vv-eyebrow">Runtime Identity</span>
+                <span className="h-px flex-1 bg-white/60" />
               </div>
-           </GlassPanel>
-        </div>
+              <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-3">
+                <IdentityTile
+                  icon={Settings}
+                  label="Runtime Provider"
+                  value={provider}
+                  badge={
+                    online ? (
+                      <StateBadge tone="emerald" label="Operational" />
+                    ) : (
+                      <StateBadge tone="neutral" label={loading ? LOADING : NOT_AVAILABLE} />
+                    )
+                  }
+                />
+                <IdentityTile
+                  icon={MessagesSquare}
+                  label="Active Chat Model"
+                  value={chatModel}
+                  badge={loadedBadge(chatLoaded)}
+                />
+                <IdentityTile
+                  icon={Server}
+                  label="Embedding Model"
+                  value={embedModel}
+                  badge={loadedBadge(embedLoaded)}
+                />
+              </div>
 
-      </div>
-    </div>
-  );
-}
+              {/* Runtime activity & inference metrics */}
+              <div className="mb-2 mt-5 flex items-center gap-2">
+                <span className="vv-eyebrow">Activity &amp; Inference Metrics</span>
+                <span className="h-px flex-1 bg-white/60" />
+              </div>
+              <div className="grid grid-cols-2 gap-2.5 md:grid-cols-4 xl:grid-cols-7">
+                <MetricTile
+                  icon={Zap}
+                  label="Active Streams"
+                  value={online ? String(activeStreams) : DASH}
+                  status={isGenerating ? "Streaming" : "Idle"}
+                  live={isGenerating}
+                />
+                <MetricTile icon={List} label="Queue Size" value={DASH} status={NOT_REPORTED} muted />
+                <MetricTile icon={Activity} label="Tokens / Sec" value={DASH} status={NOT_REPORTED} muted />
+                <MetricTile icon={Clock} label="TTFT" value={DASH} status={NOT_REPORTED} muted />
+                <MetricTile icon={Database} label="Prompt Tokens" value={DASH} status={NOT_REPORTED} muted />
+                <MetricTile icon={BarChart3} label="Completion Tokens" value={DASH} status={NOT_REPORTED} muted />
+                <MetricTile icon={Boxes} label="Context Window" value={DASH} status={NOT_REPORTED} muted />
+              </div>
+            </Panel>
 
-interface GlassMetricCardProps {
-  title: string;
-  value: string;
-  icon: React.ReactNode;
-  status: string;
-  statusColor?: string;
-  statusDotColor?: string;
-  hasSparkline?: boolean;
-}
+            {/* 2. Inference Pipeline ──────────────────────────────────── */}
+            <Panel className="p-5 sm:p-6" delay={70}>
+              <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+                <CardHeading icon={Waypoints} title="Inference Pipeline" />
+                <span className="text-[11px] font-medium text-slate-400">Retrieval-augmented flow</span>
+              </div>
+              <div className="vv-pipeline gap-0" role="list" aria-label="Inference pipeline stages">
+                {PIPELINE.map((stage, index) => (
+                  <Fragment key={stage.id}>
+                    <PipelineStage stage={stage} index={index} />
+                    {index < PIPELINE.length - 1 && <PipelineConnector index={index} />}
+                  </Fragment>
+                ))}
+              </div>
+            </Panel>
 
-function GlassMetricCard({ title, value, icon, status, statusColor = "text-emerald-600", statusDotColor = "", hasSparkline = false }: GlassMetricCardProps) {
-  return (
-    <div className="bg-white/90 backdrop-blur-md border border-slate-200/60 shadow-sm rounded-2xl p-6 flex flex-col gap-4 hover:-translate-y-1 hover:shadow-md transition-all duration-300 group">
-      <div className="flex items-center gap-2.5 text-xs font-bold text-slate-500 uppercase tracking-wide">
-        <span className="text-[#000080] shrink-0 group-hover:scale-110 transition-transform duration-300">{icon}</span>
-        <span className="truncate">{title}</span>
-      </div>
-      <div className="text-3xl font-bold text-slate-800 tracking-tight leading-none">{value}</div>
-      
-      {hasSparkline && (
-        <div className="h-10 w-full mt-1 mb-1 relative flex items-center justify-center rounded-lg border border-dashed border-slate-200 bg-slate-50 group-hover:bg-slate-100 transition-colors">
-          <div className="absolute inset-0 flex items-center justify-center">
-             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">No data yet</span>
+            {/* 3. Operational history ─────────────────────────────────── */}
+            <div className="grid grid-cols-1 gap-5 xl:grid-cols-2">
+              {/* Active Runtime Sessions */}
+              <Panel className="overflow-hidden p-0" delay={140}>
+                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/60 px-5 py-3.5">
+                  <CardHeading icon={Activity} title="Active Runtime Sessions" />
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-white/85 bg-white/65 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.09em] text-slate-500 shadow-[0_1px_2px_rgba(16,32,64,0.04)]">
+                    0 active
+                  </span>
+                </div>
+                <div className="overflow-x-auto">
+                  <table className="w-full border-collapse whitespace-nowrap text-left">
+                    <thead className="bg-white/55 backdrop-blur-md">
+                      <tr>
+                        {["Session ID", "Current Model", "Started At", "Status", "Tokens"].map((h) => (
+                          <th
+                            key={h}
+                            className="border-b border-white/60 px-5 py-2.5 text-[10.5px] font-semibold uppercase tracking-[0.09em] text-slate-400"
+                          >
+                            {h}
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <EmptyState
+                        icon={Inbox}
+                        title="No Active Sessions"
+                        detail="Per-session runtime tracking is not reported."
+                        colSpan={5}
+                      />
+                    </tbody>
+                  </table>
+                </div>
+              </Panel>
+
+              {/* Recent Runtime Events */}
+              <Panel className="overflow-hidden p-0" delay={210}>
+                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/60 px-5 py-3.5">
+                  <CardHeading icon={TerminalSquare} title="Recent Runtime Events" />
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-white/85 bg-white/65 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.09em] text-slate-500 shadow-[0_1px_2px_rgba(16,32,64,0.04)]">
+                    0 logged
+                  </span>
+                </div>
+                <div className="overflow-x-auto">
+                  <table className="w-full border-collapse whitespace-nowrap text-left">
+                    <thead className="bg-white/55 backdrop-blur-md">
+                      <tr>
+                        {["Timestamp", "Event Type", "Details"].map((h) => (
+                          <th
+                            key={h}
+                            className="border-b border-white/60 px-5 py-2.5 text-[10.5px] font-semibold uppercase tracking-[0.09em] text-slate-400"
+                          >
+                            {h}
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <EmptyState
+                        icon={ListChecks}
+                        title="Event Log Empty"
+                        detail="Runtime event history is not recorded."
+                        colSpan={3}
+                      />
+                    </tbody>
+                  </table>
+                </div>
+              </Panel>
+            </div>
           </div>
-          <svg className="w-full h-full opacity-30" preserveAspectRatio="none" viewBox="0 0 100 20">
-             <path d="M0,10 Q25,12 50,10 T100,10" fill="none" stroke="currentColor" strokeWidth="1" strokeDasharray="2 2" className="text-slate-400" />
-          </svg>
         </div>
-      )}
-
-      <div className={`text-[11px] font-bold uppercase flex items-center gap-2 pt-3 border-t border-slate-100/80 mt-auto ${statusColor}`}>
-        {/not reported|not available|awaiting/i.test(status) ? (
-           <span className="opacity-80 text-slate-400 truncate">{status}</span>
-        ) : (
-           <>
-              {(status === "Processing" || status === "Active" || status === "Streaming" || status === "Operational" || status === "Loaded") && <span className={`w-2 h-2 rounded-full animate-pulse shrink-0 ${statusDotColor || "bg-emerald-500"}`} />}
-              <span className="truncate">{status}</span>
-           </>
-        )}
       </div>
     </div>
-  );
-}
-
-interface GlassPanelProps {
-  title: string;
-  icon: React.ReactNode;
-  children: React.ReactNode;
-}
-
-function GlassPanel({ title, icon, children }: GlassPanelProps) {
-   return (
-      <div className="bg-white/90 backdrop-blur-md border border-slate-200/60 shadow-sm rounded-2xl p-6 flex flex-col gap-5 hover:shadow-md transition-shadow duration-300 group/panel">
-         <div className="flex items-center gap-3 text-sm font-bold text-slate-800 border-b border-slate-100/80 pb-4 tracking-tight">
-            <span className="group-hover/panel:scale-110 transition-transform duration-300 inline-block">{icon}</span> {title}
-         </div>
-         {children}
-      </div>
-   );
-}
-
-interface PipelineStageProps {
-  name: string;
-  icon: React.ReactNode;
-  status: 'idle' | 'active' | 'success';
-  isLast?: boolean;
-}
-
-function PipelineStage({ name, icon, status, isLast }: PipelineStageProps) {
-   const baseClasses = "flex flex-col items-center justify-center p-4 rounded-xl border transition-all duration-500 min-w-[150px] shadow-sm relative group bg-white/90 backdrop-blur-md";
-   let statusClasses = "";
-   let iconColor = "";
-   let textClasses = "";
-   let lineClasses = "";
-   
-   if (status === 'active') {
-      statusClasses = "border-[#000080]/30 shadow-[0_4px_20px_rgba(0,0,128,0.15)] ring-1 ring-[#000080]/20 bg-white";
-      iconColor = "text-[#000080]";
-      textClasses = "text-slate-800 font-bold";
-      lineClasses = "bg-[#000080]/60";
-   } else if (status === 'success') {
-      statusClasses = "border-emerald-200/60 shadow-[0_4px_15px_rgba(16,185,129,0.05)] bg-white";
-      iconColor = "text-emerald-600";
-      textClasses = "text-slate-800 font-semibold";
-      lineClasses = "bg-emerald-300";
-   } else {
-      statusClasses = "border-slate-200/60 shadow-sm opacity-90 hover:opacity-100 hover:shadow-md hover:bg-white";
-      iconColor = "text-slate-400 group-hover:text-[#000080] transition-colors duration-300";
-      textClasses = "text-slate-500 font-semibold group-hover:text-slate-800 transition-colors duration-300";
-      lineClasses = "bg-slate-200";
-   }
-
-   return (
-      <div className="flex items-center">
-        <div className={`${baseClasses} ${statusClasses}`}>
-           <div className={`mb-3 p-3 rounded-xl bg-slate-50 shadow-sm border border-slate-200/60 ${iconColor} group-hover:scale-110 group-hover:shadow-md transition-all duration-300`}>
-              {icon}
-           </div>
-           <div className={`text-[11px] text-center tracking-tight leading-tight ${textClasses}`}>{name}</div>
-        </div>
-        {!isLast && (
-           <div className="w-12 flex items-center justify-center shrink-0">
-             <div className={`h-[2px] w-full ${lineClasses} rounded-full transition-colors duration-500 relative`}>
-               {status === 'active' && <div className="absolute inset-0 bg-[#000080]/60 rounded-full animate-pulse blur-[2px]"></div>}
-             </div>
-           </div>
-        )}
-      </div>
-   );
+  )
 }
