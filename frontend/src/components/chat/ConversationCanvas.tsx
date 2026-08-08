@@ -11,7 +11,6 @@ import {
   Plus,
   Send,
   ShieldCheck,
-  Sparkles,
   Square,
   Trash2,
   User,
@@ -480,7 +479,13 @@ export default function ConversationCanvas({
             <div className="ws-chat-empty flex h-full items-center justify-center">
               <div className="ws-chat-column vv-rise flex max-w-xl flex-col items-center px-4 text-center">
                 <span className="vv-chat-empty-icon mb-5">
-                  <Sparkles className="h-7 w-7" strokeWidth={1.7} />
+                  <span className="vv-ai-orb" aria-hidden="true">
+                    <span className="vv-ai-orb__glow" />
+                    <span className="vv-ai-orb__sphere">
+                      <span className="vv-ai-orb__aurora" />
+                    </span>
+                    <span className="vv-ai-orb__sheen" />
+                  </span>
                 </span>
                 <h3 className="vv-title-section mb-2">How can I help you today?</h3>
                 <p className="vv-body mb-7 max-w-md">

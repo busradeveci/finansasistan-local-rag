@@ -810,9 +810,9 @@
   }
 
   .vv-chat-avatar--assistant {
-    color: var(--vv-accent, #2563eb);
-    background: var(--vv-accent-tint, rgba(37, 99, 235, 0.08));
-    box-shadow: inset 0 0 0 1px var(--vv-accent-ring, rgba(37, 99, 235, 0.16));
+    color: #45607f;
+    background: rgba(69, 96, 127, 0.09);
+    box-shadow: inset 0 0 0 1px rgba(69, 96, 127, 0.16);
   }
 
   .vv-chat-avatar--user {
@@ -949,17 +949,96 @@
 
   /* Empty state ─ enterprise welcome. */
   .vv-chat-empty-icon {
+    position: relative;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     width: 56px;
     height: 56px;
-    border-radius: 18px;
-    color: var(--vv-accent, #2563eb);
-    background: var(--vv-accent-tint, rgba(37, 99, 235, 0.08));
+    background: transparent;
+    box-shadow: none;
+  }
+
+  /* Ambient "intelligence" orb — soft 3D sphere with a slow rotating aurora
+     and a gentle breathing glow. Pure CSS, calm and premium. */
+  .vv-ai-orb {
+    position: relative;
+    width: 52px;
+    height: 52px;
+    border-radius: 9999px;
+  }
+
+  .vv-ai-orb__sphere {
+    position: absolute;
+    inset: 0;
+    border-radius: 9999px;
+    overflow: hidden;
+    background: radial-gradient(
+      circle at 32% 28%,
+      #eef3ff 0%,
+      #a9c0f4 28%,
+      #7f95e0 52%,
+      #5f74c0 74%,
+      #465a9c 100%
+    );
     box-shadow:
-      inset 0 0 0 1px var(--vv-accent-ring, rgba(37, 99, 235, 0.16)),
-      0 10px 26px rgba(37, 99, 235, 0.1);
+      inset -5px -7px 13px rgba(37, 48, 92, 0.38),
+      inset 4px 5px 10px rgba(255, 255, 255, 0.45);
+    animation: vv-orb-breathe 6s ease-in-out infinite;
+  }
+
+  .vv-ai-orb__aurora {
+    position: absolute;
+    inset: -22%;
+    border-radius: 9999px;
+    background: conic-gradient(
+      from 0deg,
+      rgba(120, 160, 255, 0) 0%,
+      rgba(139, 122, 240, 0.55) 28%,
+      rgba(90, 200, 210, 0.5) 58%,
+      rgba(120, 160, 255, 0) 100%
+    );
+    filter: blur(5px);
+    mix-blend-mode: screen;
+    animation: vv-orb-spin 9s linear infinite;
+  }
+
+  .vv-ai-orb__sheen {
+    position: absolute;
+    top: 15%;
+    left: 19%;
+    width: 34%;
+    height: 24%;
+    border-radius: 9999px;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0) 70%);
+    filter: blur(0.5px);
+  }
+
+  .vv-ai-orb__glow {
+    position: absolute;
+    inset: -32%;
+    border-radius: 9999px;
+    background: radial-gradient(circle, rgba(110, 150, 255, 0.4), rgba(110, 150, 255, 0) 68%);
+    filter: blur(6px);
+    animation: vv-orb-breathe 6s ease-in-out infinite;
+  }
+
+  @keyframes vv-orb-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @keyframes vv-orb-breathe {
+    0%,
+    100% {
+      transform: scale(1);
+      opacity: 0.92;
+    }
+    50% {
+      transform: scale(1.05);
+      opacity: 1;
+    }
   }
 
   /* Suggestion chips ─ starter prompts. */
@@ -1000,10 +1079,10 @@
     flex-shrink: 0;
     width: 28px;
     height: 28px;
-    border-radius: 9px;
-    color: var(--vv-accent, #2563eb);
-    background: var(--vv-accent-tint, rgba(37, 99, 235, 0.08));
-    box-shadow: inset 0 0 0 1px var(--vv-accent-ring, rgba(37, 99, 235, 0.16));
+    border-radius: 8px;
+    color: #475569;
+    background: rgba(100, 116, 139, 0.1);
+    box-shadow: inset 0 0 0 1px rgba(100, 116, 139, 0.14);
   }
 
   /* Evidence context body — readable UI text, not a code block. */
@@ -1265,10 +1344,8 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  border-radius: 10px;
-  color: var(--vv-accent);
-  background: var(--vv-accent-tint);
-  box-shadow: inset 0 0 0 1px var(--vv-accent-ring);
+  border-radius: 8px;
+  color: #475569;
 }
 
 /* ── Typography ───────────────────────────────────────────────────────── */
@@ -1601,9 +1678,9 @@
   height: 52px;
   border-radius: 9999px;
   color: var(--vv-ink-2);
-  background: linear-gradient(160deg, rgba(255, 255, 255, 0.96), rgba(255, 255, 255, 0.7));
-  border: 1px solid rgba(255, 255, 255, 0.95);
-  box-shadow: 0 1px 2px rgba(16, 32, 64, 0.04), 0 8px 20px rgba(16, 32, 64, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  background: #f8fafc;
+  border: 1px solid rgba(15, 23, 42, 0.09);
+  box-shadow: none;
   transition:
     transform var(--vv-dur) var(--vv-ease),
     color var(--vv-dur) var(--vv-ease),
@@ -1612,8 +1689,9 @@
 
 .vv-qa:hover .vv-qa__circle {
   transform: translateY(-3px);
-  color: var(--vv-accent-deep);
-  box-shadow: 0 2px 6px rgba(16, 32, 64, 0.06), 0 14px 30px rgba(37, 99, 235, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  color: var(--vv-ink);
+  border-color: rgba(15, 23, 42, 0.16);
+  box-shadow: 0 2px 6px rgba(16, 32, 64, 0.08);
 }
 
 .vv-qa:active .vv-qa__circle {
@@ -1709,6 +1787,9 @@
   .vv-bar,
   .vv-orb,
   .vv-ripple,
+  .vv-ai-orb__sphere,
+  .vv-ai-orb__aurora,
+  .vv-ai-orb__glow,
   .vv-typing span,
   .vv-chat-caret,
   [class*="animate-vv-"] {

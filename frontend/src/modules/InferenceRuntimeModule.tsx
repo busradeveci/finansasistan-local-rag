@@ -179,8 +179,6 @@ function PipelineStage({ stage, index }: { stage: Stage; index: number }) {
           {
             "--vv-delay": delay,
             color: stage.color,
-            background: tint(stage.color, 0.11),
-            boxShadow: `inset 0 0 0 1px ${tint(stage.color, 0.2)}`,
           } as FlowVars
         }
       >
@@ -226,8 +224,6 @@ function EmptyState({
             className="vv-plate mb-3 h-11 w-11"
             style={{
               color: "#94a3b8",
-              background: "rgba(148,163,184,0.12)",
-              boxShadow: "inset 0 0 0 1px rgba(148,163,184,0.2)",
             }}
           >
             <Icon className="h-5 w-5" strokeWidth={1.7} />
@@ -277,9 +273,7 @@ export default function InferenceRuntimeModule() {
         {/* Header ─────────────────────────────────────────────────────── */}
         <header className="flex flex-none flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2.5">
-            <span className="vv-plate h-8 w-8">
-              <Cpu className="h-[16px] w-[16px]" strokeWidth={1.9} />
-            </span>
+            <Cpu className="h-[18px] w-[18px] shrink-0 text-slate-500" strokeWidth={1.9} />
             <div className="min-w-0">
               <h1 className="vv-title-section">Inference Runtime</h1>
               <p className="vv-caption mt-0.5">

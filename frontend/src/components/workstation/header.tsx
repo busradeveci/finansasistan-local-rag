@@ -281,7 +281,7 @@ export function Header({ breadcrumb }: HeaderProps) {
             <button
               type="button"
               onClick={() => setActiveModal(activeModal === "profile" ? null : "profile")}
-              className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-[#000080] to-blue-700 text-[11px] font-semibold text-white shadow-md ring-1 ring-[#000080]/20 transition-transform hover:scale-105 active:scale-95"
+              className="flex h-8 w-8 items-center justify-center rounded-xl bg-slate-500 text-[11px] font-semibold text-white shadow-sm ring-1 ring-slate-400/30 transition-transform hover:scale-105 active:scale-95"
             >
               {user?.initials || "BD"}
             </button>

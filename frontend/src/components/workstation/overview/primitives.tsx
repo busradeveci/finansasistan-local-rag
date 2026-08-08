@@ -110,17 +110,11 @@ type CardHeadingProps = {
   action?: ReactNode
 }
 
-export function CardHeading({ icon: Icon, title, tone, action }: CardHeadingProps) {
-  const plateStyle: CSSProperties | undefined = tone
-    ? { color: tone, background: tint(tone, 0.1), boxShadow: `inset 0 0 0 1px ${tint(tone, 0.2)}` }
-    : undefined
-
+export function CardHeading({ icon: Icon, title, action }: CardHeadingProps) {
   return (
     <div className="flex items-center justify-between gap-3">
       <div className="flex min-w-0 items-center gap-2.5">
-        <span className="vv-plate h-7 w-7" style={plateStyle}>
-          <Icon className="h-[15px] w-[15px]" strokeWidth={1.9} />
-        </span>
+        <Icon className="h-[17px] w-[17px] shrink-0 text-slate-500" strokeWidth={1.9} />
         <h2 className="vv-title-card truncate">{title}</h2>
       </div>
       {action}

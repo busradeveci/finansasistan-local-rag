@@ -66,8 +66,6 @@ function StageTile({ stage, index, latency }: { stage: Stage; index: number; lat
           {
             "--vv-delay": delay,
             color: stage.color,
-            background: tint(stage.color, 0.11),
-            boxShadow: `inset 0 0 0 1px ${tint(stage.color, 0.2)}`,
           } as StageVars
         }
       >

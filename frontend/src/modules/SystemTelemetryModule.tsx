@@ -230,9 +230,7 @@ export default function SystemTelemetryModule() {
         {/* Header ─────────────────────────────────────────────────────── */}
         <header className="flex flex-none flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2.5">
-            <span className="vv-plate h-8 w-8">
-              <Activity className="h-[16px] w-[16px]" strokeWidth={1.9} />
-            </span>
+            <Activity className="h-[18px] w-[18px] shrink-0 text-slate-500" strokeWidth={1.9} />
             <div className="min-w-0">
               <h1 className="vv-title-section">System Telemetry</h1>
               <p className="vv-caption mt-0.5">
@@ -370,8 +368,6 @@ export default function SystemTelemetryModule() {
                               className="vv-plate mb-3 h-11 w-11"
                               style={{
                                 color: "#94a3b8",
-                                background: "rgba(148,163,184,0.12)",
-                                boxShadow: "inset 0 0 0 1px rgba(148,163,184,0.2)",
                               }}
                             >
                               <Inbox className="h-5 w-5" strokeWidth={1.7} />

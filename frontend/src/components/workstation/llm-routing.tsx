@@ -162,8 +162,6 @@ function FlowStageTile({ stage, index }: { stage: FlowStage; index: number }) {
           {
             "--vv-delay": delay,
             color: stage.color,
-            background: tint(stage.color, stage.emphasis ? 0.14 : 0.11),
-            boxShadow: `inset 0 0 0 1px ${tint(stage.color, stage.emphasis ? 0.32 : 0.2)}`,
           } as FlowVars
         }
       >
@@ -446,8 +444,6 @@ export function LlmRouting() {
                         className="vv-plate mb-3 h-11 w-11"
                         style={{
                           color: "#94a3b8",
-                          background: "rgba(148,163,184,0.12)",
-                          boxShadow: "inset 0 0 0 1px rgba(148,163,184,0.2)",
                         }}
                       >
                         <Waypoints className="h-5 w-5" strokeWidth={1.7} />

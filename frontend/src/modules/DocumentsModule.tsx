@@ -178,9 +178,7 @@ export default function DocumentsModule() {
     <div className="flex h-full min-h-0 w-full flex-col overflow-hidden p-4 sm:p-5 lg:p-6">
       <div className="mx-auto flex h-full min-h-0 w-full max-w-[1680px] flex-col gap-5">
         <header className="flex flex-none items-center gap-2.5">
-          <span className="vv-plate h-8 w-8">
-            <Files className="h-[16px] w-[16px]" strokeWidth={1.9} />
-          </span>
+          <Files className="h-[18px] w-[18px] shrink-0 text-slate-500" strokeWidth={1.9} />
           <div className="min-w-0">
             <h1 className="vv-title-section">Document Management</h1>
             <p className="vv-caption mt-0.5">
@@ -296,7 +294,7 @@ export default function DocumentsModule() {
                         <tr>
                           <td colSpan={5} className="py-14 text-center">
                             <div className="flex flex-col items-center justify-center text-slate-400">
-                              <span className="vv-plate mb-3 h-11 w-11" style={{ color: "#94a3b8", background: "rgba(148,163,184,0.12)", boxShadow: "inset 0 0 0 1px rgba(148,163,184,0.2)" }}>
+                              <span className="vv-plate mb-3 h-11 w-11" style={{ color: "#94a3b8" }}>
                                 <HardDrive className="h-5 w-5" strokeWidth={1.7} />
                               </span>
                               <p className="text-[12.5px] font-medium text-slate-500">No documents found matching criteria.</p>

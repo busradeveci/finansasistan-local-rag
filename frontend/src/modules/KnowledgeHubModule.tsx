@@ -193,9 +193,7 @@ export default function KnowledgeHubModule() {
         <Panel className="shrink-0 p-5" delay={0}>
           <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-2.5">
-              <span className="vv-plate h-8 w-8">
-                <Server className="h-[16px] w-[16px]" strokeWidth={1.9} />
-              </span>
+              <Server className="h-[18px] w-[18px] shrink-0 text-slate-500" strokeWidth={1.9} />
               <div>
                 <h1 className="vv-title-section">Knowledge Overview</h1>
                 <p className="vv-caption mt-0.5">Enterprise knowledge repository · index telemetry</p>
@@ -233,7 +231,7 @@ export default function KnowledgeHubModule() {
             <Panel className="flex min-h-0 flex-1 flex-col overflow-hidden p-2.5" delay={70}>
               {filteredInventory.length === 0 ? (
                 <div className="flex flex-1 flex-col items-center justify-center p-6 text-center">
-                  <span className="vv-plate mb-3 h-11 w-11" style={{ color: "#94a3b8", background: "rgba(148,163,184,0.12)", boxShadow: "inset 0 0 0 1px rgba(148,163,184,0.2)" }}>
+                  <span className="vv-plate mb-3 h-11 w-11" style={{ color: "#94a3b8" }}>
                     <SearchX className="h-5 w-5" strokeWidth={1.7} />
                   </span>
                   <p className="text-[13px] font-medium text-slate-500">No documents found</p>

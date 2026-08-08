@@ -219,9 +219,7 @@ export default function SecurityCenterModule() {
         {/* Header ─────────────────────────────────────────────────────── */}
         <header className="flex flex-none flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2.5">
-            <span className="vv-plate h-8 w-8">
-              <ShieldCheck className="h-[16px] w-[16px]" strokeWidth={1.9} />
-            </span>
+            <ShieldCheck className="h-[18px] w-[18px] shrink-0 text-slate-500" strokeWidth={1.9} />
             <div className="min-w-0">
               <h1 className="vv-title-section">Security Center</h1>
               <p className="vv-caption mt-0.5">
