@@ -2,31 +2,6 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ShieldCheck, Lock, WifiOff, Fingerprint, ScanEye, Activity, ChevronRight } from 'lucide-react';
 
-/* ─── VectorVault Shield Logo (inline SVG, white for dark BG) ──────────── */
-const VaultShield = ({ className = '' }: { className?: string }) => (
-  <svg viewBox="0 0 48 48" fill="none" className={className} xmlns="http://www.w3.org/2000/svg">
-    <path
-      d="M24 4L6 12v12c0 11.1 7.7 21.5 18 24 10.3-2.5 18-12.9 18-24V12L24 4z"
-      fill="url(#shield-fill)"
-      stroke="rgba(255,255,255,0.3)"
-      strokeWidth="1"
-    />
-    <path
-      d="M18 24l4 4 8-8"
-      stroke="white"
-      strokeWidth="2.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-    <defs>
-      <linearGradient id="shield-fill" x1="6" y1="4" x2="42" y2="40" gradientUnits="userSpaceOnUse">
-        <stop offset="0%" stopColor="rgba(59,130,246,0.5)" />
-        <stop offset="100%" stopColor="rgba(37,99,235,0.3)" />
-      </linearGradient>
-    </defs>
-  </svg>
-);
-
 /* ─── Pulsing green dot ────────────────────────────────────────────────── */
 const PulsingDot = () => (
   <span className="vv-pulse-wrapper">
@@ -89,11 +64,16 @@ const LoginPage = () => {
 
   return (
     <div className="vv-login-root">
-      {/* Full-page background image */}
-      <div className="vv-login-bg" />
-
-      {/* Subtle overlay for depth */}
-      <div className="vv-login-overlay" />
+      {/* Full-page looping video background */}
+      <video
+        className="vv-login-bg-video"
+        autoPlay
+        loop
+        muted
+        playsInline
+      >
+        <source src="/color-bends-1786174031594.webm" type="video/webm" />
+      </video>
 
       {/* Centered content */}
       <div className="vv-login-container">
@@ -103,7 +83,6 @@ const LoginPage = () => {
 
           {/* Brand header */}
           <div className="vv-brand-header">
-            <VaultShield className="vv-brand-shield" />
             <div className="vv-brand-text">
               <span className="vv-brand-name">VectorVault</span>
               <span className="vv-brand-subtitle">Enterprise AI Knowledge Platform</span>
@@ -244,31 +223,22 @@ const LoginPage = () => {
           -moz-osx-font-smoothing: grayscale;
         }
 
-        /* ── Background ── */
-        .vv-login-bg {
-          position: absolute;
+        /* ── Background video ── */
+        .vv-login-bg-video {
+          position: fixed;
           inset: 0;
-          width: 100%;
-          height: 100%;
-          background-image: url('/login-bg.jpg');
-          background-size: cover;
-          background-position: center;
-          background-repeat: no-repeat;
-          background-attachment: fixed;
-          z-index: 0;
-        }
-
-        .vv-login-overlay {
-          position: absolute;
-          inset: 0;
-          background: radial-gradient(ellipse at 50% 40%, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.25) 100%);
-          z-index: 1;
+          width: 100vw;
+          height: 100vh;
+          object-fit: cover;
+          z-index: -1;
+          opacity: 1;
+          filter: none;
         }
 
         /* ── Container ── */
         .vv-login-container {
           position: relative;
-          z-index: 2;
+          z-index: 1;
           width: 100%;
           min-height: 100%;
           display: flex;
@@ -281,16 +251,16 @@ const LoginPage = () => {
         .vv-glass-card {
           width: 100%;
           max-width: 480px;
-          background: rgba(255, 255, 255, 0.08);
+          background: rgba(255, 255, 255, 0.55);
           backdrop-filter: blur(28px) saturate(1.2);
           -webkit-backdrop-filter: blur(28px) saturate(1.2);
-          border: 1px solid rgba(255, 255, 255, 0.18);
+          border: 1px solid rgba(255, 255, 255, 0.4);
           border-radius: 24px;
           box-shadow:
             0 32px 64px rgba(0, 0, 0, 0.18),
             0 8px 24px rgba(0, 0, 0, 0.12),
-            inset 0 1px 0 rgba(255, 255, 255, 0.15),
-            inset 0 0 0 0.5px rgba(255, 255, 255, 0.08);
+            inset 0 1px 0 rgba(255, 255, 255, 0.5),
+            inset 0 0 0 0.5px rgba(255, 255, 255, 0.25);
           padding: 32px 36px 24px;
           overflow: hidden;
           position: relative;
@@ -315,12 +285,6 @@ const LoginPage = () => {
           margin-bottom: 20px;
         }
 
-        .vv-brand-shield {
-          width: 40px;
-          height: 40px;
-          flex-shrink: 0;
-        }
-
         .vv-brand-text {
           display: flex;
           flex-direction: column;
@@ -328,16 +292,16 @@ const LoginPage = () => {
         }
 
         .vv-brand-name {
-          font-size: 17px;
+          font-size: 1.5rem; /* text-2xl */
           font-weight: 700;
-          color: #ffffff;
+          color: #0f172a;
           letter-spacing: -0.01em;
         }
 
         .vv-brand-subtitle {
           font-size: 11px;
           font-weight: 500;
-          color: rgba(255, 255, 255, 0.5);
+          color: rgba(30, 41, 59, 0.6);
           letter-spacing: 0.06em;
           text-transform: uppercase;
         }
@@ -350,7 +314,7 @@ const LoginPage = () => {
         .vv-card-title {
           font-size: 24px;
           font-weight: 700;
-          color: #ffffff;
+          color: #0f172a;
           line-height: 1.2;
           margin: 0 0 8px 0;
           letter-spacing: -0.02em;
@@ -359,7 +323,7 @@ const LoginPage = () => {
         .vv-card-desc {
           font-size: 13.5px;
           font-weight: 400;
-          color: rgba(255, 255, 255, 0.55);
+          color: #475569;
           line-height: 1.6;
           margin: 0;
         }
@@ -380,7 +344,7 @@ const LoginPage = () => {
           display: block;
           font-size: 11.5px;
           font-weight: 600;
-          color: rgba(255, 255, 255, 0.6);
+          color: #64748b;
           letter-spacing: 0.04em;
           text-transform: uppercase;
           margin-bottom: 8px;
@@ -393,32 +357,32 @@ const LoginPage = () => {
           font-size: 14.5px;
           font-weight: 400;
           font-family: inherit;
-          color: #ffffff;
-          background: rgba(255, 255, 255, 0.06);
-          border: 1px solid rgba(255, 255, 255, 0.12);
+          color: #1e293b;
+          background: rgba(255, 255, 255, 0.6);
+          border: 1px solid #e2e8f0;
           border-radius: 14px;
           outline: none;
           transition: all 200ms cubic-bezier(0.2, 0, 0, 1);
           box-sizing: border-box;
-          box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.06);
+          box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.03);
         }
 
         .vv-input::placeholder {
-          color: rgba(255, 255, 255, 0.25);
+          color: #94a3b8;
           font-weight: 400;
         }
 
         .vv-input:focus {
-          background: rgba(255, 255, 255, 0.1);
-          border-color: rgba(96, 165, 250, 0.6);
+          background: rgba(255, 255, 255, 0.85);
+          border-color: rgba(59, 130, 246, 0.55);
           box-shadow:
-            0 0 0 3px rgba(59, 130, 246, 0.15),
-            inset 0 2px 4px rgba(0, 0, 0, 0.04);
+            0 0 0 3px rgba(59, 130, 246, 0.12),
+            inset 0 1px 2px rgba(15, 23, 42, 0.02);
         }
 
         .vv-input:hover:not(:focus) {
-          border-color: rgba(255, 255, 255, 0.2);
-          background: rgba(255, 255, 255, 0.08);
+          border-color: #cbd5e1;
+          background: rgba(255, 255, 255, 0.75);
         }
 
         /* ── Error Banner ── */
@@ -427,11 +391,11 @@ const LoginPage = () => {
           align-items: flex-start;
           gap: 10px;
           padding: 12px 14px;
-          background: rgba(239, 68, 68, 0.12);
-          border: 1px solid rgba(239, 68, 68, 0.25);
+          background: rgba(239, 68, 68, 0.08);
+          border: 1px solid rgba(239, 68, 68, 0.2);
           border-radius: 12px;
           margin-bottom: 18px;
-          color: #fca5a5;
+          color: #b91c1c;
           font-size: 12.5px;
           font-weight: 500;
           line-height: 1.45;
@@ -440,7 +404,7 @@ const LoginPage = () => {
         .vv-error-banner svg {
           flex-shrink: 0;
           margin-top: 1px;
-          color: #f87171;
+          color: #dc2626;
         }
 
         /* ── Submit Button ── */
@@ -519,8 +483,8 @@ const LoginPage = () => {
 
         /* ── Status Card ── */
         .vv-status-card {
-          background: rgba(255, 255, 255, 0.05);
-          border: 1px solid rgba(255, 255, 255, 0.1);
+          background: rgba(255, 255, 255, 0.45);
+          border: 1px solid #e2e8f0;
           border-radius: 12px;
           padding: 12px 14px;
           margin-bottom: 16px;
@@ -543,15 +507,15 @@ const LoginPage = () => {
         .vv-status-title {
           font-size: 12.5px;
           font-weight: 600;
-          color: rgba(255, 255, 255, 0.85);
+          color: #0f172a;
         }
 
         .vv-status-badge {
           font-size: 10px;
           font-weight: 600;
-          color: #34d399;
-          background: rgba(52, 211, 153, 0.1);
-          border: 1px solid rgba(52, 211, 153, 0.2);
+          color: #059669;
+          background: rgba(5, 150, 105, 0.08);
+          border: 1px solid rgba(5, 150, 105, 0.18);
           border-radius: 6px;
           padding: 2px 8px;
           letter-spacing: 0.03em;
@@ -561,7 +525,7 @@ const LoginPage = () => {
         .vv-status-desc {
           font-size: 11.5px;
           font-weight: 400;
-          color: rgba(255, 255, 255, 0.4);
+          color: #475569;
           line-height: 1.55;
           margin: 0;
         }
@@ -579,46 +543,42 @@ const LoginPage = () => {
           align-items: center;
           gap: 7px;
           padding: 6px 9px;
-          background: rgba(255, 255, 255, 0.03);
-          border: 1px solid rgba(255, 255, 255, 0.06);
+          background: rgba(255, 255, 255, 0.4);
+          border: 1px solid #e2e8f0;
           border-radius: 9px;
           transition: all 200ms ease;
         }
 
         .vv-security-item:hover {
-          background: rgba(255, 255, 255, 0.06);
-          border-color: rgba(255, 255, 255, 0.12);
+          background: rgba(255, 255, 255, 0.7);
+          border-color: #cbd5e1;
         }
 
         .vv-security-icon {
-          width: 26px;
-          height: 26px;
           display: flex;
           align-items: center;
           justify-content: center;
           flex-shrink: 0;
-          color: rgba(96, 165, 250, 0.8);
-          background: rgba(59, 130, 246, 0.08);
-          border-radius: 7px;
+          color: #2563eb;
         }
 
         .vv-security-text {
           font-size: 11px;
           font-weight: 500;
-          color: rgba(255, 255, 255, 0.55);
+          color: #334155;
           line-height: 1.3;
         }
 
         /* ── Footer ── */
         .vv-card-footer {
           padding-top: 18px;
-          border-top: 1px solid rgba(255, 255, 255, 0.06);
+          border-top: 1px solid #e2e8f0;
         }
 
         .vv-card-footer p {
           font-size: 10.5px;
           font-weight: 400;
-          color: rgba(255, 255, 255, 0.28);
+          color: #475569;
           text-align: center;
           line-height: 1.65;
           margin: 0;
@@ -688,11 +648,6 @@ const LoginPage = () => {
 
           .vv-security-grid {
             grid-template-columns: 1fr;
-          }
-
-          .vv-brand-shield {
-            width: 34px;
-            height: 34px;
           }
         }
       `}</style>
