@@ -42,12 +42,14 @@ function documentTypeIcon(filename: string) {
 
 function KpiTile({ label, value, awaiting }: { label: string; value: string; awaiting?: boolean }) {
   return (
-    <div className="vv-tile vv-tile--hover min-w-0 px-3.5 py-3">
-      <div className="vv-eyebrow mb-1.5">{label}</div>
+    <div className="vv-tile vv-tile--hover flex min-w-0 flex-col justify-center px-3.5 py-3">
+      <div className="vv-eyebrow mb-1.5 truncate" title={label}>{label}</div>
       {awaiting ? (
-        <p className="truncate text-[11px] font-medium italic text-slate-400">{AWAITING}</p>
+        <p className="truncate text-[12px] font-normal not-italic text-slate-400" title={AWAITING}>
+          {AWAITING}
+        </p>
       ) : (
-        <p className="truncate text-[14px] font-semibold tabular-nums text-slate-700" title={value}>
+        <p className="truncate text-[13.5px] font-semibold tabular-nums text-slate-700" title={value}>
           {value}
         </p>
       )}
@@ -77,10 +79,12 @@ function StatCard({
         <span className="vv-eyebrow">{label}</span>
       </div>
       {awaiting || value == null ? (
-        <p className="text-[11px] font-medium italic text-slate-400">{AWAITING}</p>
+        <p className="truncate text-[12px] font-normal not-italic text-slate-400" title={AWAITING}>
+          {AWAITING}
+        </p>
       ) : (
         <p className="flex items-baseline gap-1">
-          <span className="text-[16px] font-semibold tabular-nums text-slate-700">{value}</span>
+          <span className="text-[15px] font-semibold tabular-nums text-slate-700">{value}</span>
           {caption && <span className="text-[10.5px] font-medium text-slate-400">{caption}</span>}
         </p>
       )}
@@ -176,7 +180,7 @@ export default function KnowledgeHubModule() {
 
   return (
     <div className="flex h-full min-h-0 w-full flex-col overflow-hidden p-4 sm:p-5 lg:p-6">
-      <div className="mx-auto flex h-full min-h-0 w-full max-w-[1720px] flex-col gap-5">
+      <div className="mx-auto flex h-full min-h-0 w-full max-w-[1680px] flex-col gap-5">
         {/* ── 1. Knowledge Overview ─────────────────────────────────────── */}
         <Panel className="shrink-0 p-5" delay={0}>
           <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
@@ -383,9 +387,9 @@ export default function KnowledgeHubModule() {
                                   {c.chars.toLocaleString()}
                                 </span>
                               </div>
-                              <div className="flex flex-col items-end">
+                              <div className="flex min-w-0 flex-col items-end">
                                 <span className="vv-eyebrow">Tokens</span>
-                                <span className="text-[10.5px] font-medium italic text-slate-400">
+                                <span className="max-w-[140px] truncate text-[11px] font-normal not-italic text-slate-400" title={AWAITING}>
                                   {AWAITING}
                                 </span>
                               </div>
