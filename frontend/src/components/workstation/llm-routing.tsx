@@ -1,11 +1,22 @@
-import { Search, Route, Server, Shield, FileText, ArrowRight, Brain, CircleDot, Activity, Cpu } from "lucide-react"
+import { Fragment, type CSSProperties } from "react"
+import {
+  ArrowRight,
+  Boxes,
+  Brain,
+  CircleDot,
+  Cpu,
+  FileText,
+  Layers,
+  ListChecks,
+  MessagesSquare,
+  Radar,
+  Route,
+  Server,
+  Shield,
+  Waypoints,
+} from "lucide-react"
 import { useWorkstationData } from "@/components/workstation/use-workstation-data"
-
-const GLASS_CARD =
-  "bg-white/90 backdrop-blur-md border border-slate-200/60 shadow-sm rounded-3xl"
-
-const HYPER_GLASS =
-  "bg-white/60 backdrop-blur-md border border-slate-200/50 shadow-sm rounded-2xl hover:bg-white/90 transition-all duration-300"
+import { CardHeading, LiveBadge, Panel, tint } from "@/components/workstation/overview/primitives"
 
 const LOADING = "Loading…"
 const NOT_AVAILABLE = "Not available"
@@ -23,6 +34,178 @@ function formatDecisionTime(iso: string): string {
   })
 }
 
+/* ── Overview strip ───────────────────────────────────────────────────── */
+
+function OverviewStat({
+  icon: Icon,
+  label,
+  value,
+  muted,
+  leading,
+  title,
+}: {
+  icon: React.ComponentType<{ className?: string; strokeWidth?: number }>
+  label: string
+  value: string
+  muted?: boolean
+  leading?: React.ReactNode
+  title?: string
+}) {
+  return (
+    <div className="vv-tile vv-tile--hover flex min-w-0 flex-col justify-center px-3.5 py-3">
+      <div className="mb-1.5 flex items-center gap-1.5">
+        <Icon className="h-3.5 w-3.5 shrink-0 text-slate-400" strokeWidth={1.9} />
+        <span className="vv-eyebrow truncate">{label}</span>
+      </div>
+      <div className="flex items-center gap-2">
+        {leading}
+        <span
+          className={`truncate text-[13.5px] tabular-nums ${
+            muted ? "font-normal not-italic text-slate-400" : "font-semibold text-slate-700"
+          }`}
+          title={title ?? value}
+        >
+          {value}
+        </span>
+      </div>
+    </div>
+  )
+}
+
+/* ── Loaded-state badge ───────────────────────────────────────────────── */
+
+function LoadedBadge({ loaded }: { loaded?: boolean }) {
+  if (loaded === true) {
+    return (
+      <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-emerald-200/70 bg-emerald-50/80 px-2.5 py-0.5 text-[10.5px] font-semibold text-emerald-700">
+        <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+        Loaded
+      </span>
+    )
+  }
+  if (loaded === false) {
+    return (
+      <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-white/80 bg-white/70 px-2.5 py-0.5 text-[10.5px] font-semibold text-slate-500">
+        <span className="h-1.5 w-1.5 rounded-full bg-slate-400" />
+        Idle
+      </span>
+    )
+  }
+  return (
+    <span className="inline-flex shrink-0 items-center rounded-full border border-white/80 bg-white/70 px-2.5 py-0.5 text-[10.5px] font-semibold text-slate-400">
+      {NOT_AVAILABLE}
+    </span>
+  )
+}
+
+/* ── Registry metadata cell ───────────────────────────────────────────── */
+
+function Meta({
+  label,
+  value,
+  muted,
+  mono,
+}: {
+  label: string
+  value: string
+  muted?: boolean
+  mono?: boolean
+}) {
+  return (
+    <div className="flex min-w-0 flex-col gap-0.5">
+      <span className="vv-eyebrow">{label}</span>
+      <span
+        className={`truncate text-[12px] ${mono ? "font-mono" : ""} ${
+          muted ? "font-normal not-italic text-slate-400" : "font-medium text-slate-600"
+        }`}
+        title={value}
+      >
+        {value}
+      </span>
+    </div>
+  )
+}
+
+/* ── Routing decision flow ────────────────────────────────────────────── */
+
+const FLOW_CYCLE = 6.3
+const FLOW_SLOT = FLOW_CYCLE / 6
+
+type FlowVars = CSSProperties & {
+  "--vv-delay"?: string
+  "--vv-stage-glow"?: string
+}
+
+type FlowStage = {
+  id: string
+  name: string
+  icon: React.ComponentType<{ className?: string; strokeWidth?: number }>
+  color: string
+  emphasis?: boolean
+  status?: string | null
+}
+
+function FlowStageTile({ stage, index }: { stage: FlowStage; index: number }) {
+  const Icon = stage.icon
+  const delay = `${(index * FLOW_SLOT).toFixed(3)}s`
+
+  return (
+    <div
+      className="vv-stage group"
+      style={{ "--vv-delay": delay, "--vv-stage-glow": tint(stage.color, 0.22) } as FlowVars}
+    >
+      <span className="vv-stage__glow" style={{ "--vv-delay": delay } as FlowVars} />
+
+      <span
+        className="vv-stage__icon"
+        style={
+          {
+            "--vv-delay": delay,
+            color: stage.color,
+            background: tint(stage.color, stage.emphasis ? 0.14 : 0.11),
+            boxShadow: `inset 0 0 0 1px ${tint(stage.color, stage.emphasis ? 0.32 : 0.2)}`,
+          } as FlowVars
+        }
+      >
+        <Icon className="h-4 w-4" strokeWidth={1.9} />
+      </span>
+
+      <span
+        className={`relative z-10 px-0.5 text-center text-[9.5px] uppercase leading-[1.25] tracking-[0.055em] ${
+          stage.emphasis ? "font-semibold text-slate-600" : "font-medium text-slate-500"
+        }`}
+      >
+        {stage.name}
+      </span>
+
+      {stage.status && (
+        <span
+          className="relative z-10 rounded-full px-1.5 py-px text-[9px] font-semibold uppercase tracking-[0.05em]"
+          style={{ color: stage.color, background: tint(stage.color, 0.1) }}
+        >
+          {stage.status}
+        </span>
+      )}
+    </div>
+  )
+}
+
+function FlowConnector({ index }: { index: number }) {
+  const delay = `${(index * FLOW_SLOT).toFixed(3)}s`
+  return (
+    <div className="vv-flow" aria-hidden="true">
+      <span className="vv-flow__line" />
+      <span className="vv-flow__runner" style={{ "--vv-delay": delay } as FlowVars}>
+        <span className="vv-flow__comet" />
+      </span>
+    </div>
+  )
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   Model Routing — enterprise control-center surfaces built on the vv system.
+   ═══════════════════════════════════════════════════════════════════════ */
+
 export function LlmRouting() {
   const { status, analytics, loading } = useWorkstationData()
 
@@ -37,238 +220,279 @@ export function LlmRouting() {
   // Router status reflects the real, in-process runtime — never a static badge.
   const routerOnline = status != null
   const routerStatusLabel = !status
-    ? (loading ? LOADING : NOT_AVAILABLE)
+    ? loading
+      ? LOADING
+      : NOT_AVAILABLE
     : routerLoaded
       ? "Active"
       : "Warming up"
 
   const totalRouted =
-    analytics?.total_routed != null ? analytics.total_routed.toLocaleString() : (loading ? LOADING : "0")
+    analytics?.total_routed != null ? analytics.total_routed.toLocaleString() : loading ? LOADING : "0"
 
   const decisions = analytics?.recent_routing_decisions ?? []
 
   const models = [
-    { role: "Router Engine", name: routerModel, purpose: "Intent Classification", loaded: runtime?.models?.router?.loaded },
-    { role: "Chat Engine", name: chatModel, purpose: "General Conversation & RAG", loaded: runtime?.models?.chat?.loaded },
-    { role: "Embedding Engine", name: embedModel, purpose: "Vector Generation", loaded: runtime?.models?.embed?.loaded },
+    {
+      role: "Router Engine",
+      icon: Route,
+      name: routerModel,
+      purpose: "Intent Classification",
+      loaded: runtime?.models?.router?.loaded,
+    },
+    {
+      role: "Chat Engine",
+      icon: MessagesSquare,
+      name: chatModel,
+      purpose: "General Conversation & RAG",
+      loaded: runtime?.models?.chat?.loaded,
+    },
+    {
+      role: "Embedding Engine",
+      icon: Layers,
+      name: embedModel,
+      purpose: "Vector Generation",
+      loaded: runtime?.models?.embed?.loaded,
+    },
+  ]
+
+  const flowStages: FlowStage[] = [
+    { id: "query", name: "User Query", icon: FileText, color: "#64748b" },
+    { id: "intent", name: "Intent Classification", icon: CircleDot, color: "#4f46e5" },
+    {
+      id: "router",
+      name: "Semantic Router",
+      icon: Route,
+      color: "#2563eb",
+      emphasis: true,
+      status: routerOnline ? routerStatusLabel : null,
+    },
+    { id: "model", name: "Model Selection", icon: Brain, color: "#0d9488" },
+    { id: "response", name: "Response Generation", icon: Server, color: "#059669" },
+  ]
+
+  const policies = [
+    { rule: "Numerical Query", target: "Local Agent (phi-4-mini)", reason: "Numerical computation detected" },
+    { rule: "Document Question", target: "Local RAG", reason: "Document retrieval required" },
+    { rule: "General Conversation", target: "Chat Model", reason: "No retrieval required" },
   ]
 
   return (
-    <div className="flex flex-col gap-6 pb-12">
-      {/* 6. Search */}
-      <div className="relative">
-        <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
-        <input
-          type="text"
-          placeholder="Search routing events, models, or policies..."
-          className="w-full rounded-2xl border border-slate-200/60 bg-white/90 py-3.5 pl-12 pr-4 text-[13px] font-medium text-slate-800 shadow-sm backdrop-blur-md transition-all placeholder:text-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#000080]/20"
-        />
-      </div>
-
-      {/* 1. Routing Overview */}
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
-        <div className={`p-5 ${GLASS_CARD}`}>
-          <div className="mb-2 flex items-center gap-2 text-slate-500">
-            <Activity className="h-4 w-4" />
-            <h3 className="text-xs font-semibold uppercase tracking-wider">Router Status</h3>
-          </div>
-          <div className="flex items-center gap-2">
-            {routerOnline && (
-              <span className="relative flex h-3 w-3">
-                <span className={`absolute inline-flex h-full w-full rounded-full opacity-75 ${routerLoaded ? "animate-ping bg-emerald-400" : "bg-amber-400"}`}></span>
-                <span className={`relative inline-flex h-3 w-3 rounded-full ${routerLoaded ? "bg-emerald-500" : "bg-amber-500"}`}></span>
-              </span>
-            )}
-            <span className="font-mono text-lg font-medium text-slate-800">{routerStatusLabel}</span>
-          </div>
+    <div className="flex flex-col gap-5">
+      {/* 1. Routing Overview ─────────────────────────────────────────────── */}
+      <Panel className="p-5" delay={0}>
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+          <CardHeading icon={Radar} title="Routing Overview" />
+          <LiveBadge label="Live" />
         </div>
-        <div className={`p-5 ${GLASS_CARD}`}>
-          <div className="mb-2 flex items-center gap-2 text-slate-500">
-            <Cpu className="h-4 w-4" />
-            <h3 className="text-xs font-semibold uppercase tracking-wider">Active Router</h3>
-          </div>
-          <div className="truncate font-mono text-lg font-medium text-slate-800">{routerModel}</div>
+        <div className="grid grid-cols-2 gap-2.5 lg:grid-cols-4">
+          <OverviewStat
+            icon={Waypoints}
+            label="Router Status"
+            value={routerStatusLabel}
+            muted={!routerOnline}
+            leading={
+              routerOnline ? (
+                <span className="relative flex h-2.5 w-2.5 shrink-0">
+                  <span
+                    className={`absolute inline-flex h-full w-full rounded-full opacity-70 ${
+                      routerLoaded ? "animate-ping bg-emerald-400" : "bg-amber-400"
+                    }`}
+                  />
+                  <span
+                    className={`relative inline-flex h-2.5 w-2.5 rounded-full ${
+                      routerLoaded ? "bg-emerald-500" : "bg-amber-500"
+                    }`}
+                  />
+                </span>
+              ) : undefined
+            }
+          />
+          <OverviewStat icon={Cpu} label="Active Router" value={routerModel} muted={!status} />
+          <OverviewStat icon={Shield} label="Routing Policy" value="Semantic Intent Classification" />
+          <OverviewStat icon={Route} label="Total Routed" value={totalRouted} muted={!analytics} />
         </div>
-        <div className={`p-5 ${GLASS_CARD}`}>
-          <div className="mb-2 flex items-center gap-2 text-slate-500">
-            <Shield className="h-4 w-4" />
-            <h3 className="text-xs font-semibold uppercase tracking-wider">Routing Policy</h3>
-          </div>
-          <div className="text-sm font-medium text-slate-700">Semantic Intent Classification</div>
+      </Panel>
+
+      {/* 2. Routing Decision Flow ────────────────────────────────────────── */}
+      <Panel className="p-5 sm:p-6" delay={70}>
+        <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+          <CardHeading icon={Waypoints} title="Routing Decision Flow" />
+          <LiveBadge label="Live Trace" />
         </div>
-        <div className={`p-5 ${GLASS_CARD}`}>
-          <div className="mb-2 flex items-center gap-2 text-slate-500">
-            <Route className="h-4 w-4" />
-            <h3 className="text-xs font-semibold uppercase tracking-wider">Total Routed</h3>
-          </div>
-          <div className="font-mono text-lg font-medium text-slate-800">{totalRouted}</div>
+        <div className="vv-pipeline gap-0" role="list" aria-label="Routing decision stages">
+          {flowStages.map((stage, index) => (
+            <Fragment key={stage.id}>
+              <FlowStageTile stage={stage} index={index} />
+              {index < flowStages.length - 1 && <FlowConnector index={index} />}
+            </Fragment>
+          ))}
         </div>
-      </div>
+      </Panel>
 
-      {/* 2. Routing Decision Flow */}
-      <section className={`p-6 ${GLASS_CARD}`}>
-        <h3 className="mb-6 text-sm font-semibold text-slate-800">Routing Decision Flow</h3>
-        <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
-          
-          <div className="flex flex-col items-center gap-2">
-            <div className={`flex h-12 w-12 items-center justify-center text-slate-700 ${HYPER_GLASS}`}>
-              <FileText className="h-5 w-5" />
-            </div>
-            <span className="text-[11px] font-medium text-slate-600">User Query</span>
-          </div>
-
-          <ArrowRight className="text-slate-300 hidden md:block" />
-
-          <div className="flex flex-col items-center gap-2">
-            <div className={`flex h-12 w-12 items-center justify-center text-[#000080] ${HYPER_GLASS}`}>
-              <CircleDot className="h-5 w-5" />
-            </div>
-            <span className="text-[11px] font-medium text-slate-600">Intent Classification</span>
-          </div>
-
-          <ArrowRight className="text-slate-300 hidden md:block" />
-
-          <div className="flex flex-col items-center gap-2">
-            <div className={`flex h-14 w-14 items-center justify-center text-cyan-600 bg-white shadow-sm rounded-2xl border border-slate-200/60`}>
-              <Route className="h-6 w-6" />
-            </div>
-            <span className="text-[11px] font-bold text-slate-800">Semantic Router</span>
-            <span className={`text-[9px] uppercase tracking-wider ${routerOnline ? "text-emerald-600" : "text-slate-400"}`}>
-              {routerOnline ? routerStatusLabel : NOT_AVAILABLE}
-            </span>
-          </div>
-
-          <ArrowRight className="text-slate-300 hidden md:block" />
-
-          <div className="flex flex-col items-center gap-2">
-            <div className={`flex h-12 w-12 items-center justify-center text-emerald-600 ${HYPER_GLASS}`}>
-              <Brain className="h-5 w-5" />
-            </div>
-            <span className="text-[11px] font-medium text-slate-600">Model Selection</span>
-          </div>
-
-          <ArrowRight className="text-slate-300 hidden md:block" />
-
-          <div className="flex flex-col items-center gap-2">
-            <div className={`flex h-12 w-12 items-center justify-center text-slate-700 ${HYPER_GLASS}`}>
-              <Server className="h-5 w-5" />
-            </div>
-            <span className="text-[11px] font-medium text-slate-600">Response Gen</span>
-          </div>
-
+      {/* 3. Registered Model Registry ────────────────────────────────────── */}
+      <Panel className="p-5 sm:p-6" delay={140}>
+        <div className="mb-4 flex items-center justify-between gap-3">
+          <CardHeading icon={Boxes} title="Model Registry" />
+          <span className="hidden text-[11px] font-medium text-slate-400 sm:inline">
+            {models.length} engines
+          </span>
         </div>
-      </section>
+        <div className="flex flex-col divide-y divide-white/60">
+          {models.map((m) => {
+            const Icon = m.icon
+            return (
+              <div key={m.role} className="flex flex-col gap-3 py-4 first:pt-0 last:pb-0">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex min-w-0 items-center gap-2.5">
+                    <span className="vv-plate h-8 w-8">
+                      <Icon className="h-[15px] w-[15px]" strokeWidth={1.9} />
+                    </span>
+                    <div className="min-w-0">
+                      <div className="vv-eyebrow">{m.role}</div>
+                      <div
+                        className="truncate text-[13px] font-semibold text-slate-700"
+                        title={m.name}
+                      >
+                        {m.name}
+                      </div>
+                    </div>
+                  </div>
+                  <LoadedBadge loaded={m.loaded} />
+                </div>
 
-      {/* 3. Registered Model Registry */}
-      <section>
-        <h3 className="mb-4 text-sm font-semibold text-slate-800">Registered Model Registry</h3>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-          {models.map((m) => (
-            <div key={m.role} className={`flex flex-col p-5 ${GLASS_CARD}`}>
-              <div className="mb-4 flex items-center justify-between">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">{m.role}</span>
-                {m.loaded === true ? (
-                  <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold text-emerald-700 border border-emerald-200/60">
-                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500"></span> Loaded
-                  </span>
-                ) : m.loaded === false ? (
-                  <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-50 px-2 py-0.5 text-[10px] font-semibold text-slate-500 border border-slate-200/60">
-                    <span className="h-1.5 w-1.5 rounded-full bg-slate-400"></span> Idle
-                  </span>
-                ) : (
-                  <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-50 px-2 py-0.5 text-[10px] font-semibold text-slate-400 border border-slate-200/60">
-                    {NOT_AVAILABLE}
-                  </span>
-                )}
+                <div className="grid grid-cols-2 gap-x-6 gap-y-2.5 border-t border-white/60 pt-3 sm:grid-cols-4">
+                  <Meta label="Purpose" value={m.purpose} />
+                  <Meta label="Context Window" value={NOT_REPORTED} muted />
+                  <Meta label="Quantization" value={NOT_REPORTED} muted />
+                  <Meta
+                    label="Endpoint"
+                    value={endpoint ?? NOT_AVAILABLE}
+                    muted={endpoint == null}
+                    mono={endpoint != null}
+                  />
+                </div>
               </div>
-              <div className="mb-4 truncate font-mono text-lg font-medium text-slate-800">{m.name}</div>
-              
-              <div className="flex flex-col gap-2 border-t border-slate-200/60 pt-4 text-xs">
-                <div className="flex justify-between">
-                  <span className="text-slate-500">Purpose</span>
-                  <span className="font-medium text-slate-700">{m.purpose}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-500">Context Window</span>
-                  <span className="text-slate-400">{NOT_REPORTED}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-500">Quantization</span>
-                  <span className="text-slate-400">{NOT_REPORTED}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-500">Endpoint</span>
-                  <span className="max-w-[150px] truncate font-mono text-slate-500" title={endpoint ?? NOT_AVAILABLE}>
-                    {endpoint ?? NOT_AVAILABLE}
-                  </span>
-                </div>
+            )
+          })}
+        </div>
+      </Panel>
+
+      {/* 4. Routing Policies ─────────────────────────────────────────────── */}
+      <Panel className="p-5 sm:p-6" delay={210}>
+        <div className="mb-4 flex items-center justify-between gap-3">
+          <CardHeading icon={Shield} title="Routing Policies" />
+          <span className="hidden text-[11px] font-medium text-slate-400 sm:inline">
+            Source · Semantic Router
+          </span>
+        </div>
+        <div className="flex flex-col divide-y divide-white/60">
+          {policies.map((policy) => (
+            <div
+              key={policy.rule}
+              className="flex flex-wrap items-center gap-x-4 gap-y-2 py-3.5 first:pt-0 last:pb-0"
+            >
+              <div className="min-w-0 flex-1">
+                <div className="text-[13px] font-semibold text-slate-700">{policy.rule}</div>
+                <div className="vv-caption mt-0.5">{policy.reason}</div>
+              </div>
+              <div className="flex shrink-0 items-center gap-2">
+                <ArrowRight className="h-3.5 w-3.5 text-slate-300" strokeWidth={2} />
+                <span
+                  className="inline-flex max-w-[220px] items-center truncate rounded-full border px-2.5 py-1 text-[11.5px] font-medium"
+                  style={{
+                    color: "var(--vv-accent-deep)",
+                    background: "var(--vv-accent-tint)",
+                    borderColor: "var(--vv-accent-ring)",
+                  }}
+                  title={policy.target}
+                >
+                  {policy.target}
+                </span>
               </div>
             </div>
           ))}
         </div>
-      </section>
+      </Panel>
 
-      {/* 4. Routing Policies */}
-      <section>
-        <h3 className="mb-4 text-sm font-semibold text-slate-800">Routing Policies</h3>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-          {[
-            { rule: "Numerical Query", target: "Local Agent (phi-4-mini)", reason: "Numerical computation detected" },
-            { rule: "Document Question", target: "Local RAG", reason: "Document retrieval required" },
-            { rule: "General Conversation", target: "Chat Model", reason: "No retrieval required" },
-          ].map((policy) => (
-            <div key={policy.rule} className={`p-5 ${GLASS_CARD}`}>
-              <div className="mb-2 text-sm font-semibold text-slate-800">{policy.rule}</div>
-              <div className="mb-3 flex items-center gap-2">
-                <ArrowRight className="h-4 w-4 text-slate-400" />
-                <span className="font-mono text-xs font-medium text-[#000080]">{policy.target}</span>
-              </div>
-              <div className="text-[11px] text-slate-500">
-                <span className="font-medium text-slate-600">Reason:</span> {policy.reason}
-              </div>
-              <div className="mt-3 border-t border-slate-200/60 pt-3 text-[10px] text-slate-400">
-                Source: Semantic Router · {routerModel}
-              </div>
-            </div>
-          ))}
+      {/* 5. Recent Routing Decisions ─────────────────────────────────────── */}
+      <Panel className="overflow-hidden p-0" delay={280}>
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/60 px-5 py-3.5">
+          <CardHeading icon={ListChecks} title="Recent Routing Decisions" />
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-white/85 bg-white/65 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.09em] text-slate-500 shadow-[0_1px_2px_rgba(16,32,64,0.04)]">
+            {decisions.length.toLocaleString()} logged
+          </span>
         </div>
-      </section>
-
-      {/* 5. Recent Routing Decisions */}
-      <section>
-        <h3 className="mb-4 text-sm font-semibold text-slate-800">Recent Routing Decisions</h3>
-        <div className={`overflow-hidden ${GLASS_CARD} !p-0`}>
-          <table className="w-full text-left text-sm">
-            <thead className="border-b border-slate-200/60 bg-slate-50 text-xs text-slate-500">
+        <div className="overflow-x-auto">
+          <table className="w-full border-collapse whitespace-nowrap text-left">
+            <thead className="bg-white/55 backdrop-blur-md">
               <tr>
-                <th className="px-4 py-3 font-medium">Timestamp</th>
-                <th className="px-4 py-3 font-medium">Intent</th>
-                <th className="px-4 py-3 font-medium">Selected Model</th>
-                <th className="px-4 py-3 font-medium">Decision Reason</th>
-                <th className="px-4 py-3 font-medium">Execution Status</th>
+                {["Timestamp", "Intent", "Selected Model", "Decision Reason", "Execution Status"].map((h) => (
+                  <th
+                    key={h}
+                    className="border-b border-white/60 px-5 py-2.5 text-[10.5px] font-semibold uppercase tracking-[0.09em] text-slate-400"
+                  >
+                    {h}
+                  </th>
+                ))}
               </tr>
             </thead>
             <tbody>
               {decisions.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-4 py-12 text-center text-sm text-slate-500">
-                    {loading ? LOADING : "No routing decisions yet"}
+                  <td colSpan={5} className="py-14 text-center">
+                    <div className="flex flex-col items-center justify-center text-slate-400">
+                      <span
+                        className="vv-plate mb-3 h-11 w-11"
+                        style={{
+                          color: "#94a3b8",
+                          background: "rgba(148,163,184,0.12)",
+                          boxShadow: "inset 0 0 0 1px rgba(148,163,184,0.2)",
+                        }}
+                      >
+                        <Waypoints className="h-5 w-5" strokeWidth={1.7} />
+                      </span>
+                      <p className="text-[12.5px] font-medium text-slate-500">
+                        {loading ? LOADING : "No routing decisions yet"}
+                      </p>
+                    </div>
                   </td>
                 </tr>
               ) : (
                 decisions.map((d, i) => (
-                  <tr key={`${d.timestamp}-${i}`} className="border-b border-slate-100 last:border-transparent">
-                    <td className="px-4 py-3 font-mono text-xs text-slate-500">{formatDecisionTime(d.timestamp)}</td>
-                    <td className="px-4 py-3">
-                      <span className="rounded-md border border-slate-200/60 bg-slate-50 px-2 py-0.5 font-mono text-[11px] font-medium text-slate-600">
+                  <tr
+                    key={`${d.timestamp}-${i}`}
+                    className="group border-b border-white/45 transition-colors duration-200 last:border-transparent hover:bg-white/55"
+                  >
+                    <td className="px-5 py-2.5">
+                      <span className="text-[11px] font-medium tabular-nums text-slate-400">
+                        {formatDecisionTime(d.timestamp)}
+                      </span>
+                    </td>
+                    <td className="px-5 py-2.5">
+                      <span className="inline-flex items-center rounded-md border border-white/80 bg-white/70 px-2 py-0.5 text-[10.5px] font-medium text-slate-600">
                         {d.intent}
                       </span>
                     </td>
-                    <td className="px-4 py-3 font-mono text-xs text-slate-700">{d.selected_model}</td>
-                    <td className="px-4 py-3 text-xs text-slate-500">{d.reason}</td>
-                    <td className="px-4 py-3">
-                      <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-emerald-600">
-                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+                    <td className="px-5 py-2.5">
+                      <span
+                        className="block max-w-[220px] truncate text-[12px] font-medium text-slate-700"
+                        title={d.selected_model}
+                      >
+                        {d.selected_model}
+                      </span>
+                    </td>
+                    <td className="px-5 py-2.5">
+                      <span
+                        className="block max-w-[320px] truncate text-[12px] text-slate-500"
+                        title={d.reason}
+                      >
+                        {d.reason}
+                      </span>
+                    </td>
+                    <td className="px-5 py-2.5">
+                      <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200/70 bg-emerald-50/80 px-2.5 py-0.5 text-[10.5px] font-semibold text-emerald-700">
+                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
                         {d.status}
                       </span>
                     </td>
@@ -278,7 +502,7 @@ export function LlmRouting() {
             </tbody>
           </table>
         </div>
-      </section>
+      </Panel>
     </div>
   )
 }
