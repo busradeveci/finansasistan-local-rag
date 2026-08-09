@@ -1,23 +1,91 @@
 # VectorVault
 
-**Air-gapped enterprise RAG workstation — local inference, zero cloud egress.**
+> **Air-gapped enterprise RAG workstation — local inference, zero cloud egress.**  
+> Built with Microsoft Foundry Local for institutions where data never leaves the perimeter.
 
-[![Offline](https://img.shields.io/badge/runtime-offline-0f172a?style=flat-square)](#)
-[![Air-Gapped](https://img.shields.io/badge/deployment-air--gapped-106ebe?style=flat-square)](#)
-[![Local Inference](https://img.shields.io/badge/inference-Foundry%20Local-0078d4?style=flat-square)](#)
-[![FastAPI](https://img.shields.io/badge/FastAPI-%E2%89%A50.111-009688?style=flat-square&logo=fastapi&logoColor=white)](backend/requirements.txt)
+[![Offline](https://img.shields.io/badge/runtime-100%25%20Offline-0f172a?style=flat-square&logo=shield&logoColor=white)](#)
+[![Air-Gapped](https://img.shields.io/badge/deployment-Air--Gapped-106ebe?style=flat-square)](#)
+[![Local Inference](https://img.shields.io/badge/inference-Foundry%20Local-0078d4?style=flat-square&logo=microsoft&logoColor=white)](#)
+[![FastAPI](https://img.shields.io/badge/FastAPI-≥0.111-009688?style=flat-square&logo=fastapi&logoColor=white)](backend/requirements.txt)
 [![React](https://img.shields.io/badge/React-19.2-61DAFB?style=flat-square&logo=react&logoColor=black)](frontend/package.json)
-[![Vite](https://img.shields.io/badge/Vite-8.0-646CFF?style=flat-square&logo=vite&logoColor=white)](frontend/package.json)
-[![Tailwind](https://img.shields.io/badge/Tailwind-3.4-38BDF8?style=flat-square&logo=tailwindcss&logoColor=white)](frontend/package.json)
 [![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?style=flat-square&logo=python&logoColor=white)](#)
+[![License](https://img.shields.io/badge/license-Microsoft%20Internship-blueviolet?style=flat-square)](#)
 
 ---
 
-## Overview
+## What is VectorVault?
 
-**VectorVault** is a fully local Retrieval-Augmented Generation platform for secure document intelligence. Operators ingest policy, risk, and operational documents into an on-device SQLite vector store, then query them in natural language. Every embedding, retrieval step, and LLM completion runs through **Microsoft Foundry Local** — no public cloud APIs, no outbound model traffic.
+**VectorVault** is a production-grade, fully offline Retrieval-Augmented Generation (RAG) platform. It lets enterprise operators upload compliance documents, financial policies, and internal knowledge bases — then query them in plain English using small language models running entirely on-device.
 
-The system is built for institutions that cannot send regulated content off-premises: commercial credit, cyber incident playbooks, infrastructure architecture notes, and similar internal corpora. It was developed in the context of the **Microsoft AI Innovators Summer Internship**, demonstrating an end-to-end offline RAG stack suitable for academic and engineering evaluation.
+**No cloud. No API keys. No data egress. Ever.**
+
+Every step — from embedding generation to LLM inference — runs locally through **Microsoft Foundry Local**. This makes VectorVault suitable for regulated industries: banking, insurance, legal, healthcare, and government institutions where sensitive documents cannot leave the perimeter.
+
+> Developed as part of the **Microsoft AI Innovators Summer Internship** — demonstrating an end-to-end offline RAG stack at enterprise scale.
+
+---
+
+## Screenshots
+
+### Login Page
+
+![Login Page](docs/screenshots/01-login.png)
+
+*Glass-morphism card over an animated WebM background — JWT-gated corporate workspace entry.*
+
+### Dashboard
+
+![Dashboard](docs/screenshots/02-dashboard.png)
+
+*VectorVault Workstation — live RAG pipeline trace, security posture rail, and KPI strip.*
+
+### Conversation
+
+![Conversation](docs/screenshots/03-chat.png)
+
+*SSE-streamed chat with inline `[n]` citations, Evidence panel, and animated AI orb.*
+
+### System Telemetry
+
+![System Telemetry](docs/screenshots/04-system-telemetry.png)
+
+*Real-time machine health: CPU, RAM, disk, network, and SQLite vector index stats.*
+
+### Security Center
+
+![Security Center](docs/screenshots/05-security.png)
+
+*AI security pipeline — threat counters, PII redaction layers, and Zero Trust controls.*
+
+### Knowledge Hub
+
+![Knowledge Hub](docs/screenshots/06-knowladgehub.png)
+
+*Indexed vault inventory with chunk explorer and vector-store embedding telemetry.*
+
+### Inference Runtime
+
+![Inference Runtime](docs/screenshots/07-ınference-runtime.png)
+
+*Foundry Local runtime status, inference pipeline stages, and active session log.*
+
+### Model Routing
+
+![Model Routing](docs/screenshots/08-model-routing.png)
+
+*Live semantic intent classification and routing decision flow across three model tracks.*
+
+### Documents
+
+![Documents](docs/screenshots/09-documents.png)
+
+*Enterprise document management — drag-and-drop upload, index pipeline, chunk tracking.*
+
+### Settings
+
+![Settings](docs/screenshots/10-settings.png)
+
+*Retrieval thresholds, generation parameters, embedding config, and indexing pipeline.*
 
 ---
 
@@ -25,141 +93,200 @@ The system is built for institutions that cannot send regulated content off-prem
 
 ```mermaid
 flowchart LR
-    U[Operator] --> FE[React / Vite<br/>VectorVault UI :5173]
-    FE -->|REST + SSE| API[FastAPI<br/>backend.main :8000]
-    API --> R[phi-4-mini<br/>Semantic Router]
-    R -->|LOCAL_CHAT| CHAT[phi-3.5-mini<br/>Chat]
-    R -->|LOCAL_MATH| MATH[Safe AST Math]
-    R -->|LOCAL_RAG| SAN[sanitize.py]
-    SAN --> RET[Retrieval Pipeline]
-    RET -->|embed query| EMB[qwen3-embedding-0.6b]
-    RET -->|cosine search| DB[(SQLite VectorVault<br/>data/vectorvault.db)]
-    RET --> GEN[phi-3.5-mini<br/>Cited Generation]
+    U[👤 Operator] --> FE["⚛️ React / Vite\nVectorVault UI\nlocalhost:5173"]
+    FE -->|"REST + SSE"| API["⚡ FastAPI\nbackend.main\nlocalhost:8000"]
+    API --> R["🔀 phi-4-mini\nSemantic Router"]
+    R -->|LOCAL_CHAT| CHAT["💬 phi-3.5-mini\nDirect Chat"]
+    R -->|LOCAL_MATH| MATH["🔢 Safe AST\nMath Engine"]
+    R -->|LOCAL_RAG| SAN["🛡️ sanitize.py\n6-Layer Filter"]
+    SAN --> RET["🔍 Retrieval Pipeline"]
+    RET -->|embed query| EMB["📐 qwen3-embedding-0.6b"]
+    RET -->|cosine search| DB[("🗄️ SQLite\nvectorvault.db")]
+    RET --> GEN["✍️ phi-3.5-mini\nCited Generation"]
     GEN --> FE
     CHAT --> FE
     MATH --> FE
 ```
 
-**Request flow (LOCAL_RAG):** User question → CORS-scoped FastAPI → intent / track classification → multi-layer query sanitization → Foundry embedding → NumPy cosine search over `vector_chunks` → absolute + relative score filters, dedupe, context cap → prompt assembly with source fences → streamed SSE tokens → deterministic References block + optional numeric audit notes.
+**Full request flow (RAG track):**
+
+```
+User Query
+  → FastAPI (CORS-scoped, localhost only)
+  → phi-4-mini semantic router (LOCAL_RAG / LOCAL_MATH / LOCAL_CHAT)
+  → 6-layer query sanitization (Unicode NFC → control strip → HTML strip → injection redact → collapse → 2000-char cap)
+  → qwen3-embedding-0.6b (Foundry Local, on-device)
+  → NumPy cosine search over SQLite FP32 BLOB embeddings
+  → 4-stage filter (absolute threshold 0.15 → relative cutoff 0.55 → fingerprint dedupe → hard cap 8 chunks)
+  → Context assembly with source fences
+  → phi-3.5-mini generation (temperature 0.0, evidence-only prompt)
+  → SSE stream → inline [n] citations + References block
+  → Optional numeric audit (financial figure cross-check)
+```
 
 ---
 
 ## Features
 
-Derived from the implemented codebase (not aspirational):
+### Core Intelligence
 
-| Area | What the code does |
-|------|--------------------|
-| **Semantic routing** | `phi-4-mini` classifies each query into `LOCAL_RAG`, `LOCAL_MATH`, or `LOCAL_CHAT`, with deterministic fallback (`semantic_router.py`, `intent.py`). |
-| **Local math track** | Safe AST evaluation for arithmetic, percentages, and aggregates — no LLM, no network (`math_handler.py`). |
-| **Document ingestion** | Extractors for `.txt`, `.md`, `.pdf`, `.docx`, `.xlsx`, `.csv`; tabular rows become queryable strings (`ingestion.py`). |
-| **Recursive chunking** | Structure-aware splitter: 3000-char chunks, 450-char overlap, markdown-aware separators (`config.py`, `ingestion.py`). |
-| **Vector retrieval** | Cosine similarity over FP32 blobs in SQLite; entity/header keyword boosts; 4-stage filter: absolute threshold (`0.15`), relative cutoff (`0.55`), fingerprint dedupe, hard cap (`MAX_CONTEXT_CHUNKS = 8`). |
-| **Chunk continuity** | Mid-sentence / section-header chunks merge with the next index when needed (`retrieval.py`). |
-| **Grounded generation** | Context-only answers, inline `[n]` citations, canonical refusal sentence when evidence is missing; temperature `0.0` (`generation.py`). |
-| **Numeric audit** | Post-generation check that significant financial figures in the answer align with retrieved evidence (`numeric_audit.py`). |
-| **SSE streaming** | `/query/stream` emits status steps, agent badges, tokens, and `[SOURCES]` payloads for the Evidence panel. |
-| **Executive PDF** | Export credit-analysis reports via WeasyPrint / xhtml2pdf (`pdf_export.py`). |
-| **Operator auth** | JWT login against SQLite `users` + `audit_logs` (`/api/v1/auth/login`). |
-| **Workstation modules** | Conversation, Workstation dashboard, Knowledge Hub, Documents, Model Routing, Inference Runtime, System Telemetry, Security, Settings. |
-| **Live telemetry** | CPU / RAM / disk / network / vector-index metrics via `psutil` and SQLite (`/api/telemetry`, `/api/v1/telemetry/system`). |
+**Semantic Routing** — `phi-4-mini` classifies every query into one of three execution tracks with deterministic fallback. RAG queries hit the retrieval pipeline. Math queries go to a safe AST evaluator with no LLM involvement. General queries go directly to the chat model.
+
+**Precision Retrieval** — Cosine similarity search over FP32 BLOB embeddings stored in SQLite. Entity and header keyword boosts improve recall on structured documents. A four-stage filter (absolute score threshold, relative cutoff, fingerprint deduplication, hard context cap) ensures the model only sees high-quality evidence.
+
+**Grounded Generation** — The LLM is constrained to answer only from retrieved context. Responses include inline `[n]` citations mapped to source chunks. When evidence is insufficient, a canonical refusal sentence is returned — the model never fabricates.
+
+**Numeric Audit** — A post-generation pass cross-checks significant financial figures in the answer against retrieved evidence, flagging mismatches before the response reaches the user.
+
+### Document Processing
+
+**Multi-Format Ingestion** — `.txt`, `.md`, `.pdf`, `.docx`, `.xlsx`, `.csv`. Tabular rows from spreadsheets become individually queryable text strings.
+
+**Structure-Aware Chunking** — Recursive splitter with 3000-character chunks and 450-character overlap. Markdown-aware separators preserve heading hierarchy. Mid-sentence and section-header boundary chunks are merged with adjacent chunks to prevent context fragmentation.
+
+### Security & Compliance
+
+**Air-Gap Enforcement** — Zero outbound network requests. Foundry Local runs entirely on-device. The Security Center UI actively monitors and reports `zero_outbound` status.
+
+**6-Layer Query Sanitization** — Unicode normalization → C0/C1 control strip → HTML tag removal → prompt injection redaction → whitespace collapse → 2000-character hard cap.
+
+**Prompt Injection Detection** — Regex neutralization of adversarial override phrases. All detections are counted and surfaced in the Security Center.
+
+**International PII Redaction** — Automatic redaction of sensitive identifiers before query processing and before render.
+
+**JWT Operator Auth** — SHA-256 password verification, HS256 JWT (12-hour expiry), full `audit_logs` trail for every AUTH event.
+
+### Developer Experience
+
+**SSE Streaming** — `/query/stream` emits structured status events, agent track badges, token fragments, and `[SOURCES]` payloads consumed by the Evidence panel in real time.
+
+**Executive PDF Export** — One-click export of any conversation to a formatted PDF report with source citations, author metadata, and a system ID. Unicode/Turkish character support via embedded DejaVu Sans font.
+
+**Live Telemetry** — CPU, RAM, disk, network, and SQLite vector index stats served by `psutil` and surfaced in the System Telemetry module.
+
+**OpenAPI Docs** — Full interactive API documentation at `http://127.0.0.1:8000/docs`.
 
 ---
 
 ## Tech Stack
 
-| Layer | Technology | Version / alias (from config) |
-|-------|------------|-------------------------------|
-| **Frontend** | React, React DOM, React Router | `^19.2.6`, `^7.18.2` |
-| | Vite, TypeScript, Tailwind CSS | `^8.0.12`, `^5.7.3`, `^3.4.19` |
-| | axios, framer-motion, lucide-react, recharts | `^1.18.0`, `^12.42.2`, `^1.27.0`, `^3.9.2` |
-| **Backend** | FastAPI, Uvicorn, Pydantic | `>=0.111.0`, `>=0.29.0`, `>=2.7.0` |
-| | NumPy, psutil, PyJWT | `>=1.26.0`, `>=5.9.0`, `>=2.8.0` |
-| | PyPDF2 / pypdf / pymupdf, python-docx, pandas, openpyxl | see `backend/requirements.txt` |
-| **Vector store** | SQLite (`data/vectorvault.db`) — documents + BLOB embeddings | local file |
-| **Inference** | Microsoft Foundry Local SDK | `foundry-local-sdk>=0.1.0` |
-| | Chat | `phi-3.5-mini` |
-| | Router | `phi-4-mini` |
-| | Embeddings | `qwen3-embedding-0.6b` |
-| **Security** | `sanitize.py`, upload allowlists, JWT + audit log, offline Foundry runtime | in-process |
+### Frontend
+
+| Technology | Version | Purpose |
+|---|---|---|
+| React + React DOM | `^19.2.6` | UI framework |
+| React Router | `^7.18.2` | Client-side routing |
+| Vite | `^8.0.12` | Build tool & dev server |
+| TypeScript | `^5.7.3` | Type safety |
+| Tailwind CSS | `^3.4.19` | Utility-first styling |
+| Lucide React | `^0.383.0` | Icon system |
+| Framer Motion | `^12.42.2` | Animations |
+| Recharts | `^2.x` | Telemetry charts |
+| Axios | `^1.18.0` | HTTP client |
+
+### Backend
+
+| Technology | Version | Purpose |
+|---|---|---|
+| FastAPI | `>=0.111.0` | API framework |
+| Uvicorn | `>=0.29.0` | ASGI server |
+| Pydantic | `>=2.7.0` | Data validation |
+| NumPy | `>=1.26.0` | Vector math (cosine similarity) |
+| psutil | `>=5.9.0` | System telemetry |
+| PyJWT | `>=2.8.0` | JWT auth |
+| pypdf / pymupdf | latest | PDF parsing |
+| python-docx | latest | DOCX parsing |
+| pandas + openpyxl | latest | XLSX/CSV parsing |
+
+### Inference & Storage
+
+| Component | Technology |
+|---|---|
+| Inference runtime | Microsoft Foundry Local SDK |
+| Chat model | `phi-3.5-mini` |
+| Router model | `phi-4-mini` |
+| Embedding model | `qwen3-embedding-0.6b` (1024-dim, FP32) |
+| Vector store | SQLite — BLOB columns for embeddings |
+| Database | `data/vectorvault.db` (local file, gitignored) |
 
 ---
 
-## UI Highlights
-
-- **Conversation orb** — Ambient CSS intelligence orb (`.vv-ai-orb`) with breathe / aurora spin animations on the Conversation canvas empty and streaming states.
-- **Glass-morphism login** — Full-bleed looping WebM background (`color-bends-*.webm`) behind a frosted VectorVault glass card; corporate-domain gate + JWT session.
-- **Lucide icon system** — Consistent stroke icons across sidebar navigation, modules, Evidence, and Security Center.
-- **VectorVault dashboard** — Workstation overview with RAG pipeline visualization, security rail, KPI strip, and live telemetry panels (Fluent-inspired glass surfaces in `index.css` / Tailwind tokens).
-
----
-
-## Directory Tree
+## Directory Structure
 
 ```
-finansasistan-local-rag/
+vectorvault-enterprise/
+│
 ├── README.md
-├── package.json                 # root helper deps
 ├── .gitignore
-├── backend/
-│   ├── main.py                  # FastAPI app, health/telemetry/security routes
-│   ├── config.py                # models, chunking, retrieval thresholds
-│   ├── sanitize.py              # query / filename / LaTeX sanitization
+├── package.json
+│
+├── backend/                          # FastAPI application
+│   ├── main.py                       # App entry point, health & telemetry routes
+│   ├── config.py                     # Model aliases, chunking & retrieval thresholds
+│   ├── sanitize.py                   # 6-layer query & filename sanitization
 │   ├── requirements.txt
 │   ├── logging_config.py
-│   ├── startup_check.py         # Foundry Local preflight
+│   ├── startup_check.py              # Foundry Local preflight
 │   ├── runtime_diagnostics.py
+│   │
 │   ├── db/
-│   │   ├── database.py
-│   │   ├── schema.py            # users, audit_logs, documents, vector_chunks
-│   │   └── vector_store.py      # insert / search / inventory
+│   │   ├── database.py               # SQLite connection management
+│   │   ├── schema.py                 # users, audit_logs, documents, vector_chunks
+│   │   └── vector_store.py           # Embedding insert / cosine search / inventory
+│   │
 │   ├── routers/
-│   │   ├── query.py             # POST /query, GET /query/stream
-│   │   ├── documents.py         # /api/v1/documents CRUD + PDF export
-│   │   └── api_v1.py            # auth, telemetry, config, security logs
+│   │   ├── query.py                  # POST /query  ·  GET /query/stream (SSE)
+│   │   ├── documents.py              # /api/v1/documents CRUD + PDF export
+│   │   └── api_v1.py                 # Auth, telemetry, config, security logs
+│   │
 │   └── services/
-│       ├── foundry_client.py    # SDK manager, embed / chat / router clients
-│       ├── ingestion.py
-│       ├── retrieval.py
-│       ├── generation.py
-│       ├── chat_handler.py
-│       ├── semantic_router.py
-│       ├── intent.py
-│       ├── math_handler.py
-│       ├── numeric_audit.py
+│       ├── foundry_client.py         # Foundry Local SDK — embed / chat / router
+│       ├── ingestion.py              # Multi-format parser + recursive chunker
+│       ├── retrieval.py              # 4-stage filtered cosine retrieval
+│       ├── generation.py             # Grounded generation + citation mapping
+│       ├── chat_handler.py           # Direct chat track handler
+│       ├── semantic_router.py        # phi-4-mini routing logic
+│       ├── intent.py                 # Fallback intent classification
+│       ├── math_handler.py           # Safe AST math evaluator
+│       ├── numeric_audit.py          # Post-generation financial figure check
 │       ├── document_metadata.py
-│       ├── pdf_export.py
-│       └── metrics.py
+│       ├── pdf_export.py             # Executive PDF with DejaVu Sans Unicode font
+│       └── metrics.py                # Security counters & analytics
+│
 ├── data/
-│   ├── vault/                   # source documents for ingestion (gitignored)
-│   ├── docs/                    # auxiliary / runtime docs (gitignored)
-│   └── vectorvault.db           # SQLite index (gitignored)
-├── frontend/
-│   ├── package.json
-│   ├── vite.config.js           # port 5173, proxy → :8000
-│   ├── tailwind.config.js
+│   ├── vault/                        # Source documents for ingestion (gitignored)
+│   └── vectorvault.db                # Live SQLite vector index (gitignored)
+│
+├── docs/
+│   └── screenshots/                  # UI captures for README
+│
+├── frontend/                         # React / Vite SPA
 │   ├── index.html
+│   ├── package.json
+│   ├── vite.config.js                # Dev server port 5173, proxy → :8000
+│   ├── tailwind.config.js
+│   │
 │   ├── public/
-│   │   ├── color-bends-*.webm   # login background
-│   │   ├── login-bg.jpg
+│   │   ├── color-bends-*.webm        # Login page background video
 │   │   └── favicon.svg
+│   │
 │   └── src/
-│       ├── App.tsx              # / login, /workstation shell
+│       ├── App.tsx                   # Routes: / (login) → /workstation
 │       ├── main.tsx
-│       ├── index.css            # glass + orb design system
-│       ├── api/client.ts
-│       ├── pages/LoginPage.tsx
+│       ├── index.css                 # Glass + orb design system tokens
+│       ├── api/client.ts             # Axios client + SSE stream handler
+│       ├── pages/LoginPage.tsx       # Glass login with JWT session
 │       ├── context/WorkstationContext.tsx
-│       ├── modules/             # Chat, Documents, KnowledgeHub, Security, …
+│       ├── modules/                  # Feature modules (Chat, Docs, Hub, …)
 │       ├── components/
-│       │   ├── chat/            # ConversationCanvas, citations, filters
-│       │   ├── evidence/
-│       │   ├── workstation/     # shell, sidebar, overview, telemetry
-│       │   └── VectorVaultLogo.tsx
+│       │   ├── chat/                 # ConversationCanvas, citations, filters
+│       │   ├── evidence/             # Retrieved Sources panel
+│       │   └── workstation/          # Shell, sidebar, overview, telemetry
 │       ├── lib/answerScrub.ts
 │       └── types/workstation.ts
+│
 └── scripts/
-    └── check-runtime.ps1        # offline diagnostics + HTTP probes
+    └── check-runtime.ps1             # Windows: offline diagnostics + HTTP probes
 ```
 
 ---
@@ -170,32 +297,46 @@ finansasistan-local-rag/
 
 - **Python 3.10+**
 - **Node.js 18+**
-- **Microsoft Foundry Local** (`winget install Microsoft.FoundryLocal`), then `foundry service start`
-- Models resolved from the local registry: `phi-3.5-mini`, `phi-4-mini`, `qwen3-embedding-0.6b`
+- **Microsoft Foundry Local** — install and start the service:
 
-### 1. Backend
+```powershell
+winget install Microsoft.FoundryLocal
+foundry service start
+```
 
-From the **repository root** (imports use the `backend.*` package):
+- Models pulled automatically by Foundry Local on first run: `phi-3.5-mini`, `phi-4-mini`, `qwen3-embedding-0.6b`
+
+---
+
+### 1 — Backend
+
+Run all commands from the **repository root** (the `backend.*` package imports require it):
 
 ```bash
+# Create virtual environment
 python -m venv .venv
 
-# Windows
+# Activate (Windows)
 .venv\Scripts\activate
 
-# macOS / Linux
+# Activate (macOS / Linux)
 # source .venv/bin/activate
 
+# Install dependencies
 pip install -r backend/requirements.txt
 
-# Optional preflight
+# Optional: verify Foundry Local is ready
 python -m backend.startup_check
 
-# API — http://127.0.0.1:8000
+# Start the API server
 python -m uvicorn backend.main:app --reload --port 8000
 ```
 
-### 2. Frontend
+API available at **http://127.0.0.1:8000** · Docs at **http://127.0.0.1:8000/docs**
+
+---
+
+### 2 — Frontend
 
 ```bash
 cd frontend
@@ -203,121 +344,87 @@ npm install
 npm run dev
 ```
 
-Vite serves **http://localhost:5173** (or the next free `517x` port). In development, `/api`, `/documents`, and `/query` proxy to `http://127.0.0.1:8000`.
+Workstation UI at **http://localhost:5173**
 
-### 3. Documents
+In development, `/api`, `/documents`, and `/query` requests proxy automatically to `http://127.0.0.1:8000`.
 
-Place supported files in `data/vault/`, then upload/index via the **Documents** or **Knowledge Hub** modules (API: `POST /api/v1/documents/upload`). Vault contents are gitignored.
+---
 
-### 4. Sign in
+### 3 — Load Documents
 
-Open the login page, use an allowed corporate-style email domain (`@vectorvault.local`, `@bank.com`, `@organization.com`, `@enterprise.com`) and a password accepted by the SQLite user store. Default seeded operator (see `schema.py`): `busra.deveci@vectorvault.local` / `admin`. Successful login stores a JWT in `localStorage` and navigates to `/workstation`.
+Place `.pdf`, `.docx`, `.md`, `.txt`, `.xlsx`, or `.csv` files in `data/vault/`, then upload and index them through the **Documents** or **Knowledge Hub** modules in the UI.
 
-### 5. Runtime check (Windows)
+Vault contents are gitignored — your documents stay local.
+
+---
+
+### 4 — Sign In
+
+Sign in with an authorized operator account for your local deployment.
+
+Accepted email domains for local evaluation: `@vectorvault.local`, `@bank.com`, `@organization.com`, `@enterprise.com`
+
+After a successful login, a JWT is stored in `localStorage` and the session navigates to `/workstation`.
+
+> Rotate default auth secrets and operator accounts before any shared or production deployment.
+
+---
+
+### 5 — Runtime Check (Windows)
 
 ```powershell
 .\scripts\check-runtime.ps1
 ```
 
-Runs `backend.runtime_diagnostics`, then probes `:8000` and `:5173`.
+Runs `backend.runtime_diagnostics`, then probes ports `:8000` and `:5173`.
 
 ---
 
 ## Security & Compliance
 
-Implemented controls (code-backed):
-
 | Control | Implementation |
-|---------|----------------|
-| **Air-gap / offline inference** | Foundry Local Core only; `/api/security` and telemetry report `offline_mode` / `zero_outbound`. |
-| **Prompt injection detection** | Regex neutralization of override phrases → `[REDACTED]`; counter via `metrics.record_prompt_injection()` (`sanitize.py`). |
-| **6-layer query sanitization** | Unicode NFC → strip C0/C1 controls → strip HTML tags → injection redaction → whitespace collapse → 2 000-char cap. |
-| **Path traversal guard** | `sanitize_filename()` keeps basename only; strips Windows/POSIX-unsafe characters. |
-| **Upload allowlist** | Extensions + MIME types for text, markdown, PDF, DOCX, XLSX, CSV; rejected uploads recorded. |
-| **Context overflow protection** | Query length cap, `MAX_CONTEXT_CHUNKS`, `MAX_TOTAL_PROMPT_CHARS` prompt budget. |
-| **Output grounding** | Evidence-only prompting, citation map, refusal contract, numeric audit notes on financial mismatches. |
-| **Auth & audit** | SHA-256 password check, HS256 JWT (12 h), `audit_logs` for AUTH success/denial. |
-| **CORS** | Restricted to localhost Vite origins on ports `517x`. |
-| **Security Center UI** | Surfaces live counters (sanitized queries, injections blocked, uploads rejected) and documents PII category coverage for operator review. |
+|---|---|
+| **Air-gap / Zero Egress** | Foundry Local Core only. `/api/security` reports `offline_mode: true` and `zero_outbound: verified`. Outbound Egress counter is always 0. |
+| **Prompt Injection Detection** | Adversarial override phrases neutralized to `[REDACTED]` via regex in `sanitize.py`. Counter surfaced in Security Center. |
+| **6-Layer Query Sanitization** | Unicode NFC → C0/C1 control strip → HTML tag removal → injection redaction → whitespace collapse → 2000-char hard cap. |
+| **Path Traversal Guard** | `sanitize_filename()` strips to basename only; removes all Windows/POSIX-unsafe characters. |
+| **Upload Allowlist** | Extension + MIME-type allowlist for `.txt .md .pdf .docx .xlsx .csv`. Rejected uploads are logged and counted. |
+| **Context Overflow Protection** | Query length cap, `MAX_CONTEXT_CHUNKS = 8`, `MAX_TOTAL_PROMPT_CHARS` budget enforced before LLM call. |
+| **Output Grounding** | Evidence-only system prompt, citation map enforced, canonical refusal on missing evidence, numeric audit post-pass. |
+| **Operator Auth & Audit** | SHA-256 password check · HS256 JWT (12 h expiry) · `audit_logs` table records every AUTH success and denial. |
+| **CORS Policy** | Restricted to `localhost` Vite origins on ports `517x` only. |
+| **International PII Redaction** | 8-category PII redaction applied uniformly across all documents and queries pre-render. |
 
-> Demo credentials and the JWT secret in `api_v1.py` are for local evaluation only — rotate before any shared deployment.
-
----
-
-## Screenshots
-
-> Add captures under `docs/screenshots/` (or update the paths below) after recording the UI.
-
-### Login Page
-
-![Login Page](docs/screenshots/01-login.png)
-
-*Glass card over animated video background — VectorVault secure workspace entry.*
-
-### Dashboard (Workstation)
-
-![Dashboard](docs/screenshots/02-dashboard.png)
-
-*VectorVault overview — RAG pipeline, KPIs, and security rail.*
-
-### Conversation
-
-![Conversation](docs/screenshots/03-c.png)
-
-*SSE chat with citation chips, Evidence panel, and animated AI orb.*
-
-### Knowledge Hub
-
-![Knowledge Hub](docs/screenshots/04-knowledge-hub.png)
-
-*Indexed vault inventory, chunk explorer, and vector-store stats.*
-
-### Documents
-![Documents](docs/screenshots/05-documents.png)
-*Enterprise document management — upload, index, and manage vault files.*
-
-### Model Routing
-![Model Routing](docs/screenshots/06-model-routing.png)
-*Semantic intent classification and live routing decision flow.*
-
-### Inference Runtime
-![Inference Runtime](docs/screenshots/07-inference-runtime.png)
-*Foundry Local runtime status, pipeline stages, and active sessions.*
-
-### System Telemetry
-![System Telemetry](docs/screenshots/08-system-telemetry.png)
-*Live machine health, storage, and network monitoring.*
-
-### Security Center
-![Security Center](docs/screenshots/09-security.png)
-*AI security pipeline, threat counters, and PII redaction controls.*
-
-### Settings
-![Settings](docs/screenshots/10-settings.png)
-*Retrieval, generation, embedding, and indexing configuration.*
+> Local evaluation auth is for development only. Rotate operator accounts and signing secrets before any shared deployment.
 
 ---
 
-## API Surface (selected)
+## API Reference
 
-| Method | Path | Purpose |
-|--------|------|---------|
-| `GET` | `/` | Liveness |
-| `GET` | `/api/status` | Models, uptime, document inventory |
-| `GET` | `/api/telemetry` | CPU / memory / vector index |
-| `GET` | `/api/security` | Threat counters + capability flags |
-| `GET` | `/api/analytics` | Pipeline latency / routing snapshot |
-| `POST` | `/api/v1/auth/login` | Operator JWT |
-| `GET/POST/DELETE` | `/api/v1/documents…` | Inventory, upload, chunks, PDF export |
-| `POST` | `/query` | Blocking answer |
-| `GET` | `/query/stream` | SSE answer stream |
-| `GET` | `/api/v1/config` | Live retrieval / generation settings |
+| Method | Endpoint | Description |
+|---|---|---|
+| `GET` | `/` | Liveness check |
+| `GET` | `/api/status` | Model status, uptime, document inventory |
+| `GET` | `/api/telemetry` | CPU / RAM / disk / vector index metrics |
+| `GET` | `/api/security` | Threat counters + Zero Trust capability flags |
+| `GET` | `/api/analytics` | Pipeline latency and routing snapshot |
+| `POST` | `/api/v1/auth/login` | Operator JWT authentication |
+| `GET` | `/api/v1/documents` | List indexed documents |
+| `POST` | `/api/v1/documents/upload` | Upload and index a document |
+| `DELETE` | `/api/v1/documents/{id}` | Remove a document and its chunks |
+| `GET` | `/api/v1/documents/{id}/export-pdf` | Export executive PDF report |
+| `POST` | `/query` | Blocking RAG query |
+| `GET` | `/query/stream` | SSE streaming RAG query |
+| `GET` | `/api/v1/config` | Live retrieval & generation settings |
 | `GET` | `/api/v1/telemetry/system` | Extended host telemetry |
 
-Interactive OpenAPI docs: **http://127.0.0.1:8000/docs** when the API is running.
+Full interactive docs: **http://127.0.0.1:8000/docs**
 
 ---
 
 ## License & Attribution
 
-**VectorVault (FinansAsistan)** was developed as part of the **Microsoft AI Innovators Summer Internship** evaluation track. Inference powered by **Microsoft Foundry Local**. UI product branding: **VectorVault**.
+**VectorVault** *(originally FinansAsistan)* was developed as part of the **Microsoft AI Innovators Summer Internship** evaluation track.
+
+Inference powered by **[Microsoft Foundry Local](https://github.com/microsoft/foundry-local)**.  
+UI product branding: **VectorVault**.
