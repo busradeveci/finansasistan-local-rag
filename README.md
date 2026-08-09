@@ -1,4 +1,4 @@
-# FinansAsistan
+# VectorVault
 
 **Air-gapped enterprise RAG workstation — local inference, zero cloud egress.**
 
@@ -15,7 +15,7 @@
 
 ## Overview
 
-**FinansAsistan** (product UI: **VectorVault**) is a fully local Retrieval-Augmented Generation platform for secure document intelligence. Operators ingest policy, risk, and operational documents into an on-device SQLite vector store, then query them in natural language. Every embedding, retrieval step, and LLM completion runs through **Microsoft Foundry Local** — no public cloud APIs, no outbound model traffic.
+**VectorVault** is a fully local Retrieval-Augmented Generation platform for secure document intelligence. Operators ingest policy, risk, and operational documents into an on-device SQLite vector store, then query them in natural language. Every embedding, retrieval step, and LLM completion runs through **Microsoft Foundry Local** — no public cloud APIs, no outbound model traffic.
 
 The system is built for institutions that cannot send regulated content off-premises: commercial credit, cyber incident playbooks, infrastructure architecture notes, and similar internal corpora. It was developed in the context of the **Microsoft AI Innovators Summer Internship**, demonstrating an end-to-end offline RAG stack suitable for academic and engineering evaluation.
 
@@ -262,7 +262,7 @@ Implemented controls (code-backed):
 
 ### Conversation
 
-![Conversation](docs/screenshots/03-conversation.png)
+![Conversation](docs/screenshots/03-c.png)
 
 *SSE chat with citation chips, Evidence panel, and animated AI orb.*
 
@@ -271,6 +271,30 @@ Implemented controls (code-backed):
 ![Knowledge Hub](docs/screenshots/04-knowledge-hub.png)
 
 *Indexed vault inventory, chunk explorer, and vector-store stats.*
+
+### Documents
+![Documents](docs/screenshots/05-documents.png)
+*Enterprise document management — upload, index, and manage vault files.*
+
+### Model Routing
+![Model Routing](docs/screenshots/06-model-routing.png)
+*Semantic intent classification and live routing decision flow.*
+
+### Inference Runtime
+![Inference Runtime](docs/screenshots/07-inference-runtime.png)
+*Foundry Local runtime status, pipeline stages, and active sessions.*
+
+### System Telemetry
+![System Telemetry](docs/screenshots/08-system-telemetry.png)
+*Live machine health, storage, and network monitoring.*
+
+### Security Center
+![Security Center](docs/screenshots/09-security.png)
+*AI security pipeline, threat counters, and PII redaction controls.*
+
+### Settings
+![Settings](docs/screenshots/10-settings.png)
+*Retrieval, generation, embedding, and indexing configuration.*
 
 ---
 
@@ -296,4 +320,4 @@ Interactive OpenAPI docs: **http://127.0.0.1:8000/docs** when the API is running
 
 ## License & Attribution
 
-Developed as part of the **Microsoft AI Innovators Summer Internship** evaluation track. Inference powered by **Microsoft Foundry Local**. UI product branding: **VectorVault**.
+**VectorVault (FinansAsistan)** was developed as part of the **Microsoft AI Innovators Summer Internship** evaluation track. Inference powered by **Microsoft Foundry Local**. UI product branding: **VectorVault**.
