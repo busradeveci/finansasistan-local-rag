@@ -53,31 +53,31 @@ Every step — from embedding generation to LLM inference — runs locally throu
 
 ### Security Center
 
-![Security Center](docs/screenshots/05-security.png)
+![Security Center](docs/screenshots/09-security.png)
 
 *AI security pipeline — threat counters, PII redaction layers, and Zero Trust controls.*
 
 ### Knowledge Hub
 
-![Knowledge Hub](docs/screenshots/06-knowladgehub.png)
+![Knowledge Hub](docs/screenshots/04-knowledge-hub.png)
 
 *Indexed vault inventory with chunk explorer and vector-store embedding telemetry.*
 
 ### Inference Runtime
 
-![Inference Runtime](docs/screenshots/07-ınference-runtime.png)
+![Inference Runtime](docs/screenshots/07-inference-runtime.png)
 
 *Foundry Local runtime status, inference pipeline stages, and active session log.*
 
 ### Model Routing
 
-![Model Routing](docs/screenshots/08-model-routing.png)
+![Model Routing](docs/screenshots/06-model-routing.png)
 
 *Live semantic intent classification and routing decision flow across three model tracks.*
 
 ### Documents
 
-![Documents](docs/screenshots/09-documents.png)
+![Documents](docs/screenshots/05-documents.png)
 
 *Enterprise document management — drag-and-drop upload, index pipeline, chunk tracking.*
 
