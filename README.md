@@ -11,6 +11,12 @@
 [![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?style=flat-square&logo=python&logoColor=white)](#)
 [![License](https://img.shields.io/badge/license-Microsoft%20Internship-blueviolet?style=flat-square)](#)
 
+## 📽️ Project Demo
+
+[![Watch Demo](https://img.shields.io/badge/Watch%20Demo-Google%20Drive-4285F4?style=flat-square&logo=google-drive&logoColor=white)](https://drive.google.com/file/d/1PfCK-PCLCObPntRwauky75tmWVIEhVVD/view?usp=sharing)
+
+> 2-minute walkthrough — local RAG inference, document querying with citations, and PDF export.
+
 ---
 
 ## What is VectorVault?
