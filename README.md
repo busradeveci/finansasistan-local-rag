@@ -19,7 +19,7 @@
 
 **No cloud. No API keys. No data egress. Ever.**
 
-Every step — from embedding generation to LLM inference — runs locally through **Microsoft Foundry Local**. This makes VectorVault suitable for regulated industries: banking, insurance, legal, healthcare, and government institutions where sensitive documents cannot leave the perimeter.
+Every step — from embedding generation to LLM inference — runs locally through **Microsoft Foundry Local**. This makes VectorVault suitable for financial services, legal, insurance, and other regulated industries worldwide — where sensitive documents cannot leave the internal network.
 
 > Developed as part of the **Microsoft AI Innovators Summer Internship** — demonstrating an end-to-end offline RAG stack at enterprise scale.
 
@@ -110,19 +110,16 @@ flowchart LR
 
 **Full request flow (RAG track):**
 
-```
-User Query
-  → FastAPI (CORS-scoped, localhost only)
-  → phi-4-mini semantic router (LOCAL_RAG / LOCAL_MATH / LOCAL_CHAT)
-  → 6-layer query sanitization (Unicode NFC → control strip → HTML strip → injection redact → collapse → 2000-char cap)
-  → qwen3-embedding-0.6b (Foundry Local, on-device)
-  → NumPy cosine search over SQLite FP32 BLOB embeddings
-  → 4-stage filter (absolute threshold 0.15 → relative cutoff 0.55 → fingerprint dedupe → hard cap 8 chunks)
-  → Context assembly with source fences
-  → phi-3.5-mini generation (temperature 0.0, evidence-only prompt)
-  → SSE stream → inline [n] citations + References block
-  → Optional numeric audit (financial figure cross-check)
-```
+1. User query enters FastAPI (CORS-scoped, localhost only)
+2. `phi-4-mini` semantic router selects `LOCAL_RAG` / `LOCAL_MATH` / `LOCAL_CHAT`
+3. 6-layer query sanitization (Unicode NFC → control strip → HTML strip → injection redact → collapse → 2000-char cap)
+4. `qwen3-embedding-0.6b` embeds the query on-device via Foundry Local
+5. NumPy cosine search over SQLite FP32 BLOB embeddings
+6. 4-stage filter (absolute threshold 0.15 → relative cutoff 0.55 → fingerprint dedupe → hard cap 8 chunks)
+7. Context assembly with `SOURCE BEGIN/END` fences
+8. `phi-3.5-mini` generation (temperature 0.0, evidence-only prompt)
+9. SSE stream with inline `[n]` citations and a deterministic References block
+10. Optional numeric audit (financial figure cross-check)
 
 ---
 
@@ -137,6 +134,14 @@ User Query
 **Grounded Generation** — The LLM is constrained to answer only from retrieved context. Responses include inline `[n]` citations mapped to source chunks. When evidence is insufficient, a canonical refusal sentence is returned — the model never fabricates.
 
 **Numeric Audit** — A post-generation pass cross-checks significant financial figures in the answer against retrieved evidence, flagging mismatches before the response reaches the user.
+
+### System Prompt Design
+
+RAG generation uses a lean system prompt plus a per-request user contract assembled in `generation.py`:
+
+- **Evidence-only** — The system prompt (`SYSTEM_PROMPT` in `config.py`) requires answers from retrieved context chunks only; the user message marks numbered `SOURCE BEGIN/END` fences as the sole source of truth and forbids blending facts across fences unless the excerpts themselves correlate them.
+- **Citation enforcement** — Facts must be cited inline as `[1]`, `[2]`, …; the server builds a filename→number map, strips any model-written References/Sources section, and appends a deterministic References block for cited (or all) sources.
+- **Refusal contract** — If the sources do not explicitly contain the answer, the model must reply with exactly `NO_CONTEXT_ANSWER` (`"This information is not available in the uploaded documents."`) and nothing else; refusal leaks and `(Note: …)` meta-commentary are scrubbed from substantive answers.
 
 ### Document Processing
 
